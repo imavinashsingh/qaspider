@@ -9,8 +9,9 @@ export class QaService {
         controller: AbortController;
         promise: Promise<void>;
     }>();
-    constructor(readonly store: SqliteStore, readonly artifacts: ArtifactStore, private readonly provider: ProviderAdapter = new CodexPlanningAdapter(), private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) { }
+    constructor(readonly store: SqliteStore, readonly artifacts: ArtifactStore, private readonly provider: ProviderAdapter | (()=>ProviderAdapter) = new CodexPlanningAdapter(), private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) { }
     async plan(storyId: string, policyInput: TestPolicy, signal?: AbortSignal): Promise<PlanRevision> {
+        const provider=typeof this.provider==='function'?this.provider():this.provider;
         const story = this.store.testing.getStory(storyId);
         if (!story)
             throw new Error('Unknown story revision');
@@ -24,7 +25,7 @@ export class QaService {
         if (policy.fixtures && ![policy.fixtures.setupUrl, policy.fixtures.cleanupUrl].every(url => environment.allowedOrigins.includes(new URL(url).origin)))
             throw new Error('Fixture endpoint outside story scope');
         // No context reaches a real provider until its own synthetic capability gate passes.
-        if (!this.provider.capabilities().synthetic) {
+        if (!provider.capabilities().synthetic) {
             if (!(this.provider instanceof CodexPlanningAdapter))
                 throw new Error('Unvalidated real provider');
             await this.provider.validateIsolation(signal);
@@ -60,10 +61,10 @@ export class QaService {
         summary = summary.replace(/[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}/g, '[email]');
         if (summary.length > 16000)
             throw new Error('Relevant context exceeds planning budget; narrow the story');
-        const proposal = proposalSchema.parse(await this.provider.plan({ summary }, signal));
+        const proposal = proposalSchema.parse(await provider.plan({ summary }, signal));
         signal?.throwIfAborted();
-        const capabilities = this.provider.capabilities();
-        const validation = this.provider instanceof CodexPlanningAdapter ? this.provider.validationRecord() : null;
+        const capabilities = provider.capabilities();
+        const validation = provider instanceof CodexPlanningAdapter ? provider.validationRecord() : null;
         const plan = this.store.testing.savePlan(story.id, proposal, policy, { id: capabilities.id, synthetic: capabilities.synthetic, validationId: validation?.id ?? null });
         for (const inference of proposal.inferredRequirements)
             this.store.testing.addInference(story.id, inference.text, capabilities.id);

@@ -1,3 +1,4 @@
+import {configuredProviderFactory} from '../../studio/src/settings.js';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -28,7 +29,7 @@ export async function runTestingCli(args: string[], output: (line: string) => vo
             throw new Error('Workspace not initialized');
         store = new SqliteStore(database);
         const artifacts = new ArtifactStore(store, join(directory, 'artifacts'));
-        const service = new QaService(store, artifacts, provider, undefined, env);
+        const service = new QaService(store, artifacts, configuredProviderFactory(resolve(values.workspace??'.')), undefined, env);
         const file = () => {
             if (!values.file)
                 throw new Error('A file is required');

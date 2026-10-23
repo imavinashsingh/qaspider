@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "actualExistingM5Workspace": true,
+  "projectId": "b6c213d1-818f-4b27-9166-3dd16f37ef5c",
+  "before": {
+    "hash": "7c9cbc8072e3f10b89be09a885a1811df33a7d134397afadc7400a855048da8f",
+    "scopes": 3,
+    "stories": 4,
+    "plans": 1,
+    "runs": 10,
+    "artifacts": 313,
+    "versions": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "after": {
+    "hash": "7c9cbc8072e3f10b89be09a885a1811df33a7d134397afadc7400a855048da8f",
+    "scopes": 3,
+    "stories": 4,
+    "plans": 1,
+    "runs": 10,
+    "artifacts": 313,
+    "versions": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "contentPreserved": true,
+  "registryRestartPreserved": true
+}
