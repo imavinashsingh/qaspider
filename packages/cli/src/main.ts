@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { runCli } from './cli.js';
 const args = process.argv.slice(2);
-if (['studio','view','projects'].includes(args[0]??'')) {
+if(args.includes('--help')||args[0]==='help'){const {cliReference}=await import('../../core/src/cli-reference.js');console.log('QASpider — Node 24 local QA\n'+cliReference.map(c=>c.command+' '+c.options.join(' ')+'\n  '+c.description).join('\n'));}
+else if (['studio','view','projects'].includes(args[0]??'')) {
  const {runStudioCli}=await import('./studio.js');process.exitCode=await runStudioCli(args);
 } else if (['serve','onboard','configuration','settings','overview'].includes(args[0] ?? '')) {
   const { runApplicationCli } = await import('./application.js'); process.exitCode = await runApplicationCli(args);

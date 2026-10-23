@@ -11,3 +11,7 @@ it('registers canonical workspaces once, restricts browser paths, persists renam
   expect(()=>registry.create({name:'Invalid',directory:'invalid',origin:'https://example.test/path',environmentName:'QA'})).toThrow();expect(existsSync(join(allowed,'invalid'))).toBe(false);
  }finally{store.close();rmSync(root,{recursive:true,force:true});}
 });
+it('creates a usable workspace without exposing technical directory identifiers to onboarding',()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-guided-project-'));const allowed=join(root,'projects');mkdirSync(allowed);const store=new StudioStore(join(root,'registry'));const registry=new ProjectRegistry(store,[allowed]);
+ try{const first=registry.create({name:'Customer Portal QA',origin:'https://qa.example.test',environmentName:'QA'});const second=registry.create({name:'Customer Portal QA',origin:'https://qa.example.test',environmentName:'QA'});expect(first.path).toMatch(/customer-portal-qa-[a-f0-9]{8}$/);expect(first.path).not.toBe(second.path);expect(first.path.startsWith(allowed+'/')).toBe(true);expect(existsSync(join(first.path,'.qaspider/memory.db'))).toBe(true);registry.select(first.id);expect(registry.selected()).toBe(first.id);}finally{store.close();rmSync(root,{recursive:true,force:true});}
+});
