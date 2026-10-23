@@ -1,0 +1,138 @@
+{
+  "milestone": "M4",
+  "status": "complete",
+  "baselineCommit": "92eb99c",
+  "branch": "feat/qaspider-m3-m5",
+  "sdk": {
+    "server": "@modelcontextprotocol/server@2.4.0",
+    "client": "@modelcontextprotocol/client@2.4.0",
+    "officialSource": "https://github.com/modelcontextprotocol/typescript-sdk",
+    "transport": "stdio",
+    "olderSdkInstalled": false
+  },
+  "migrations": [
+    {
+      "version": 5,
+      "file": "packages/storage/migrations/005_operation_jobs.sql",
+      "tables": [
+        "operation_jobs"
+      ],
+      "previousMigrationsUnchanged": true,
+      "sha256": "d90598b07bc4f2c097215343c2726c86dda0cba26e81f8534ed87c0eb634e530"
+    }
+  ],
+  "features": [
+    "Explicit exact-scope MCP authorization with no default grants",
+    "MCP application context, approved paths, planning, approved deterministic execution, targeted exploration, reporting, memory proposals and job status/cancellation",
+    "Shared application, QA, learning, navigation and policy services",
+    "Persistent bounded map/explore jobs",
+    "Transactional application/environment/role-reference onboarding",
+    "Real Applications, Configuration and aggregate Overview dashboard screens",
+    "CLI onboard/configuration/settings/overview/serve --mcp"
+  ],
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "testFiles": 17,
+      "testsPassed": 44,
+      "subprocessPermissionRequired": true
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=/home/avi/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64/codex npm run verify:provider",
+      "result": "passed",
+      "evidence": "validation/m4-provider-validation.json"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "passed",
+      "testsPassed": 10,
+      "durationSecondsApprox": 84,
+      "finalSourceAfterCrossBuildFix": true
+    }
+  ],
+  "securityReview": [
+    "No MCP approval, onboarding, arbitrary artifact/path read or expectation-rewrite tool",
+    "Per-action exact application/environment/build/role/tenant/feature-flag grants; multi-role operations validate every role",
+    "Job results referencing a base build require that base build read permission",
+    "Approved exact plan and normal action/fixture policies required for execution",
+    "Codex context construction/isolation source unchanged and synthetic gate reverified",
+    "Viewer remains loopback-only, bearer-protected and Host/Origin checked; mutations require same-origin JSON",
+    "No reusable access token published or committed",
+    "Onboarding accepts credential references only and cannot silently repurpose existing identities",
+    "Artifact quotas, retention and raw-trace restrictions preserved"
+  ],
+  "resolvedDevelopmentFailures": [
+    "Protocol test initially used an unavailable SDK in-memory transport export; replaced with actual compiled CLI and official stdio client",
+    "Nested subprocess spawning blocked inside sandbox; real stdio tests passed with approved subprocess access",
+    "MCP report lacked explicit deterministic-execution metadata; added providerUsed=false",
+    "Cross-build job-result disclosure regression test first failed, then passed after authorization fix"
+  ],
+  "failures": [],
+  "blockers": [],
+  "knownLimitations": [
+    "MCP is local stdio only; no remote HTTP/OAuth deployment",
+    "Explicit owner CLI/dashboard review required for approvals",
+    "Provider planning still requires validated Codex CLI and current CLI authentication",
+    "Onboarding creates new immutable scope identities; it does not edit historical identities or support automatic MFA",
+    "Abruptly interrupted jobs/runs still require operator reconciliation; no automatic crash resumption",
+    "Artifacts and screenshots remain local; raw traces are never exported through MCP"
+  ],
+  "completedAtUtc": "2026-10-23T19:27:24.593203+00:00",
+  "qualityGate": {
+    "CLIAndProtocolTests": true,
+    "dashboardE2E": true,
+    "providerIsolation": true,
+    "M0M3Regressions": true,
+    "typecheck": true,
+    "productionBuild": true,
+    "securityAndPolicy": true
+  },
+  "evidence": {
+    "onboardingThroughReport": "validation/m4-onboarding-evidence.json",
+    "learningRegression": "validation/m4-learning-regression-evidence.json",
+    "providerIsolation": "validation/m4-provider-validation.json",
+    "privateReceiptsAndScreenshots": ".qaspider/m3-m4-acceptance",
+    "privatePermissions": "directories 0700; files 0600"
+  },
+  "changedFiles": [
+    "README.md",
+    "apps/viewer/src/main.tsx",
+    "apps/viewer/src/workspace.tsx",
+    "examples/m4/mcp-authorization.json",
+    "examples/m4/onboarding.json",
+    "package-lock.json",
+    "package.json",
+    "packages/application/package.json",
+    "packages/application/src/http.ts",
+    "packages/application/src/service.ts",
+    "packages/cli/src/application.ts",
+    "packages/cli/src/main.ts",
+    "packages/core/src/application.ts",
+    "packages/core/src/index.ts",
+    "packages/mcp/package.json",
+    "packages/mcp/src/server.ts",
+    "packages/navigation/src/viewer.ts",
+    "packages/storage/migrations/005_operation_jobs.sql",
+    "packages/storage/src/jobs.ts",
+    "packages/storage/src/sqlite.ts",
+    "tests/integration/application.test.ts",
+    "tests/integration/cli.test.ts",
+    "tests/integration/mcp.test.ts",
+    "tests/integration/navigation-storage.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/smoke/workspace.spec.ts",
+    "validation/m4-learning-regression-evidence.json",
+    "validation/m4-onboarding-evidence.json",
+    "validation/m4-provider-validation.json",
+    "validation/m4-report.json"
+  ]
+}

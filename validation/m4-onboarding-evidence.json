@@ -1,0 +1,27 @@
+{
+  "scope": {
+    "applicationId": "onboarded",
+    "environmentId": "onboarded-qa",
+    "build": "m4-onboarding",
+    "roleId": "onboarded-guest",
+    "tenant": "public",
+    "featureFlags": {}
+  },
+  "states": 4,
+  "transitions": 16,
+  "planId": "9980e188-9964-459f-9962-c5692b954c06",
+  "mcpSummary": {
+    "PASS": 1,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "FLAKY": 0,
+    "NOT RUN": 0
+  },
+  "providerUsed": false,
+  "runIds": [
+    "21764bc8-c20d-4497-b16a-a82f15e91a76",
+    "2f12ba9d-3960-4ab3-9f43-5a5d69340266"
+  ],
+  "settingsPersisted": true
+}

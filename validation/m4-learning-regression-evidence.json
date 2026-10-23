@@ -1,0 +1,140 @@
+{
+  "exploration": {
+    "run": {
+      "id": "ff971f80-51b0-4d7a-9ca9-5e18b0fc1da9",
+      "scopeId": "72866cbb1b56ff848135ff64cadf0163704709c3061cc0cd39faed455e201bd3",
+      "kind": "map",
+      "status": "complete",
+      "startedAt": 1792783546396,
+      "finishedAt": 1792783548152,
+      "actions": 31,
+      "requests": 66,
+      "states": 3,
+      "message": "Navigation work completed",
+      "evidenceIds": [
+        "7f9aa07c-b062-445c-a5fc-e5eec4045fc9",
+        "104155a2-bd42-4625-bba9-525ea0e31e40",
+        "8cf229a8-f420-42b5-b349-ee85b41b7547",
+        "a6fbe29c-63de-468f-ad43-9c7e22de2450",
+        "3e8b379f-09dd-4bbc-a6b4-736aeafbe7da",
+        "6bffdede-6588-4486-99bd-9141367e6f42",
+        "43c9cdde-1327-494e-91ab-5ee6d03e3274",
+        "eab1c606-59ca-4d0a-8746-3d8100d0029c",
+        "18ec8a2a-2909-4189-8922-7df40f2037e3",
+        "87bc29ca-2ca9-4568-b9ca-378f2851f280",
+        "24cb52cd-378d-46bd-a402-d727aa6bb63f"
+      ]
+    },
+    "change": {
+      "id": "34905318-fc5d-4802-ba3e-32a7f4abb62c",
+      "base": {
+        "applicationId": "benchmark",
+        "environmentId": "development",
+        "build": "before-consent",
+        "roleId": "guest",
+        "tenant": "public",
+        "featureFlags": {}
+      },
+      "head": {
+        "applicationId": "benchmark",
+        "environmentId": "development",
+        "build": "with-consent",
+        "roleId": "guest",
+        "tenant": "public",
+        "featureFlags": {}
+      },
+      "reviewer": "change-reviewer",
+      "createdAt": 1792783548154,
+      "newStateIds": [
+        "2ee690aea2f8ee0b880997909cb56cec1d1b2439e7e8eb980d50c8012893b633"
+      ],
+      "missingStateIds": [
+        "87e529590fe511652d77ad137cee85b88f56e35891e0de5d44659a4be63fb5da",
+        "971e9221e17333468d3928e82ed2e526f2e86d4cfa9024e33cc52eafb1290332"
+      ],
+      "changedTransitions": [
+        "15bed94f528e0eaf3c59448843b090352593dc4341f7d2f30a5c97066ed1710f",
+        "408a89a1afe5970b4a939de4b8e6a9b855dd93af98a877ccefd4759fcd2574f0",
+        "476da2ecda11393c0e0ef145ee3b554e52249c65c67603da9051793f3b6da546",
+        "91b56e74afcb977227c2f55f7bf0635d2df39207a9258f80bc35557cd1ec2ea6"
+      ],
+      "newTransitionIds": [
+        "069737b6e13d2040e99e39d6a1b6cf9a3a431b074f127998a5b75f7c4530772b",
+        "7ea9ac43135f551f36a0f887bddadf216a9e7522457b0740d9f1b337a8b2437d",
+        "953b588ef3f740373db5f3c55da7955d1de117cff1e7d07fa0ba3f65a6d6ce45",
+        "c513f2ef95b4bd30e3adda53a9cf4b2d35195ffeb30df816b032fe8ab0d49be1"
+      ],
+      "impactedScenarioIds": [
+        "duplicate"
+      ]
+    },
+    "candidate": {
+      "id": "547880cf-05dd-4dc8-ab64-e21452039c86",
+      "scope": {
+        "applicationId": "benchmark",
+        "environmentId": "development",
+        "build": "with-consent",
+        "roleId": "guest",
+        "tenant": "public",
+        "featureFlags": {}
+      },
+      "kind": "navigation",
+      "transitionIds": [
+        "069737b6e13d2040e99e39d6a1b6cf9a3a431b074f127998a5b75f7c4530772b",
+        "7ea9ac43135f551f36a0f887bddadf216a9e7522457b0740d9f1b337a8b2437d",
+        "953b588ef3f740373db5f3c55da7955d1de117cff1e7d07fa0ba3f65a6d6ce45",
+        "c513f2ef95b4bd30e3adda53a9cf4b2d35195ffeb30df816b032fe8ab0d49be1"
+      ],
+      "changeSetId": "34905318-fc5d-4802-ba3e-32a7f4abb62c",
+      "source": "Bounded targeted exploration with checked preconditions and postconditions",
+      "expectation": null,
+      "createdAt": 1792783548155,
+      "evidenceIds": [
+        "3e8b379f-09dd-4bbc-a6b4-736aeafbe7da",
+        "18ec8a2a-2909-4189-8922-7df40f2037e3",
+        "87bc29ca-2ca9-4568-b9ca-378f2851f280",
+        "6bffdede-6588-4486-99bd-9141367e6f42"
+      ]
+    }
+  },
+  "approvalId": "770cf4a1-e1c1-4e83-89b7-b944d4939528",
+  "originalFailure": {
+    "id": "866e2e29-158d-4bbb-9ab9-c66d09a9f219",
+    "scopeId": "c423641f80c97961eb5116619e00daac2ddcdcca4ec4cfd3c247e2da3008db63",
+    "kind": "replay",
+    "status": "failed",
+    "startedAt": 1792783545197,
+    "finishedAt": 1792783546393,
+    "actions": 2,
+    "requests": 5,
+    "states": 0,
+    "message": "Live state precondition/postcondition mismatch",
+    "evidenceIds": [
+      "16aeff76-6736-4028-8cb1-07c0fed260ec",
+      "18f8d10d-4007-4e64-827a-bba95a04b133",
+      "6a077fd7-3c3d-4451-96d9-7ce000aaa86f"
+    ]
+  },
+  "restartedReplay": {
+    "id": "ddb848d2-45d4-4582-bd54-b895ad23586e",
+    "scopeId": "72866cbb1b56ff848135ff64cadf0163704709c3061cc0cd39faed455e201bd3",
+    "kind": "replay",
+    "status": "complete",
+    "startedAt": 1792783549026,
+    "finishedAt": 1792783549359,
+    "actions": 3,
+    "requests": 5,
+    "states": 2,
+    "message": "Navigation work completed",
+    "evidenceIds": [
+      "d345b5d6-c9f6-4f4f-b62f-330d6879a1a5",
+      "4a8bb489-e7d2-4202-a4df-bc791f4f9f52",
+      "ad227309-8833-4ddd-a3c6-da1c9401060e"
+    ],
+    "providerUsed": false
+  },
+  "defectRun": "a49029f2-5a6e-4520-9bca-3c2ada360c40",
+  "duplicateDefectDetected": true,
+  "originalRequirementsUnchanged": true,
+  "providerUsed": false
+}

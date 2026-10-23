@@ -1,0 +1,5 @@
+{
+ "grants":[
+  {"scope":{"applicationId":"benchmark","environmentId":"development","roleId":"guest","build":"demo-1","tenant":"public","featureFlags":{}},"actions":["read"]}
+ ]
+}

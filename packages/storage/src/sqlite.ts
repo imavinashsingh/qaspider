@@ -7,6 +7,7 @@ import { applicationSchema, environmentSchema, roleSchema, settingsSchema, type 
 import { assertNoSymlinks, privateDirectory } from './filesystem.js';
 import { SqliteNavigationRepository } from './navigation.js';
 import { SqliteTestingRepository } from './testing.js';
+import { SqliteOperationJobs } from './jobs.js';
 import { SqliteLearningRepository } from './learning.js';
 type Row = Record<string, unknown>;
 export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
@@ -15,6 +16,7 @@ export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
   readonly navigation: SqliteNavigationRepository;
   readonly testing: SqliteTestingRepository;
   readonly learning: SqliteLearningRepository;
+  readonly operationJobs: SqliteOperationJobs;
   constructor(path: string) {
     if (path === ':memory:') this.db = new Database(path);
     else {
@@ -30,6 +32,7 @@ export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
     this.navigation = new SqliteNavigationRepository(this.db, id => this.getEnvironment(id), id => this.getRole(id));
     this.testing = new SqliteTestingRepository(this.db, id => this.getEnvironment(id), id => this.getRole(id));
     this.learning = new SqliteLearningRepository(this.db, this.navigation);
+    this.operationJobs = new SqliteOperationJobs(this.db);
   }
   migrate(): void {
     const directory = fileURLToPath(new URL('../migrations/', import.meta.url));
@@ -53,6 +56,9 @@ export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
   createApplication(input: Application): Application {
     const item = applicationSchema.parse(input); this.db.prepare('INSERT INTO applications(id, name) VALUES (?, ?)').run(item.id, item.name); return item;
   }
+  listApplications(): Application[] { return (this.db.prepare('SELECT * FROM applications ORDER BY id').all() as Row[]).map(row => applicationSchema.parse(row)); }
+  listEnvironments(): Environment[] { return (this.db.prepare('SELECT id FROM environments ORDER BY id').all() as Row[]).map(row=>this.getEnvironment(String(row.id))!); }
+  listRoles(): RoleProfile[] { return (this.db.prepare('SELECT id FROM role_profiles ORDER BY id').all() as Row[]).map(row=>this.getRole(String(row.id))!); }
   getApplication(id: string): Application | undefined {
     const row = this.db.prepare('SELECT * FROM applications WHERE id = ?').get(id) as Row | undefined;
     return row ? applicationSchema.parse(row) : undefined;

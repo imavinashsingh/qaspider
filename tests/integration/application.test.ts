@@ -1,0 +1,17 @@
+import {it,expect} from 'vitest';
+import {mkdtempSync,rmSync,writeFileSync}from'node:fs';import{tmpdir}from'node:os';import{join}from'node:path';
+import {SqliteStore,ArtifactStore}from'../../packages/storage/src/index.js';
+import {ApplicationService}from'../../packages/application/src/service.js';
+import {runApplicationCli}from'../../packages/cli/src/application.js';
+it('onboards references transactionally, preserves IDs, persists settings and refuses production discovery',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-app-'));const path=join(root,'.qaspider','memory.db');let store=new SqliteStore(path);let service=new ApplicationService(store,new ArtifactStore(store,join(root,'artifacts')));
+ const config={application:{id:'a',name:'App'},environment:{id:'qa',applicationId:'a',name:'QA',kind:'qa' as const,allowedOrigins:['http://127.0.0.1:3000']},roles:[{id:'guest',environmentId:'qa',name:'Guest',auth:{kind:'guest' as const}}]};
+ try{expect(service.onboard(config).applications).toHaveLength(1);expect(service.onboard(config).roles).toHaveLength(1);expect(()=>service.onboard({...config,application:{id:'other',name:'Other'},environment:{...config.environment,applicationId:'other'}})).toThrow();expect(store.getApplication('other')).toBeUndefined();
+ expect(()=>service.onboard({...config,roles:[{...config.roles[0]!,auth:{kind:'form',username:'secret',password:'secret'}}] as never})).toThrow();expect(()=>service.onboard({...config,environment:{...config.environment,allowedOrigins:['https://outside.test']}})).toThrow();
+ service.settings({...store.getSettings(),retentionDays:7});expect(()=>service.settings({...store.getSettings(),globalQuotaBytes:1,perRunQuotaBytes:2})).toThrow();expect(store.getSettings().retentionDays).toBe(7);
+ expect(()=>service.startMap({scope:{applicationId:'a',environmentId:'qa',roleId:'guest',tenant:'public',build:'b',featureFlags:{}},seedUrl:'http://outside.test/',config:{},limits:{}})).toThrow();
+ const job=service.startMap({scope:{applicationId:'a',environmentId:'qa',roleId:'guest',tenant:'public',build:'cancel',featureFlags:{}},seedUrl:'http://127.0.0.1:3000/',config:{},limits:{}});service.cancel(job.id);await service.shutdown();expect(store.operationJobs.get(job.id)?.status).toBe('cancelled');store.close();store=new SqliteStore(path);expect(store.operationJobs.get(job.id)?.status).toBe('cancelled');service=new ApplicationService(store,new ArtifactStore(store,join(root,'artifacts')));expect(service.configuration().applications[0]?.name).toBe('App');expect(service.configuration().settings.retentionDays).toBe(7);
+ const onboardingFile=join(root,'onboarding.json'),settingsFile=join(root,'settings.json');writeFileSync(onboardingFile,JSON.stringify(config));writeFileSync(settingsFile,JSON.stringify({...store.getSettings(),retentionDays:8}));expect(await runApplicationCli(['onboard','--workspace',root,'--file',onboardingFile],()=>{})).toBe(0);expect(await runApplicationCli(['settings','--workspace',root,'--file',settingsFile],()=>{})).toBe(0);expect(await runApplicationCli(['overview','--workspace',root],()=>{})).toBe(0);
+ const logs:string[]=[];expect(await runApplicationCli(['configuration','--workspace',root],line=>logs.push(line))).toBe(0);expect(JSON.parse(logs[0]!).environments[0].id).toBe('qa');expect(await runApplicationCli(['serve','--mcp','--workspace',root],()=>{})).toBe(1);
+ }finally{await service.shutdown();store.close();rmSync(root,{recursive:true,force:true});}
+});

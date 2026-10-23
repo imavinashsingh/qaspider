@@ -1,0 +1,1 @@
+{"name":"@qaspider/mcp","version":"0.0.0","private":true,"type":"module","main":"../../dist/packages/mcp/src/server.js","types":"../../dist/packages/mcp/src/server.d.ts","dependencies":{"@modelcontextprotocol/server":"2.4.0"}}

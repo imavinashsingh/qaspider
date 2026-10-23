@@ -1,0 +1,9 @@
+{
+ "application":{"id":"my-app","name":"My local application"},
+ "environment":{"id":"my-app-qa","applicationId":"my-app","name":"QA","kind":"qa","allowedOrigins":["http://127.0.0.1:3000"]},
+ "roles":[
+  {"id":"my-app-guest","environmentId":"my-app-qa","name":"Guest","auth":{"kind":"guest"}},
+  {"id":"my-app-admin","environmentId":"my-app-qa","name":"Admin","auth":{"kind":"form","usernameEnv":"MY_APP_ADMIN_EMAIL","passwordEnv":"MY_APP_ADMIN_PASSWORD"}},
+  {"id":"my-app-user","environmentId":"my-app-qa","name":"User","auth":{"kind":"form","usernameEnv":"MY_APP_USER_EMAIL","passwordEnv":"MY_APP_USER_PASSWORD"}}
+ ]
+}

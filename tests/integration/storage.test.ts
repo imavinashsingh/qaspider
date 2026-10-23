@@ -10,8 +10,8 @@ afterEach(() => { stores.splice(0).forEach(s => s.close()); roots.splice(0).forE
 describe('SQLite repositories and migrations', () => {
   it('migrates fresh storage, is repeatable, persists all M0 entities on reopen', () => {
     const { store, path } = setup();
-    expect(store.migrationVersions()).toEqual([1, 2, 3, 4]);
-    store.migrate(); expect(store.migrationVersions()).toEqual([1, 2, 3, 4]);
+    expect(store.migrationVersions()).toEqual([1, 2, 3, 4, 5]);
+    store.migrate(); expect(store.migrationVersions()).toEqual([1, 2, 3, 4, 5]);
     store.createApplication({ id: 'app', name: 'Portal' });
     store.createEnvironment({ id: 'qa', applicationId: 'app', name: 'QA', kind: 'qa', allowedOrigins: ['http://127.0.0.1:3000'] });
     store.createRole({ id: 'admin', environmentId: 'qa', name: 'Admin', auth: { kind: 'form', usernameEnv: 'QA_USER', passwordEnv: 'QA_PASSWORD' } });

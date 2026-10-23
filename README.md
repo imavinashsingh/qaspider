@@ -1,6 +1,6 @@
 # QASpider — Story-driven QA
 
-Local-first QA following the approved QASpider V2 architecture. **M0–M3 are implemented.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. MCP remains deferred.
+Local-first QA following the approved QASpider V2 architecture. **M0–M4 are implemented.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
 ## Install and verify
 
@@ -9,8 +9,8 @@ Use Node **24.x** and npm:
 ```sh
 npm ci
 npm run typecheck
-npm test
 npm run build
+npm test
 npx playwright install chromium
 npm run test:smoke
 ```
@@ -188,3 +188,23 @@ node_modules/.bin/qaspider memory rollback --scope HEAD_SCOPE_ID --revision REVI
 All commands accept `--workspace`. `memory reject` uses the same options as `approve`; `memory approve-expectation` requires one `--ids` value, `--reviewer` and exact `--source`. Discovery and navigation replay remain AI-free. There is no autonomous expectation mutation.
 
 The benchmark's token-protected `/__fixtures/change` accepts `registrationConsent: true` to insert a local presentation-only consent dialog. This is an explicitly configured safe navigation control, not a business-rule consent assertion. `tests/smoke/learning.spec.ts` demonstrates change detection, targeted discovery, UI approval, separate-process replay, duplicate-email defect detection and rollback. Raw Chromium evidence remains private in ignored `test-results/`.
+
+## M4 — MCP v2 and workspace dashboard
+
+The local dashboard includes **Applications**, **Configuration**, **Overview**, **Navigation Graph**, **Test Studio**, **Test Runs** and **Memory Center**. Applications creates persisted application/environment/role records and starts bounded mapping jobs. Credentials are configured outside the app and referenced by environment-variable names. Configuration edits artifact quotas, retention and trace capture. Overview counts actual stored records. Switch back to Navigation Graph after a mapping job completes to load its newly persisted scope.
+
+Application IDs, environment IDs and role IDs are immutable through onboarding; repeating identical input is safe. Use new IDs for a changed scope rather than repurposing historical records. Advanced auth locators, safe controls and private selectors use the same strict navigation configuration as the CLI.
+
+```sh
+node_modules/.bin/qaspider onboard --file examples/m4/onboarding.json
+node_modules/.bin/qaspider configuration
+node_modules/.bin/qaspider overview
+node_modules/.bin/qaspider settings --file workspace-settings.json
+node_modules/.bin/qaspider serve --mcp --authorization examples/m4/mcp-authorization.json
+```
+
+The server uses the official split TypeScript SDK **v2.4.0** (`@modelcontextprotocol/server`), over stdio. No network MCP listener is started. Stdout is reserved for protocol messages. The operator must supply a strict authorization file; there are no default grants. Example grants are exact app/environment/build/role/tenant/feature-flag scopes. Add only the actions your client needs: `read`, `plan`, `execute`, `explore`, `propose`. Multi-role stories require permission for every role. Review the file before launching an external agent; possession of the process connection alone grants no scope access.
+
+Tools: `get_app_context`, `find_path`, `plan_tests`, `run_tests`, `explore_feature`, `get_report`, `propose_memory_update`, `get_job`, `cancel_job`. Planning still runs the synthetic Codex isolation gate before context sharing. Execution requires an exact approved plan and its policy. Exploration uses configured origins, controls, identity and budgets; results remain unapproved. MCP cannot onboard applications, approve plans/requirements/memory, read arbitrary paths, retrieve raw traces or change accepted expectations. Reports expose evidence references; raw browser evidence stays private. Use the local owner CLI/dashboard for explicit review and approval.
+
+CLI, dashboard and MCP use the same application, QA, learning, navigation, storage and policy services. Discovery jobs and their results persist in migration 005; graceful cancellation is supported. Abruptly terminated jobs still need operator reconciliation and are not automatically resumed. Build before `npm test`: the MCP integration test exercises the compiled CLI through the actual SDK client, not a mocked protocol.
