@@ -1,0 +1,311 @@
+{
+  "milestone": "M5.2",
+  "status": "complete",
+  "generatedAt": "2026-10-23T21:39:43.830424+00:00",
+  "branch": "feat/qaspider-m5-2-ux",
+  "baseline": "5c8a3a4",
+  "scope": "Professional local Studio UX redesign only; no M6, push, publication, external target changes or migration changes.",
+  "audit": {
+    "alreadyImplemented": [
+      "Cookie/CSRF administrator authentication",
+      "Canonical per-project registry and pinned project APIs",
+      "M1 navigation discovery, verification, persistence and replay",
+      "M2 immutable requirements/plans, gated Codex planning, deterministic execution and reports",
+      "M3 governed memory review and rollback",
+      "M4 scoped stdio MCP and actual tool reference",
+      "Optional project-managed MCP lifecycle and provider configuration"
+    ],
+    "gapsAddressed": [
+      "Inconsistent navigation and missing global New Test",
+      "Technical project directory/IDs required in basic onboarding",
+      "No direct approved-test replay or recent-report action from Overview",
+      "No searchable/copyable in-Studio CLI reference or shared CLI help",
+      "Small typography, inconsistent spacing and mobile layouts",
+      "Admin incorrectly selected as the initial discovery role",
+      "Redundant or technical fields in basic test review and artifact settings"
+    ]
+  },
+  "screensChanged": [
+    "Administrator setup and login",
+    "Persistent Studio shell/sidebar/project switcher/New Test",
+    "Projects/create/import/manage",
+    "Overview/setup checklist/recent reports/memory summary",
+    "Applications/onboarding/discovery",
+    "Test Studio/story/planning/review/approval/execution",
+    "Run Existing Test",
+    "Test Runs/assertions/screenshots/evidence",
+    "Navigation Graph (shared design system)",
+    "Memory Center (shared design system)",
+    "CLI & MCP with separate tabs",
+    "Settings General/AI Providers/Security/MCP"
+  ],
+  "journeysImplemented": [
+    "Create project without IDs or directory input; generated private workspace remains CLI-usable",
+    "Import/open CLI workspace without replacing its database",
+    "Guest-first safe discovery and explicit transition batch approval",
+    "New Test \u2192 scoped story \u2192 provider proposal \u2192 title/advanced edits \u2192 immutable revision \u2192 explicit approval \u2192 actual browser execution \u2192 persisted report",
+    "Overview recent report \u2192 exact saved run",
+    "Run Existing Test \u2192 approved plan \u2192 AI-free deterministic execution",
+    "Search and copy project-specific shell-quoted CLI snippets",
+    "Open truthful MCP tool/configuration/lifecycle documentation",
+    "Switch/restart projects with isolated data and persistent selection"
+  ],
+  "changedFiles": [
+    "README.md",
+    "apps/viewer/src/cli.tsx",
+    "apps/viewer/src/main.tsx",
+    "apps/viewer/src/project-overview.tsx",
+    "apps/viewer/src/settings.tsx",
+    "apps/viewer/src/studio.tsx",
+    "apps/viewer/src/style.css",
+    "apps/viewer/src/testing.tsx",
+    "apps/viewer/src/ui.tsx",
+    "apps/viewer/src/workspace.tsx",
+    "docs/STUDIO-UX.md",
+    "docs/STUDIO.md",
+    "packages/cli/src/main.ts",
+    "packages/core/src/cli-reference.ts",
+    "packages/studio/src/projects.ts",
+    "packages/studio/src/server.ts",
+    "tests/integration/studio-http.test.ts",
+    "tests/integration/studio-projects.test.ts",
+    "tests/smoke/studio-ux.spec.ts",
+    "tests/smoke/studio.spec.ts",
+    "tests/smoke/testing.spec.ts",
+    "tests/smoke/workspace.spec.ts",
+    "tests/unit/ux-contracts.test.ts",
+    "validation/m5-2-report.json",
+    "validation/m5-2-screenshots.json",
+    "validation/m5-2-baseline-provider.json",
+    "validation/m5-2-provider-validation.json",
+    "validation/m2-isolation-recheck.json"
+  ],
+  "migrations": {
+    "added": [],
+    "001Through005Unchanged": true,
+    "sha256": {
+      "packages/storage/migrations/001_foundation.sql": "463667121ecff9266f0f78e070eb5e3cd147b8b2c753fe08cb7afa42ac6b6864",
+      "packages/storage/migrations/002_navigation.sql": "d99431b96c3c531ae38cacfd1df0e3aa9f078d638b6c25cc73454d0f74317b96",
+      "packages/storage/migrations/003_story_testing.sql": "7a97f66fae6689d60cd9708885fccfb2bf7db40e5ebb55cfef1073eec9a4521f",
+      "packages/storage/migrations/004_governed_learning.sql": "57129f3dec10a9db8614041eac3d84170ea2b8359493f278fb8e4216030bcfd0",
+      "packages/storage/migrations/005_operation_jobs.sql": "d90598b07bc4f2c097215343c2726c86dda0cba26e81f8534ed87c0eb634e530"
+    }
+  },
+  "qualityGates": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run build",
+      "result": "pass",
+      "exitCode": 0,
+      "log": ".qaspider/m5-2/logs/qaspider-m52-semantic-build.log"
+    },
+    {
+      "command": "npm test",
+      "result": "pass",
+      "exitCode": 0,
+      "testFiles": 26,
+      "testsPassed": 61,
+      "testsFailed": 0,
+      "log": ".qaspider/m5-2/logs/qaspider-m52-visual-units.log"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "pass",
+      "exitCode": 0,
+      "testsPassed": 13,
+      "testsFailed": 0,
+      "log": ".qaspider/m5-2/logs/qaspider-m52-verified-smoke.log",
+      "evidence": ".qaspider/m5-2/full-regression-results"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npx playwright test tests/smoke/studio-ux.spec.ts tests/smoke/studio.spec.ts",
+      "result": "pass",
+      "exitCode": 0,
+      "testsPassed": 2,
+      "testsFailed": 0,
+      "purpose": "Targeted recheck after final removal of nested main landmarks; verifies one main landmark and captures final screenshots. No backend/provider changes followed the full-suite run.",
+      "log": ".qaspider/m5-2/logs/qaspider-m52-semantic-smoke.log"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=/home/avi/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64/codex npm run verify:provider",
+      "result": "pass",
+      "exitCode": 0,
+      "log": ".qaspider/m5-2/logs/qaspider-m52-final-provider.log"
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js --help",
+      "result": "pass",
+      "coverage": "37 reference entries; tested help consistency, parser option membership and credential-free examples"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass",
+      "exitCode": 0
+    },
+    {
+      "check": "Independent SHA-256 comparison of migrations 001\u2013005 against the M5 baseline",
+      "result": "pass"
+    },
+    {
+      "check": "SHA-256 verification of every retained screenshot and baseline/final private provider receipt",
+      "result": "pass"
+    }
+  ],
+  "realExecutionEvidence": {
+    "syntheticPlanningCalls": 1,
+    "realBrowserRuns": 2,
+    "aiFreeReplay": true,
+    "generatedWorkspaceDirectory": true,
+    "cliDoctor": true,
+    "states": 4,
+    "transitions": 16,
+    "runIds": [
+      "59ea0cef-2ac2-4bf4-93e1-ddfcddfa4361",
+      "19d8c8d5-b936-4b78-a438-3e4f7998ebbe"
+    ],
+    "captures": [
+      "administrator-setup-1440.png",
+      "administrator-setup-390.png",
+      "login-1440.png",
+      "login-390.png",
+      "empty-projects-1440.png",
+      "empty-projects-390.png",
+      "projects-1440.png",
+      "projects-390.png",
+      "applications-1440.png",
+      "applications-390.png",
+      "graph-1440.png",
+      "graph-390.png",
+      "test-review-1440.png",
+      "test-review-390.png",
+      "test-runs-1440.png",
+      "test-runs-390.png",
+      "overview-1440.png",
+      "overview-390.png",
+      "run-existing-1440.png",
+      "run-existing-390.png",
+      "memory-1440.png",
+      "memory-390.png",
+      "cli-reference-1440.png",
+      "cli-reference-390.png",
+      "mcp-reference-1440.png",
+      "mcp-reference-390.png",
+      "settings-general-1440.png",
+      "settings-general-390.png",
+      "settings-ai-1440.png",
+      "settings-ai-390.png",
+      "settings-security-1440.png",
+      "settings-security-390.png"
+    ],
+    "privateReceipt": ".qaspider/m5-2/ux-evidence.json",
+    "planning": "Explicitly synthetic fixture injected through a programmatic dependency in the acceptance harness only. Real QaService validation, SQLite persistence, NavigationEngine and Chromium TestExecutor execute the journey. Production CLI/HTTP exposes no synthetic planning toggle.",
+    "initialRunSummary": {
+      "PASS": 1
+    },
+    "replayRunSummary": {
+      "PASS": 1
+    },
+    "totalPlannerCallsAcrossBothRuns": 1,
+    "originalAndEditedRevisionsRetained": true,
+    "rawScreenshotsAndTraces": "Private/ignored only; screenshots of assertion evidence mask inputs."
+  },
+  "screenshots": {
+    "manifest": "validation/m5-2-screenshots.json",
+    "retainedBefore": 3,
+    "after": 32,
+    "desktopWidth": 1440,
+    "mobileWidth": 390,
+    "documentOverflowAssertions": "Passed for all 32 captures. Graph canvas intentionally scrolls within its own container.",
+    "review": "All affected desktop/mobile screens visually reviewed through contact sheets and selected full-resolution screenshots. Before images are prior retained acceptance captures, not newly fabricated baseline images.",
+    "privateDirectory": ".qaspider/m5-2"
+  },
+  "cliDocumentation": {
+    "entries": 37,
+    "source": "packages/core/src/cli-reference.ts audited against actual dispatchers and parseArgs options; shared by installed --help and authenticated Studio metadata.",
+    "coverage": [
+      "setup/init/doctor/onboard/configuration/settings/overview",
+      "projects list/register/rename/archive",
+      "studio/view/local recovery",
+      "map/graph/approve/path/replay",
+      "story import/list; plan generate/list/show/edit/approve",
+      "test run/replay/report",
+      "build diff/exploration/memory list/approve/reject/rollback/approve-expectation",
+      "provider validate; serve --mcp"
+    ],
+    "copyVerified": true,
+    "workspacePinned": true,
+    "variablePlaceholders": "Clearly explained and intentionally require user-owned IDs/configuration files. Benchmark URL/role/build examples must be adapted for other applications.",
+    "mcpTools": "Read from actual mcpInformation/server definition; no tool names invented."
+  },
+  "providerValidation": {
+    "before": "validation/m5-2-baseline-provider.json",
+    "after": "validation/m5-2-provider-validation.json",
+    "latestManifest": "validation/m2-isolation-recheck.json",
+    "verifiedAt": "2026-10-23T21:30:32.661Z",
+    "toolNames": [],
+    "canariesUntouched": true,
+    "timeoutValidated": true,
+    "cancellationValidated": true,
+    "sanitizedContextVerified": true,
+    "privateEvidence": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/44a12b82-fda1-4283-bba8-c4620b1c6355",
+    "originalLivePlanningRecordUnchanged": true,
+    "newLiveModelPlanningClaimed": false,
+    "optionalProviders": {
+      "claude": "deferred, unavailable and unverified",
+      "gemini": "deferred, unavailable and unverified"
+    }
+  },
+  "securityRegressionResults": [
+    "Session/CSRF, Host/Origin, login rotation/logout/recovery and project API authorization tests pass",
+    "New CLI metadata endpoint rejects unauthenticated and unknown-project requests",
+    "Project create/import still reject traversal, symlinks and nonapproved roots; generated directories are private",
+    "Origin/action/authentication/role/tenant/build boundaries retained and exercised",
+    "M3 approval provenance, navigation promotion, immutable expectations and rollback regression passes",
+    "M4 real stdio MCP initialization, authorization, AI-free execution and evidence retrieval pass",
+    "Artifact quota/retention/traversal tests pass",
+    "Browser URL/localStorage/sessionStorage/document.cookie secret checks pass",
+    "Provider tools remain disabled, hostile canaries unchanged, cancellation and timeout terminate processes, sanitized context verified",
+    "No tokens, credentials, databases, traces or raw artifacts staged/committed; existing user script remains untouched"
+  ],
+  "developmentFailuresResolved": [
+    "Initial red CLI contract test failed before the reference module existed",
+    "Updated onboarding revealed an exact accessible-label mismatch; application URL now has an explicit label",
+    "Guest discovery initially selected admin from sorted roles; fixed guest-first initialization and added assertion",
+    "New acceptance test selectors were corrected for concurrent job/notice status regions and the documented test run alias appearing in replay search",
+    "Strict TypeScript caught redundant narrowed-mode comparisons during final UI cleanup; corrected before validation"
+  ],
+  "currentFailures": [],
+  "environmentalBlockers": [],
+  "nonBlockingWarnings": [
+    "Vite reports node:crypto externalization through shared proposal-contract imports. The final browser bundle contains no node:crypto, createHash or browser-external references; Chromium workflows pass.",
+    "Expected rejected-MCP startup output occurs in negative authorization tests; tests return success.",
+    "Playwright emits an environment NO_COLOR/FORCE_COLOR warning."
+  ],
+  "knownUxLimitations": [
+    "Complex authentication locators, fixture/endpoint grants and complete assertion edits still use Advanced Settings JSON; no generic authentication wizard added",
+    "A separate external resource/CDN allowlist is not implemented; undeclared origins stay blocked",
+    "New-project environment selector sets the display name; compatibility IDs benchmark/development and the original development kind remain in the underlying bootstrap",
+    "Graph canvas has intentional internal scrolling on mobile; long histories remain vertically scrollable",
+    "Single-administrator, loopback-only local beta; no remote/multi-user deployment or formal WCAG certification claimed",
+    "New Test acceptance planning is synthetic and clearly labeled; no new real-model planning execution is claimed in M5.2",
+    "Optional Claude/Gemini providers remain unverified/deferred"
+  ],
+  "commits": [
+    {
+      "hash": "26d2a21",
+      "stage": "Validated backend/CLI foundation"
+    },
+    {
+      "hash": "56687c3",
+      "stage": "Validated Studio workflows, design system, documentation and acceptance tests"
+    }
+  ],
+  "preservedUserChanges": [
+    "scripts/test-superadmin-map.mjs (preexisting untracked file; not read, run, staged or committed)"
+  ],
+  "stopGate": "M5.2 complete. No M6 work, push or publication performed."
+}

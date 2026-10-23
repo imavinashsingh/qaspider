@@ -1,0 +1,286 @@
+{
+  "beforeProvenance": "Retained earlier acceptance screenshots: startup MCP Projects/Settings and M5.1 Graph; not retroactively generated baseline captures.",
+  "afterProvenance": "Final Studio UX acceptance: actual persisted benchmark data and explicitly labeled synthetic planning fixture; 1440px desktop and 390px mobile.",
+  "screenshots": [
+    {
+      "phase": "before",
+      "file": ".qaspider/m5-2/before/graph.png",
+      "sha256": "6c577bb96145ecc76ddd4a9b3e3293ddc042e2d155e7ebdc6affac557fd8833b",
+      "bytes": 146979,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "phase": "before",
+      "file": ".qaspider/m5-2/before/projects.png",
+      "sha256": "f213b383e0c0ed9e3dec891aab98b5d306f6e7db1b13406f4b064908e67eeb8f",
+      "bytes": 136816,
+      "width": 1280,
+      "height": 1879
+    },
+    {
+      "phase": "before",
+      "file": ".qaspider/m5-2/before/settings.png",
+      "sha256": "1adff9bf67f95ab17684ed0e47b5d95fd040d8e87012ca1e6558e1931b0d9ac6",
+      "bytes": 96446,
+      "width": 1280,
+      "height": 1132
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/administrator-setup-1440.png",
+      "sha256": "5daf5302871530814e51c02b147cfcfee69a367b411d67b788ba1dac08f68cbe",
+      "bytes": 269958,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/administrator-setup-390.png",
+      "sha256": "096d3a9dd0988a2b77490af24b14d5d378023ff78520bbee10f6aceff87fcdff",
+      "bytes": 62436,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/applications-1440.png",
+      "sha256": "1b1861662bad0913d23d0783f3803df1e6e5b5d8ca2ca716c64c24904ab51afb",
+      "bytes": 167177,
+      "width": 1440,
+      "height": 1744
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/applications-390.png",
+      "sha256": "bb7f49cb42bd5e77e4b63a0fac8cf14fbeec56938e4e430ba931b9c735cecbda",
+      "bytes": 138462,
+      "width": 390,
+      "height": 2178
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/cli-reference-1440.png",
+      "sha256": "4db37c9e54b05d144bf6620732c6b291180a61893e7ae1e5c7140d9b0dc1f65c",
+      "bytes": 227821,
+      "width": 1440,
+      "height": 1608
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/cli-reference-390.png",
+      "sha256": "9c95e1cbc4d2607fd71fd046268e7723f2f6fc56830dd6bd27d69834669b6fb2",
+      "bytes": 212412,
+      "width": 390,
+      "height": 2824
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/empty-projects-1440.png",
+      "sha256": "978f0de2d8aeb42ec5bf509fd50bae5ac7eb6ba1a9a98d68d613402303b923e8",
+      "bytes": 160812,
+      "width": 1440,
+      "height": 1451
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/empty-projects-390.png",
+      "sha256": "784b9162a62e1dce81078604912d96dfcdfc7b4436b90b09421eaa40418c22b7",
+      "bytes": 136747,
+      "width": 390,
+      "height": 2249
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/graph-1440.png",
+      "sha256": "3c08236e5ea0aaad4e5424a8f1ad2302faea6d074ad22edef020a299e2dd2b61",
+      "bytes": 351676,
+      "width": 1440,
+      "height": 3087
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/graph-390.png",
+      "sha256": "333fb73fda9e6712ee3506917b120815f24bbafcfc4504b45b662128487e3a64",
+      "bytes": 335180,
+      "width": 390,
+      "height": 6208
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/login-1440.png",
+      "sha256": "470698c706a2b1135895096a12238171fb9ebbcce83bb2bd0bd337f179cab8ad",
+      "bytes": 262049,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/login-390.png",
+      "sha256": "a4bbefd7d21c53fb551556fb3a49b65a355ea81d1625ddb0d374d6c801807282",
+      "bytes": 58514,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/mcp-reference-1440.png",
+      "sha256": "4492c4febee2c535e46e77feffa89ec1b263a5d522cd1d0b23aab7831ce2f689",
+      "bytes": 233595,
+      "width": 1440,
+      "height": 1681
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/mcp-reference-390.png",
+      "sha256": "bd2d7edbd2c8d87b7d651949ad5c1fc54ab5e50d37508198575a7d82cc561379",
+      "bytes": 177431,
+      "width": 390,
+      "height": 2338
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/memory-1440.png",
+      "sha256": "ecd2251d68c6f3800535c4045843dc5c0d1ceb2c3b64b68b80de789082c0b51d",
+      "bytes": 158241,
+      "width": 1440,
+      "height": 1769
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/memory-390.png",
+      "sha256": "0ae1a84006d8e396feebae4e4592c6f459dbaf31bea76073a163c493b3a3b6aa",
+      "bytes": 128425,
+      "width": 390,
+      "height": 2175
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/overview-1440.png",
+      "sha256": "936a142d8fcb7b0fcbe352f3846bc2bcf87b8e427794c9b843d20c1c74025df2",
+      "bytes": 219781,
+      "width": 1440,
+      "height": 1146
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/overview-390.png",
+      "sha256": "a988e1668ea53e76535b50006e495effc9db33b10971930f6d852c1de578f0af",
+      "bytes": 175219,
+      "width": 390,
+      "height": 2015
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/projects-1440.png",
+      "sha256": "37bd9f51050e0fc2415111dd481714c9a2fa3cf1d1af045c54ffdb7598195792",
+      "bytes": 184072,
+      "width": 1440,
+      "height": 1731
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/projects-390.png",
+      "sha256": "cab9310618012da748d59226ebe98e1f063fbff0265228a52be5a784ad0cdba8",
+      "bytes": 158697,
+      "width": 390,
+      "height": 2602
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/run-existing-1440.png",
+      "sha256": "36071b20e486dab1bbabebbb382375bb79b4f7b02110ec07ac2b5f9718238d2d",
+      "bytes": 123563,
+      "width": 1440,
+      "height": 1206
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/run-existing-390.png",
+      "sha256": "30cc23260356770f06d7cb29728059ac24b099a4666c593906650d35775a79c1",
+      "bytes": 94520,
+      "width": 390,
+      "height": 1371
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-ai-1440.png",
+      "sha256": "7ff6eb8c8110d09ddfcbc5a00e9b3da3e07fce10b3638f43958d8d8c255b8f8d",
+      "bytes": 141429,
+      "width": 1440,
+      "height": 1319
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-ai-390.png",
+      "sha256": "77df56f9cb1e366fe01d7a4b0b0dd11caafa320eb89888359100fc1ee37391b5",
+      "bytes": 112180,
+      "width": 390,
+      "height": 1719
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-general-1440.png",
+      "sha256": "bed1e7b27a6292f779f8a96c57147c11f8cf5898c346019a012811be8b44fb77",
+      "bytes": 92807,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-general-390.png",
+      "sha256": "6121525045bceec7530fd20c38b66eb5b06f3556d61025d15d6f770d6958b3c0",
+      "bytes": 69189,
+      "width": 390,
+      "height": 1334
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-security-1440.png",
+      "sha256": "2990442471b43e9c6c13c9e2b8f1ca3db97b1fb28dadf91307c5dd80f29657e9",
+      "bytes": 101314,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/settings-security-390.png",
+      "sha256": "a5ba75c7f06868c20bc399657ff3f0b5d1950237db2870c218ad0576ffc9e595",
+      "bytes": 78596,
+      "width": 390,
+      "height": 1076
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/test-review-1440.png",
+      "sha256": "32d06fcfde2f2245fa20548e55d3764cbcbcefdacf5e35ea51a53b7e8c9ada7e",
+      "bytes": 252312,
+      "width": 1440,
+      "height": 2934
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/test-review-390.png",
+      "sha256": "097ac5599ab0a806ca65cb129a70301527b42de0a5ce375e37f280654a711036",
+      "bytes": 213023,
+      "width": 390,
+      "height": 3334
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/test-runs-1440.png",
+      "sha256": "2951cec0c29c4ae226e7cd920524826ef9d7d021348c8104ea3ee273a3fd5950",
+      "bytes": 173288,
+      "width": 1440,
+      "height": 2155
+    },
+    {
+      "phase": "after",
+      "file": ".qaspider/m5-2/after/test-runs-390.png",
+      "sha256": "a5ff402e1ede1d3a53d5a736cab4f3ee7611faed955b427bbfce14ce0152cc65",
+      "bytes": 129773,
+      "width": 390,
+      "height": 2181
+    }
+  ]
+}

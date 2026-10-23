@@ -1,0 +1,147 @@
+{
+  "verifiedAt": "2026-10-23T21:30:32.661Z",
+  "isolation": {
+    "id": "44a12b82-fda1-4283-bba8-c4620b1c6355",
+    "version": "codex-cli 0.162.0-alpha.17.2",
+    "binarySha256": "73b73b048546993298234a295de01ef2424e7a8b29def9d0ecb1ca7cb77500d4",
+    "model": "gpt-6.1-sol",
+    "toolNames": [],
+    "canariesUntouched": true,
+    "schemaValidated": true,
+    "timeoutValidated": true,
+    "cancellationValidated": true,
+    "validatedAt": 1792791032609,
+    "evidence": {
+      "directory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/44a12b82-fda1-4283-bba8-c4620b1c6355",
+      "receipts": [
+        {
+          "name": "process-version.json",
+          "sha256": "2c1d732e3867ad57cd63c8de3848aab148d5be9c0dd26590faab9af309aaee06",
+          "bytes": 576
+        },
+        {
+          "name": "process-help.json",
+          "sha256": "9b52688050178c0a5c2a99561620731cd47c1789c416b1a12042fb5b288ecbe4",
+          "bytes": 5008
+        },
+        {
+          "name": "wire-1.json",
+          "sha256": "0af06157160d980828c54be9c3eea553860ac647c980cc7500b1ce462d7be40c",
+          "bytes": 60443
+        },
+        {
+          "name": "process-structured-output.json",
+          "sha256": "0c1f51cce405edc323f4db021ec3753d43f11c041d79e8f0fcae8e654935f629",
+          "bytes": 2489
+        },
+        {
+          "name": "wire-2.json",
+          "sha256": "6fb058586218e4c275161e2b643946952daf366f36fc62a3033d975c1ebbe64f",
+          "bytes": 60407
+        },
+        {
+          "name": "process-timeout.json",
+          "sha256": "c9543668960f45309ba0371ae19afb2ec9cd15285a1c81792f412ab1907d4c5a",
+          "bytes": 2232
+        },
+        {
+          "name": "wire-3.json",
+          "sha256": "46838eba39f9b8ed9ac5ad022a27c9d0ebc6263a9da41fd9bff0f2abee0e8970",
+          "bytes": 60412
+        },
+        {
+          "name": "process-cancellation.json",
+          "sha256": "b2146bb2dc382b0d51fd08146ed0d0f9552b7680c4c222d856f1bfe2e30693aa",
+          "bytes": 2232
+        },
+        {
+          "name": "validation.json",
+          "sha256": "025945738bc2569e7f2de579bb694560bc76e8b9b969dfd8b112aa3f7eea7d4f",
+          "bytes": 376
+        }
+      ]
+    }
+  },
+  "sourceHashes": {
+    "packages/providers/src/codex.ts": "362ad49215545db19790ba5b6b9e36bc32dc9766b568630f4d158aabda726d3a",
+    "packages/providers/src/evidence.ts": "faf8c9a2a67abb0b58ca82a9254c565bb5022f47ce86f80541f3a74c70664fde",
+    "packages/qa/src/service.ts": "5ad592b0130f58cb67eceb79920d0be8f300c2eb449d4d501158e3b94145f16b",
+    "scripts/verify-provider.mjs": "c8ff2593264bb57b5c292cbd75f402baf889891765de532d800ae0c7d30b37d9"
+  },
+  "syntheticOnly": true,
+  "realAiInvoked": false,
+  "disabledToolWireRequests": 3,
+  "timeout": {
+    "pid": 134119,
+    "signal": "SIGKILL",
+    "reason": "Codex planning timed out",
+    "durationMs": 527,
+    "processExited": true
+  },
+  "cancellation": {
+    "pid": 134205,
+    "signal": "SIGKILL",
+    "reason": "Codex planning cancelled",
+    "durationMs": 512,
+    "processExited": true
+  },
+  "sanitizedContext": {
+    "credentialAndFixtureCanariesAbsent": true,
+    "rawArtifactAbsent": true,
+    "receipt": "context-sanitization.json"
+  },
+  "privateEvidenceDirectory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/44a12b82-fda1-4283-bba8-c4620b1c6355",
+  "receipts": [
+    {
+      "name": "process-version.json",
+      "sha256": "2c1d732e3867ad57cd63c8de3848aab148d5be9c0dd26590faab9af309aaee06",
+      "bytes": 576
+    },
+    {
+      "name": "process-help.json",
+      "sha256": "9b52688050178c0a5c2a99561620731cd47c1789c416b1a12042fb5b288ecbe4",
+      "bytes": 5008
+    },
+    {
+      "name": "wire-1.json",
+      "sha256": "0af06157160d980828c54be9c3eea553860ac647c980cc7500b1ce462d7be40c",
+      "bytes": 60443
+    },
+    {
+      "name": "process-structured-output.json",
+      "sha256": "0c1f51cce405edc323f4db021ec3753d43f11c041d79e8f0fcae8e654935f629",
+      "bytes": 2489
+    },
+    {
+      "name": "wire-2.json",
+      "sha256": "6fb058586218e4c275161e2b643946952daf366f36fc62a3033d975c1ebbe64f",
+      "bytes": 60407
+    },
+    {
+      "name": "process-timeout.json",
+      "sha256": "c9543668960f45309ba0371ae19afb2ec9cd15285a1c81792f412ab1907d4c5a",
+      "bytes": 2232
+    },
+    {
+      "name": "wire-3.json",
+      "sha256": "46838eba39f9b8ed9ac5ad022a27c9d0ebc6263a9da41fd9bff0f2abee0e8970",
+      "bytes": 60412
+    },
+    {
+      "name": "process-cancellation.json",
+      "sha256": "b2146bb2dc382b0d51fd08146ed0d0f9552b7680c4c222d856f1bfe2e30693aa",
+      "bytes": 2232
+    },
+    {
+      "name": "validation.json",
+      "sha256": "025945738bc2569e7f2de579bb694560bc76e8b9b969dfd8b112aa3f7eea7d4f",
+      "bytes": 376
+    },
+    {
+      "name": "context-sanitization.json",
+      "sha256": "d60bc93859ce4b2007a0dcb009f59a4ef574bfaebaf4c6bcb9398f67c7cfe0bb",
+      "bytes": 3511
+    }
+  ],
+  "manifestSha256": "c0a47a466c7f362ae43f62b9c72ed5734bfbb9534798bb842556a86b07b26133"
+}
