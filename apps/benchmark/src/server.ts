@@ -23,8 +23,8 @@ export function createBenchmark(fixtureToken: string) {
   if (fixtureToken.length < 16) throw new Error('Fixture token must contain at least 16 characters');
   const accounts = new Map<string, Account>(); const sessions = new Map<string, string>();
   const stats = { registrations: 0, unsafeVisits: 0 };
-  let aboutTitle = 'About the benchmark';
-  function reset() { aboutTitle = 'About the benchmark'; stats.registrations = 0; stats.unsafeVisits = 0; accounts.clear(); sessions.clear(); for (const role of ['admin', 'user'] as const) { const email = `${role}@example.test`; accounts.set(email, account(email, 'benchmark-password', role, false)); } }
+  let aboutTitle = 'About the benchmark'; let duplicateEmailDefect = false;
+  function reset() { duplicateEmailDefect = false; aboutTitle = 'About the benchmark'; stats.registrations = 0; stats.unsafeVisits = 0; accounts.clear(); sessions.clear(); for (const role of ['admin', 'user'] as const) { const email = `${role}@example.test`; accounts.set(email, account(email, 'benchmark-password', role, false)); } }
   reset();
   return createServer((req, res) => { void handle(req, res).catch(() => { if (!res.headersSent) json(res, 400, { error: 'Invalid request' }); else res.end(); }); });
   function json(res: ServerResponse, status: number, data: unknown) { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); }
@@ -44,7 +44,7 @@ export function createBenchmark(fixtureToken: string) {
     if (req.method === 'GET' && path === '/health') { json(res, 200, { status: 'ok', benchmark: true }); return; }
     if (path.startsWith('/__fixtures/')) {
       if (req.method !== 'POST' || !equal(String(req.headers['x-fixture-token'] ?? ''), fixtureToken)) { json(res, 403, { error: 'Fixture authorization required' }); return; }
-      if (path === '/__fixtures/change') { const input = z.object({ aboutTitle: z.string().regex(/^[a-zA-Z ]{1,80}$/) }).strict().parse(await body(req)); aboutTitle = input.aboutTitle; json(res, 200, { changed: true }); return; }
+      if (path === '/__fixtures/change') { const input = z.object({ aboutTitle: z.string().regex(/^[a-zA-Z ]{1,80}$/).optional(), duplicateEmailDefect: z.boolean().optional() }).strict().parse(await body(req)); if (input.aboutTitle) aboutTitle = input.aboutTitle; if (input.duplicateEmailDefect !== undefined) duplicateEmailDefect = input.duplicateEmailDefect; json(res, 200, { changed: true }); return; }
       if (path === '/__fixtures/stats') { json(res, 200, stats); return; }
       if (path === '/__fixtures/reset') { reset(); json(res, 200, { reset: true }); return; }
       if (path === '/__fixtures/setup') {
@@ -84,7 +84,7 @@ export function createBenchmark(fixtureToken: string) {
       if (input.password.length < 8 || input.password.length > 256) { json(res, 400, { error: 'Password must contain 8–256 characters' }); return; }
       if (path === '/api/register') {
         stats.registrations++;
-        if (accounts.has(input.email)) { json(res, 409, { error: 'Email already exists' }); return; }
+        if (accounts.has(input.email) && !(duplicateEmailDefect && accounts.get(input.email)?.fixture)) { json(res, 409, { error: 'Email already exists' }); return; }
         accounts.set(input.email, account(input.email, input.password, 'user', true)); json(res, 201, { message: 'Account created' }); return;
       }
       const found = accounts.get(input.email);

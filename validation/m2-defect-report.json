@@ -1,0 +1,637 @@
+{
+  "run": {
+    "id": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+    "planRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+    "status": "complete",
+    "startedAt": 1792780379932,
+    "finishedAt": 1792780383098,
+    "selectedScenarioIds": [
+      "registration-valid",
+      "registration-invalid-email",
+      "registration-duplicate-email",
+      "admin-users-guest",
+      "admin-users-standard-user",
+      "admin-users-admin"
+    ]
+  },
+  "plan": {
+    "id": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+    "planId": "eb50f44f-ba21-4681-8c11-32190d030fbe",
+    "revision": 1,
+    "storyRevisionId": "ebc6d554-2cff-48b3-9132-d2e8d67adc51",
+    "proposal": {
+      "title": "Registration and access control",
+      "feature": "Registration and access control",
+      "inferredRequirements": [],
+      "scenarios": [
+        {
+          "id": "registration-valid",
+          "title": "Guest registration with a valid unique email",
+          "roleId": "guest",
+          "requirementIds": [
+            "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91"
+          ],
+          "targetStateId": "2c004afd9857f496ab7fe3d077e9dc0059212a89d6b3d1bebd980987e4dbb9f8",
+          "data": [
+            {
+              "key": "email",
+              "type": "email",
+              "source": {
+                "kind": "unique-email"
+              }
+            },
+            {
+              "key": "password",
+              "type": "password",
+              "source": {
+                "kind": "generated-password"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Email"
+              },
+              "valueKey": "email"
+            },
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Password"
+              },
+              "valueKey": "password"
+            },
+            {
+              "kind": "click",
+              "locator": {
+                "kind": "role",
+                "role": "button",
+                "name": "Create account"
+              },
+              "submitUrl": "http://127.0.0.1:4317/api/register"
+            }
+          ],
+          "assertions": [
+            {
+              "id": "registration-valid-status",
+              "requirementId": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+              "kind": "text",
+              "locator": {
+                "kind": "role",
+                "role": "status",
+                "name": ""
+              },
+              "expected": "Account created",
+              "comparison": "equals"
+            }
+          ],
+          "allowedActions": [
+            {
+              "roleId": "guest",
+              "url": "http://127.0.0.1:4317/api/register",
+              "method": "POST"
+            }
+          ],
+          "cleanup": "owned-fixtures",
+          "severity": "high",
+          "retries": 0
+        },
+        {
+          "id": "registration-invalid-email",
+          "title": "Guest registration with invalid-email",
+          "roleId": "guest",
+          "requirementIds": [
+            "56b83194-2fae-400b-9571-401467083ed0"
+          ],
+          "targetStateId": "2c004afd9857f496ab7fe3d077e9dc0059212a89d6b3d1bebd980987e4dbb9f8",
+          "data": [
+            {
+              "key": "email",
+              "type": "email",
+              "source": {
+                "kind": "literal",
+                "value": "invalid-email"
+              }
+            },
+            {
+              "key": "password",
+              "type": "password",
+              "source": {
+                "kind": "generated-password"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Email"
+              },
+              "valueKey": "email"
+            },
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Password"
+              },
+              "valueKey": "password"
+            },
+            {
+              "kind": "click",
+              "locator": {
+                "kind": "role",
+                "role": "button",
+                "name": "Create account"
+              },
+              "submitUrl": "http://127.0.0.1:4317/api/register"
+            }
+          ],
+          "assertions": [
+            {
+              "id": "registration-invalid-email-alert",
+              "requirementId": "56b83194-2fae-400b-9571-401467083ed0",
+              "kind": "text",
+              "locator": {
+                "kind": "role",
+                "role": "alert",
+                "name": ""
+              },
+              "expected": "Invalid email",
+              "comparison": "equals"
+            }
+          ],
+          "allowedActions": [
+            {
+              "roleId": "guest",
+              "url": "http://127.0.0.1:4317/api/register",
+              "method": "POST"
+            }
+          ],
+          "cleanup": "owned-fixtures",
+          "severity": "medium",
+          "retries": 0
+        },
+        {
+          "id": "registration-duplicate-email",
+          "title": "Guest registration with an existing owned fixture email",
+          "roleId": "guest",
+          "requirementIds": [
+            "5aecb6ec-9fe3-42c3-9a74-16bc809debfd"
+          ],
+          "targetStateId": "2c004afd9857f496ab7fe3d077e9dc0059212a89d6b3d1bebd980987e4dbb9f8",
+          "data": [
+            {
+              "key": "email",
+              "type": "email",
+              "source": {
+                "kind": "duplicate-email"
+              }
+            },
+            {
+              "key": "password",
+              "type": "password",
+              "source": {
+                "kind": "generated-password"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Email"
+              },
+              "valueKey": "email"
+            },
+            {
+              "kind": "fill",
+              "locator": {
+                "kind": "label",
+                "value": "Password"
+              },
+              "valueKey": "password"
+            },
+            {
+              "kind": "click",
+              "locator": {
+                "kind": "role",
+                "role": "button",
+                "name": "Create account"
+              },
+              "submitUrl": "http://127.0.0.1:4317/api/register"
+            }
+          ],
+          "assertions": [
+            {
+              "id": "registration-duplicate-email-alert",
+              "requirementId": "5aecb6ec-9fe3-42c3-9a74-16bc809debfd",
+              "kind": "text",
+              "locator": {
+                "kind": "role",
+                "role": "alert",
+                "name": ""
+              },
+              "expected": "Email already exists",
+              "comparison": "equals"
+            }
+          ],
+          "allowedActions": [
+            {
+              "roleId": "guest",
+              "url": "http://127.0.0.1:4317/api/register",
+              "method": "POST"
+            }
+          ],
+          "cleanup": "owned-fixtures",
+          "severity": "high",
+          "retries": 0
+        },
+        {
+          "id": "admin-users-guest",
+          "title": "Guest GET to admin users returns HTTP 401",
+          "roleId": "guest",
+          "requirementIds": [
+            "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8"
+          ],
+          "targetStateId": "abfe922b35720d989bf430887aef53251ed778ef8d00f2c1d54542382786dd4a",
+          "data": [],
+          "steps": [],
+          "assertions": [
+            {
+              "id": "admin-users-guest-status",
+              "requirementId": "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8",
+              "kind": "http-status",
+              "url": "http://127.0.0.1:4317/api/admin/users",
+              "expected": 401
+            }
+          ],
+          "allowedActions": [],
+          "cleanup": "owned-fixtures",
+          "severity": "high",
+          "retries": 0
+        },
+        {
+          "id": "admin-users-standard-user",
+          "title": "Authenticated standard user GET to admin users returns HTTP 403",
+          "roleId": "user",
+          "requirementIds": [
+            "da312603-6400-4382-b3cf-d18190598efa"
+          ],
+          "targetStateId": "0acd574333db4e0b5a3754987f5619b9730a0a01935b706bb47023e1b7707206",
+          "data": [],
+          "steps": [],
+          "assertions": [
+            {
+              "id": "admin-users-standard-user-status",
+              "requirementId": "da312603-6400-4382-b3cf-d18190598efa",
+              "kind": "http-status",
+              "url": "http://127.0.0.1:4317/api/admin/users",
+              "expected": 403
+            }
+          ],
+          "allowedActions": [],
+          "cleanup": "owned-fixtures",
+          "severity": "high",
+          "retries": 0
+        },
+        {
+          "id": "admin-users-admin",
+          "title": "Authenticated admin GET to admin users returns HTTP 200",
+          "roleId": "admin",
+          "requirementIds": [
+            "7266b3ed-19ec-4773-a378-6d5027869e5f"
+          ],
+          "targetStateId": "9526671d49ab3b1d6fa9efb8a36cec9aef327fe1184bb262289cc6bb3e954aa7",
+          "data": [],
+          "steps": [],
+          "assertions": [
+            {
+              "id": "admin-users-admin-status",
+              "requirementId": "7266b3ed-19ec-4773-a378-6d5027869e5f",
+              "kind": "http-status",
+              "url": "http://127.0.0.1:4317/api/admin/users",
+              "expected": 200
+            }
+          ],
+          "allowedActions": [],
+          "cleanup": "owned-fixtures",
+          "severity": "high",
+          "retries": 0
+        }
+      ]
+    },
+    "policy": {
+      "actionGrants": [
+        {
+          "roleId": "guest",
+          "url": "http://127.0.0.1:4317/api/register",
+          "method": "POST"
+        }
+      ],
+      "readGrants": [
+        {
+          "roleId": "guest",
+          "url": "http://127.0.0.1:4317/api/admin/users"
+        },
+        {
+          "roleId": "admin",
+          "url": "http://127.0.0.1:4317/api/admin/users"
+        },
+        {
+          "roleId": "user",
+          "url": "http://127.0.0.1:4317/api/admin/users"
+        }
+      ],
+      "fixtures": {
+        "setupUrl": "http://127.0.0.1:4317/__fixtures/setup",
+        "cleanupUrl": "http://127.0.0.1:4317/__fixtures/cleanup",
+        "tokenEnv": "BENCHMARK_FIXTURE_TOKEN",
+        "emailDomain": "example.test"
+      },
+      "discovery": false
+    },
+    "hash": "0b7650e3974b7da1c43ba1c3be730be0100cee55381d9a56f3ab140f78d65bd0",
+    "status": "approved",
+    "provider": {
+      "id": "codex",
+      "synthetic": false,
+      "validationId": "2212afe5-c1a2-4a3b-8208-840cab961d05"
+    },
+    "createdAt": 1792780329910
+  },
+  "story": {
+    "id": "ebc6d554-2cff-48b3-9132-d2e8d67adc51",
+    "storyId": "2c059a66-a128-49db-bc5a-097f5aa0881d",
+    "revision": 1,
+    "title": "Registration and access control",
+    "markdown": "# Registration and access control\n\nA visitor can register using an email and password. Registration must preserve email uniqueness. These acceptance criteria are authoritative; a failing run must never alter them.\n\n## Acceptance Criteria\n- AC-1: A guest submitting a valid unique email and a generated password sees exactly Account created in the status role.\n- AC-2: A guest submitting invalid-email and a generated password sees exactly Invalid email in the alert role.\n- AC-3: A guest submitting an email belonging to an existing owned fixture and a generated password sees exactly Email already exists in the alert role; do not create a duplicate account.\n- AC-4: A guest GET to http://127.0.0.1:4317/api/admin/users returns HTTP 401.\n- AC-5: An authenticated standard user GET to http://127.0.0.1:4317/api/admin/users returns HTTP 403.\n- AC-6: An authenticated admin GET to http://127.0.0.1:4317/api/admin/users returns HTTP 200.\n",
+    "sourceRef": "examples/m2/registration.md",
+    "context": {
+      "applicationId": "benchmark",
+      "environmentId": "development",
+      "build": "m1-smoke",
+      "tenant": "public",
+      "featureFlags": {},
+      "roleIds": [
+        "guest",
+        "admin",
+        "user"
+      ]
+    },
+    "requirements": [
+      {
+        "id": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+        "key": "AC-1",
+        "text": "A guest submitting a valid unique email and a generated password sees exactly Account created in the status role.",
+        "sourceRef": "examples/m2/registration.md#L6",
+        "origin": "specified",
+        "approved": true
+      },
+      {
+        "id": "56b83194-2fae-400b-9571-401467083ed0",
+        "key": "AC-2",
+        "text": "A guest submitting invalid-email and a generated password sees exactly Invalid email in the alert role.",
+        "sourceRef": "examples/m2/registration.md#L7",
+        "origin": "specified",
+        "approved": true
+      },
+      {
+        "id": "5aecb6ec-9fe3-42c3-9a74-16bc809debfd",
+        "key": "AC-3",
+        "text": "A guest submitting an email belonging to an existing owned fixture and a generated password sees exactly Email already exists in the alert role; do not create a duplicate account.",
+        "sourceRef": "examples/m2/registration.md#L8",
+        "origin": "specified",
+        "approved": true
+      },
+      {
+        "id": "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8",
+        "key": "AC-4",
+        "text": "A guest GET to http://127.0.0.1:4317/api/admin/users returns HTTP 401.",
+        "sourceRef": "examples/m2/registration.md#L9",
+        "origin": "specified",
+        "approved": true
+      },
+      {
+        "id": "da312603-6400-4382-b3cf-d18190598efa",
+        "key": "AC-5",
+        "text": "An authenticated standard user GET to http://127.0.0.1:4317/api/admin/users returns HTTP 403.",
+        "sourceRef": "examples/m2/registration.md#L10",
+        "origin": "specified",
+        "approved": true
+      },
+      {
+        "id": "7266b3ed-19ec-4773-a378-6d5027869e5f",
+        "key": "AC-6",
+        "text": "An authenticated admin GET to http://127.0.0.1:4317/api/admin/users returns HTTP 200.",
+        "sourceRef": "examples/m2/registration.md#L11",
+        "origin": "specified",
+        "approved": true
+      }
+    ]
+  },
+  "results": [
+    {
+      "scenarioId": "registration-valid",
+      "roleId": "guest",
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "reason": "Every approved assertion passed",
+          "assertions": [
+            {
+              "id": "registration-valid-status",
+              "requirementId": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+              "status": "PASS",
+              "expected": "Account created",
+              "actual": "Account created",
+              "evidenceId": "9eadd85d-f5ff-4349-8a54-99e6d93ce49d"
+            }
+          ],
+          "evidenceIds": [
+            "9efe494e-e7b2-4630-a04c-3aea390f5c06",
+            "9eadd85d-f5ff-4349-8a54-99e6d93ce49d",
+            "56a1823b-cf72-4b0c-b2d1-1a23de688ce0",
+            "70b58bd9-1c85-4fc5-aa25-6f4795f5422f"
+          ],
+          "navigationRunId": "d35b2bd9-2e9d-4ee6-b84b-b3b488ab6d25"
+        }
+      ]
+    },
+    {
+      "scenarioId": "registration-invalid-email",
+      "roleId": "guest",
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "reason": "Every approved assertion passed",
+          "assertions": [
+            {
+              "id": "registration-invalid-email-alert",
+              "requirementId": "56b83194-2fae-400b-9571-401467083ed0",
+              "status": "PASS",
+              "expected": "Invalid email",
+              "actual": "Invalid email",
+              "evidenceId": "729f4460-d205-45cf-8637-3374fb611d62"
+            }
+          ],
+          "evidenceIds": [
+            "7e29df8f-6069-4818-b00d-c8ae5d025050",
+            "729f4460-d205-45cf-8637-3374fb611d62",
+            "9bc9546e-d9b6-4ba5-8f40-59b353d4bdbb",
+            "2fca083d-1dc2-49ef-b4f8-0517ef688257"
+          ],
+          "navigationRunId": "b7584a35-4e67-419b-8f67-2d959a7e32aa"
+        }
+      ]
+    },
+    {
+      "scenarioId": "registration-duplicate-email",
+      "roleId": "guest",
+      "status": "FAIL",
+      "attempts": [
+        {
+          "status": "FAIL",
+          "reason": "Observed behavior differs from an approved requirement",
+          "assertions": [
+            {
+              "id": "registration-duplicate-email-alert",
+              "requirementId": "5aecb6ec-9fe3-42c3-9a74-16bc809debfd",
+              "status": "FAIL",
+              "expected": "Email already exists",
+              "actual": "",
+              "evidenceId": "77354eab-f8c9-4fe7-9da9-76e865126fce"
+            }
+          ],
+          "evidenceIds": [
+            "7065cd38-5c25-4c32-953d-2eb773ff5d21",
+            "77354eab-f8c9-4fe7-9da9-76e865126fce",
+            "82ec28ea-4f65-4aa0-8dfe-cec10fb20462",
+            "98ee25e1-8c49-4cad-94ef-8c375825d46f"
+          ],
+          "navigationRunId": "26fd5f23-de08-40e4-aee4-7cdc4fec952e"
+        }
+      ]
+    },
+    {
+      "scenarioId": "admin-users-guest",
+      "roleId": "guest",
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "reason": "Every approved assertion passed",
+          "assertions": [
+            {
+              "id": "admin-users-guest-status",
+              "requirementId": "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8",
+              "status": "PASS",
+              "expected": 401,
+              "actual": 401,
+              "evidenceId": "aff3a585-b9ce-4440-b154-8a7092c9d3d4"
+            }
+          ],
+          "evidenceIds": [
+            "b2b2421f-b6e6-443d-ae74-1231ec75185f",
+            "aff3a585-b9ce-4440-b154-8a7092c9d3d4",
+            "ececdc37-babb-4a60-9f3c-65944d1a6e4f",
+            "06f1ce82-16b4-4759-b8a1-f29b08bf2032"
+          ],
+          "navigationRunId": "aa24ca41-5d8d-4fa1-ad11-a4ef187ed34a"
+        }
+      ]
+    },
+    {
+      "scenarioId": "admin-users-standard-user",
+      "roleId": "user",
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "reason": "Every approved assertion passed",
+          "assertions": [
+            {
+              "id": "admin-users-standard-user-status",
+              "requirementId": "da312603-6400-4382-b3cf-d18190598efa",
+              "status": "PASS",
+              "expected": 403,
+              "actual": 403,
+              "evidenceId": "e4b7a70f-ab23-4d2c-868e-f2f14a6dfc52"
+            }
+          ],
+          "evidenceIds": [
+            "3e60e968-0626-4150-9902-dc50426ad490",
+            "e4b7a70f-ab23-4d2c-868e-f2f14a6dfc52",
+            "acc04fb3-9c47-4e08-b656-01ba1fb01d8c",
+            "5369d28e-51a6-4a01-bfee-c8429ba72d00"
+          ],
+          "navigationRunId": "b30faffb-2814-4b5e-b266-dfbd55d380ca"
+        }
+      ]
+    },
+    {
+      "scenarioId": "admin-users-admin",
+      "roleId": "admin",
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "reason": "Every approved assertion passed",
+          "assertions": [
+            {
+              "id": "admin-users-admin-status",
+              "requirementId": "7266b3ed-19ec-4773-a378-6d5027869e5f",
+              "status": "PASS",
+              "expected": 200,
+              "actual": 200,
+              "evidenceId": "906bfe15-da1d-4dae-8ef6-2d80c06d5ab1"
+            }
+          ],
+          "evidenceIds": [
+            "de70b2a9-288a-4f6e-a9b5-e407c85a2c7b",
+            "906bfe15-da1d-4dae-8ef6-2d80c06d5ab1",
+            "037f3096-2d07-4585-84ae-5512fd50156c",
+            "475b3c17-fac8-42e3-a8a6-c3661ea530d2"
+          ],
+          "navigationRunId": "cf96f31e-01d4-45ac-8921-5a60026306b0"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "PASS": 5,
+    "FAIL": 1,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "FLAKY": 0,
+    "NOT RUN": 0
+  },
+  "fixtures": [
+    {
+      "id": "c812322f-ab5c-43e6-9ec4-bf289578b504",
+      "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+      "scenarioId": "registration-valid",
+      "attempt": 1,
+      "kind": "unique-email",
+      "status": "cleaned",
+      "message": ""
+    },
+    {
+      "id": "1cb6cc1f-52c6-4118-acb6-33f6639a1ca3",
+      "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+      "scenarioId": "registration-duplicate-email",
+      "attempt": 1,
+      "kind": "duplicate-email",
+      "status": "cleaned",
+      "message": ""
+    }
+  ]
+}

@@ -98,6 +98,14 @@ test('maps isolated roles, persists across restart, batch approves, replays with
     expect(store.navigation.snapshot(scopes[0]!).transitions.some(edge => edge.toStateId === aboutState.id && edge.status === 'suspect')).toBe(true);
     results.push({ changedDestinationRejected: changed });
     await request.post('/__fixtures/change', { headers: { 'x-fixture-token': 'smoke-fixture-token' }, data: { aboutTitle: 'About the benchmark' } });
+    // Reconcile the negative probe without erasing its failed verification or artifact.
+    const reconciled = await new NavigationEngine(store, artifacts, browser).map(scopes[0]!, `${baseURL}/`, guestGraph.scope!.config, { depth: 1, intervalMs: 0 }, undefined, env);
+    expect(reconciled.status).toBe('complete');
+    const repaired = store.navigation.snapshot(scopes[0]!); const verifiedAgain = repaired.transitions.filter(edge=>edge.status==='verified');
+    store.navigation.approveBatch(scopes[0]!, verifiedAgain.map(edge=>edge.id), 'negative-probe-reconciler');
+    expect(store.navigation.snapshot(scopes[0]!).transitions.some(edge=>edge.toStateId===aboutState.id&&edge.status==='approved'&&edge.failures>0)).toBe(true);
+    expect(changed.evidenceIds.every(id=>store.getArtifact(id)?.status==='available')).toBe(true);
+    results.push({reconciledRun:reconciled,negativeEvidencePreserved:changed.evidenceIds});
     writeFileSync(info.outputPath('persistent-replay.json'), JSON.stringify({ database, results }, null, 2));
     expect(readFileSync(database).length).toBeGreaterThan(0);
   } finally { store.close(); }

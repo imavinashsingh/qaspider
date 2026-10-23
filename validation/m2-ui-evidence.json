@@ -1,0 +1,14 @@
+{
+  "realProvider": "codex",
+  "synthetic": false,
+  "planRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+  "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+  "renderedScenarioCount": 6,
+  "summaryMatchesSqlite": true,
+  "approvedHashDisplayed": true,
+  "screenshots": [
+    ".qaspider/m2-ui-evidence/test-runs-viewport.png",
+    ".qaspider/m2-ui-evidence/real-codex-report.png",
+    ".qaspider/m2-ui-evidence/real-codex-plan.png"
+  ]
+}

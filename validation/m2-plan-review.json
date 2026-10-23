@@ -1,0 +1,14 @@
+{
+  "reviewer": "m2-acceptance-review",
+  "planRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+  "hash": "0b7650e3974b7da1c43ba1c3be730be0100cee55381d9a56f3ab140f78d65bd0",
+  "decision": "approved",
+  "review": [
+    "Six cases cover all six explicit source criteria",
+    "Messages and HTTP statuses match the authoritative requirements",
+    "Each target exists in the exact role/environment/tenant/build",
+    "Only guest POST /api/register and scoped GET /api/admin/users are granted",
+    "Unique generated fixtures have explicit setup/cleanup and generated passwords",
+    "No executable scripts, raw artifacts, credentials or inferred expectations"
+  ]
+}

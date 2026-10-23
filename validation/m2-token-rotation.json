@@ -1,0 +1,9 @@
+{
+  "verifiedAt": "2026-10-23T18:56:24.775Z",
+  "rotated": true,
+  "oldTokenStatus": 401,
+  "newTokenStatus": 200,
+  "bootstrapFile": ".qaspider/dashboard-access.json",
+  "fileMode": "600",
+  "newTokenPublished": false
+}

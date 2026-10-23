@@ -23,7 +23,7 @@ export async function runNavigationCli(args: string[], output: (line: string) =>
       const viewer = createGraphServer(db, artifacts);
       await new Promise<void>((resolve, reject) => { viewer.server.once('error', reject); viewer.server.listen(port, '127.0.0.1', resolve); });
       output(JSON.stringify({ status: 'viewer-ready', url: `http://127.0.0.1:${port}/#token=${viewer.token}` }));
-      await new Promise<void>(resolve => { const stop = () => { viewer.server.close(() => resolve()); viewer.server.closeAllConnections(); }; controller.signal.addEventListener('abort', stop, { once: true }); if (controller.signal.aborted) stop(); }); return 0;
+      await new Promise<void>(resolve => { const stop = () => { viewer.server.close(() => resolve()); viewer.server.closeAllConnections(); }; controller.signal.addEventListener('abort', stop, { once: true }); if (controller.signal.aborted) stop(); }); await viewer.shutdown(); return 0;
     }
     if (command === 'graph' && !values.role) { output(JSON.stringify({ scopes: db.navigation.listScopes().map(({ id, scope, seedUrl }) => ({ id, scope, seedUrl })) })); return 0; }
     const environment = db.getEnvironment(values.environment ?? 'development'); if (!environment) throw new Error('Unknown environment');

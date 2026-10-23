@@ -10,8 +10,8 @@ afterEach(() => { stores.splice(0).forEach(s => s.close()); roots.splice(0).forE
 describe('SQLite repositories and migrations', () => {
   it('migrates fresh storage, is repeatable, persists all M0 entities on reopen', () => {
     const { store, path } = setup();
-    expect(store.migrationVersions()).toEqual([1, 2]);
-    store.migrate(); expect(store.migrationVersions()).toEqual([1, 2]);
+    expect(store.migrationVersions()).toEqual([1, 2, 3]);
+    store.migrate(); expect(store.migrationVersions()).toEqual([1, 2, 3]);
     store.createApplication({ id: 'app', name: 'Portal' });
     store.createEnvironment({ id: 'qa', applicationId: 'app', name: 'QA', kind: 'qa', allowedOrigins: ['http://127.0.0.1:3000'] });
     store.createRole({ id: 'admin', environmentId: 'qa', name: 'Admin', auth: { kind: 'form', usernameEnv: 'QA_USER', passwordEnv: 'QA_PASSWORD' } });
@@ -46,6 +46,6 @@ it('refuses migration drift and databases newer than the installed application',
   const raw = new Database(path); raw.prepare('UPDATE schema_migrations SET checksum = ? WHERE version = 1').run('tampered'); raw.close();
   expect(() => new SqliteStore(path)).toThrow('checksum');
   const { store: other, path: otherPath } = setup(); other.close();
-  const future = new Database(otherPath); future.prepare('INSERT INTO schema_migrations VALUES (?, ?, ?)').run(3, 'future', 'today'); future.close();
+  const future = new Database(otherPath); future.prepare('INSERT INTO schema_migrations VALUES (?, ?, ?)').run(4, 'future', 'today'); future.close();
   expect(() => new SqliteStore(otherPath)).toThrow('newer');
 });

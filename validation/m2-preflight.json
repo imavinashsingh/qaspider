@@ -1,0 +1,18 @@
+{
+  "baselineCommit": "66e5c51",
+  "workingTreeInitiallyClean": true,
+  "checkpointRequired": false,
+  "reconciliationDatabase": ".qaspider/m1-reconciliation/.qaspider/memory.db",
+  "oldProofs": [
+    {
+      "id": "a533c6ebecbb0cefe4be8de5a7c1fbd35e14b761c2d6ccdf6177cd6245d96154",
+      "evidenceId": "3cfde0b6-8527-4d6b-a834-e04546b2f8d3",
+      "failures": 1,
+      "bytes": 172
+    }
+  ],
+  "newVerificationRun": "e95a1ca6-55d2-4c94-8f64-319a4f78dd2d",
+  "newApproval": "898df0e3-9018-4902-93da-03b48b678b90",
+  "status": "approved after live verification",
+  "historicalFailureEvidencePreserved": true
+}

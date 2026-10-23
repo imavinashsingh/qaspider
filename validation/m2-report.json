@@ -1,0 +1,412 @@
+{
+  "milestone": "M2",
+  "status": "complete",
+  "stoppedAfter": "M2",
+  "M3Started": false,
+  "completedAtUtc": "2026-10-23T18:46:01.168627+00:00",
+  "project": "/home/avi/Opensource/qaspider",
+  "preImplementation": {
+    "baselineCommit": "66e5c51",
+    "initialWorkingTree": "clean",
+    "checkpointRequired": false,
+    "independentM1Validation": {
+      "typecheck": "passed",
+      "build": "passed",
+      "unitIntegrationTests": 28,
+      "chromiumTests": 5
+    },
+    "guestTransitionReconciliation": "validation/m2-preflight.json",
+    "failedHistoricalEvidencePreserved": true
+  },
+  "changedFiles": [
+    "AGENTS.md",
+    "README.md",
+    "apps/benchmark/src/server.ts",
+    "apps/viewer/src/api.ts",
+    "apps/viewer/src/main.tsx",
+    "apps/viewer/src/style.css",
+    "apps/viewer/src/testing.tsx",
+    "examples/m2/context.json",
+    "examples/m2/policy.json",
+    "examples/m2/registration.md",
+    "package-lock.json",
+    "package.json",
+    "packages/cli/src/main.ts",
+    "packages/cli/src/navigation.ts",
+    "packages/cli/src/testing.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/navigation.ts",
+    "packages/core/src/testing.ts",
+    "packages/navigation/src/engine.ts",
+    "packages/navigation/src/viewer.ts",
+    "packages/providers/package.json",
+    "packages/providers/src/codex.ts",
+    "packages/providers/src/evidence.ts",
+    "packages/qa/package.json",
+    "packages/qa/src/artifacts.ts",
+    "packages/qa/src/execution.ts",
+    "packages/qa/src/http.ts",
+    "packages/qa/src/service.ts",
+    "packages/storage/migrations/003_story_testing.sql",
+    "packages/storage/src/sqlite.ts",
+    "packages/storage/src/testing.ts",
+    "scripts/verify-provider.mjs",
+    "tests/integration/cli.test.ts",
+    "tests/integration/navigation-storage.test.ts",
+    "tests/integration/planning.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/integration/testing-history.test.ts",
+    "tests/integration/testing-storage.test.ts",
+    "tests/smoke/navigation.spec.ts",
+    "tests/smoke/testing.spec.ts",
+    "tests/unit/codex-provider.test.ts",
+    "tests/unit/provider-evidence.test.ts",
+    "tests/unit/run-artifacts.test.ts",
+    "tests/unit/stories.test.ts",
+    "validation/m2-cli-replay.json",
+    "validation/m2-defect-report.json",
+    "validation/m2-demo-evidence.json",
+    "validation/m2-full-suite-replay.json",
+    "validation/m2-generated-plan.json",
+    "validation/m2-isolation-recheck.json",
+    "validation/m2-plan-review.json",
+    "validation/m2-preflight.json",
+    "validation/m2-provider-validation.json",
+    "validation/m2-report.json",
+    "validation/m2-token-rotation.json",
+    "validation/m2-ui-evidence.json"
+  ],
+  "implementation": {
+    "contracts": "Strict story context, typed inputs/actions/assertions, requirement provenance, plan policy and proposal schemas; runtime provider validation.",
+    "storage": "Append-only source/requirement/plan history and approvals; runs pin exact approved hashes; assertion evidence and fixture/job lifecycle persisted.",
+    "planning": "Real Codex CLI with synthetic isolation gate; scoped keyword retrieval and approved navigation availability; bounded targeted safe discovery for missing features.",
+    "execution": "Fresh role context per attempt; approved M1 entry path replay with live pre/postconditions; typed deterministic scenario execution; fixture ownership, safe cleanup and all requested classifications.",
+    "ui": "Real SQLite-backed Test Studio scenario review/edit/approval, progress/cancellation and Test Runs with assertions, failures, fixture status, screenshots and trace references.",
+    "cli": [
+      "story import/list",
+      "plan generate/show/edit/approve/list",
+      "test run/replay",
+      "report",
+      "provider validate"
+    ],
+    "artifactPolicy": "Existing retention/global quota retained; a shared logical test-run budget also charges child navigation artifacts."
+  },
+  "migrations": [
+    {
+      "file": "packages/storage/migrations/003_story_testing.sql",
+      "version": 3,
+      "previousMigrationsUnchanged": true,
+      "tables": [
+        "stories",
+        "story_revisions",
+        "requirements",
+        "requirement_approvals",
+        "plans",
+        "plan_revisions",
+        "plan_approvals",
+        "test_runs",
+        "test_scenario_results",
+        "test_attempts",
+        "assertion_results",
+        "fixture_reservations",
+        "qa_jobs"
+      ],
+      "immutableHistoryTriggers": true
+    }
+  ],
+  "validationCommands": [
+    {
+      "command": "npm install --package-lock-only --ignore-scripts --offline",
+      "exitCode": 0,
+      "result": "Updated workspace lock entries; no new third-party runtime dependencies."
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "result": "Strict typecheck across all workspaces and tests passed."
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "result": {
+        "filesPassed": 13,
+        "testsPassed": 39,
+        "testsFailed": 0
+      }
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "result": "TypeScript production output, copied migrations and Vite viewer passed."
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "exitCode": 0,
+      "result": {
+        "testsPassed": 8,
+        "testsFailed": 0,
+        "durationSeconds": 59.9
+      }
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js init --workspace /tmp/qaspider-m2-cli-check",
+      "exitCode": 0,
+      "result": "Fresh workspace initialized."
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js doctor --workspace /tmp/qaspider-m2-cli-check",
+      "exitCode": 0,
+      "result": "Schema [1,2,3], preserved defaults, expected missing test-credential reference warnings."
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=/home/avi/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64/codex node .qaspider/m2-plan-demo.mjs",
+      "exitCode": 0,
+      "result": "Synthetic gate followed by real Codex generation of six scenarios; original draft retained."
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node .qaspider/m2-execute-demo.mjs",
+      "exitCode": 0,
+      "result": "Reviewed/approved real plan; baseline six PASS, injected duplicate defect five PASS/one FAIL, reopened SQLite and replayed without AI."
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js test replay --workspace .qaspider/m1-reconciliation --plan a85052bb-fef6-4ffa-8151-36df0b2b303a --scenarios registration-valid --no-ai",
+      "exitCode": 0,
+      "result": "Separate CLI process passed with QASPIDER_CODEX_BIN deliberately unavailable; providerUsed=false."
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node .qaspider/m2-ui-check.mjs",
+      "exitCode": 0,
+      "result": "Live viewer rendered the six persisted real-Codex scenarios, exact approval hash and five PASS/one FAIL report; screenshots inspected."
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "result": "No whitespace errors."
+    }
+  ],
+  "chromiumCoverage": [
+    "M0 registration, role isolation and cleanup",
+    "M0 cross-origin/fixture/seed protection",
+    "M1 independent role mapping, restart persistence, batch approval, graph UI and reconciled negative probe",
+    "M1 budgets/cancellation/origin/credential guards",
+    "M1 storage-state secret isolation",
+    "M2 real browser registration outcomes, defect evidence, immutable requirements, reopen/replay and complete review/approval/report UI using explicitly labeled synthetic planning fixtures",
+    "M2 guest/admin/user 401/200/403 execution, cross-scope targets, unapproved paths, unsafe forms and cancellation",
+    "M2 targeted unknown-feature exploration, bounded safe controls and separate navigation approval"
+  ],
+  "realProviderValidation": {
+    "id": "2212afe5-c1a2-4a3b-8208-840cab961d05",
+    "version": "codex-cli 0.162.0-alpha.17.2",
+    "binarySha256": "73b73b048546993298234a295de01ef2424e7a8b29def9d0ecb1ca7cb77500d4",
+    "model": "gpt-6.1-sol",
+    "toolNames": [],
+    "canariesUntouched": true,
+    "schemaValidated": true,
+    "timeoutValidated": true,
+    "cancellationValidated": true,
+    "validatedAt": 1792780283425
+  },
+  "realAcceptance": {
+    "storyRevisionId": "ebc6d554-2cff-48b3-9132-d2e8d67adc51",
+    "approvedPlanRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+    "approvedHash": "0b7650e3974b7da1c43ba1c3be730be0100cee55381d9a56f3ab140f78d65bd0",
+    "baseline": {
+      "runId": "0b7da57f-9015-4559-8e97-5f823b18f056",
+      "summary": {
+        "PASS": 6,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 0
+      }
+    },
+    "defect": {
+      "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+      "summary": {
+        "PASS": 5,
+        "FAIL": 1,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 0
+      },
+      "failingScenario": "registration-duplicate-email",
+      "expected": "Email already exists",
+      "actual": "",
+      "classification": "FAIL"
+    },
+    "reopenedReplay": {
+      "runId": "f7a969f3-65b6-4bc6-a227-1ccd610152b8",
+      "summary": {
+        "PASS": 1,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 5
+      },
+      "providerUsed": false
+    },
+    "separateProcessReplay": {
+      "runId": "65ca4324-50f6-4704-ac80-542eb4e7ca89",
+      "summary": {
+        "PASS": 1,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 5
+      },
+      "providerUsed": false,
+      "providerExecutableDeliberatelyUnavailable": true
+    },
+    "requirementsAndApprovedHashPreserved": true,
+    "allFixtureReservationsCleaned": true,
+    "realUiEvidence": "validation/m2-ui-evidence.json"
+  },
+  "securityChecks": [
+    "Real provider sees zero tools after synthetic wire validation; no application context before the gate.",
+    "Fresh private worker home/workdir, ignored user/project rules, disabled tool/MCP/hook features, binary hash binding, bounded output, process-group timeout and cancellation.",
+    "Provider child environment excludes application credentials; only existing Codex authentication is copied privately and removed.",
+    "Scoped app/environment/role/tenant/build/flags retrieval; production execution blocked.",
+    "Single exact approved POST per submit; unknown forms and non-allowlisted controls refused; scoped safe GET assertions with no redirects.",
+    "No model-supplied JavaScript/shell is executed.",
+    "Raw traces denied by viewer; provider context contains no raw artifacts; screenshot/input redaction and private file permissions retained.",
+    "Global/per-run quotas, retention and tombstones preserved; parent test run includes child navigation evidence in its quota.",
+    "Explicit source and AI-inferred requirements remain distinct; requirement and approved-plan history cannot be updated/deleted."
+  ],
+  "developmentFailuresResolved": [
+    "Initial tests failed on absent M2 modules, then passed after implementation.",
+    "Synthetic probe revealed global Codex home instructions can load independently of project_doc_max_bytes; real workers use a fresh home containing only the auth file.",
+    "Real planning initially rejected Zod oneOf in strict output; wire schema now uses anyOf and results still undergo full Zod validation.",
+    "Initial UI checks exposed icon-inclusive accessible names and a broad Test run selector; explicit accessible names and exact locators fixed the failures."
+  ],
+  "finalEngineeringFailures": [],
+  "environmentalBlockers": [],
+  "unresolvedProblems": [],
+  "remainingLimitations": [
+    "Execution supports typed fill/click and text/visibility/declared HTTP-status assertions, not arbitrary JS/shell/database assertions.",
+    "Fixture lifecycle follows the explicitly configured benchmark-compatible setup/cleanup contract; MFA automation and general fixture adapters are deferred.",
+    "Retrieval/exploration use bounded scoped keywords; missing initial scopes and newly discovered transitions require mapping/navigation review.",
+    "Abrupt termination requires operator reconciliation of running jobs/runs, active artifacts and orphan fixture reservations; no automatic crash resumption.",
+    "Full local traces may contain session/request data and remain private; masking also depends on target-specific private selectors/known secrets.",
+    "Real Codex planning requires the installed CLI capabilities, configured model availability and current CLI sign-in; unsupported isolation fails closed."
+  ],
+  "evidenceFiles": [
+    "validation/m2-preflight.json",
+    "validation/m2-provider-validation.json",
+    "validation/m2-generated-plan.json",
+    "validation/m2-plan-review.json",
+    "validation/m2-demo-evidence.json",
+    "validation/m2-defect-report.json",
+    "validation/m2-cli-replay.json",
+    "validation/m2-ui-evidence.json"
+  ],
+  "privateEvidence": {
+    "workspace": ".qaspider/m1-reconciliation",
+    "database": ".qaspider/m1-reconciliation/.qaspider/memory.db",
+    "managedArtifacts": ".qaspider/m1-reconciliation/.qaspider/artifacts",
+    "uiScreenshots": [
+      ".qaspider/m2-ui-evidence/test-runs-viewport.png",
+      ".qaspider/m2-ui-evidence/real-codex-report.png",
+      ".qaspider/m2-ui-evidence/real-codex-plan.png"
+    ],
+    "chromiumOutput": "test-results/",
+    "htmlTestReport": "playwright-report/"
+  },
+  "stopGate": {
+    "M2Only": true,
+    "learningAgents": false,
+    "autonomousPromotion": false,
+    "MCP": false,
+    "M3M4Deferred": true
+  },
+  "postCompletionChecks": {
+    "checkedAtUtc": "2026-10-23T18:57:23.542363+00:00",
+    "fullSuiteAiFreeReplay": {
+      "evidence": "validation/m2-full-suite-replay.json",
+      "runId": "36d5df83-12bd-48fe-845d-fa5f16d9eea7",
+      "freshCliProcess": true,
+      "summary": {
+        "PASS": 6,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 0
+      },
+      "providerUsed": false,
+      "providerCanaryInvoked": false,
+      "priorSingleScenarioReplayWasIntentional": true,
+      "priorFiveNotRunWereFailures": false,
+      "approvedPlanAndRequirementsPreserved": true
+    },
+    "isolationEvidence": {
+      "evidence": "validation/m2-isolation-recheck.json",
+      "validationId": "b1442cc8-51a5-419c-b40f-02003b04738e",
+      "originalRealPlanningValidationPreserved": true,
+      "privateReceipts": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/b1442cc8-51a5-419c-b40f-02003b04738e",
+      "zeroTools": true,
+      "timeoutAndCancellationProcessExitVerified": true,
+      "sanitizedContextVerifiedWithSyntheticCanaries": true,
+      "receiptHashesVerified": true,
+      "futureChangeGate": "npm run verify:provider before and after provider/isolation/context-construction changes; see AGENTS.md",
+      "realAiInvokedDuringRecheck": false
+    },
+    "dashboardAccess": {
+      "evidence": "validation/m2-token-rotation.json",
+      "exposedTokenStatus": 401,
+      "replacementTokenStatus": 200,
+      "replacementBootstrapFile": ".qaspider/dashboard-access.json",
+      "fileMode": "600",
+      "replacementTokenPublished": false
+    },
+    "commands": [
+      {
+        "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node .qaspider/m2-full-suite-check.mjs",
+        "exitCode": 0,
+        "result": "6 PASS; provider canary not invoked; full approved suite executed in fresh CLI process."
+      },
+      {
+        "command": "npm run typecheck",
+        "exitCode": 0
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "result": {
+          "testFiles": 14,
+          "testsPassed": 40,
+          "testsFailed": 0
+        }
+      },
+      {
+        "command": "QASPIDER_CODEX_BIN=/home/avi/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64/codex npm run verify:provider",
+        "exitCode": 0,
+        "result": "Production build and actual synthetic CLI wire/termination/context receipts passed."
+      },
+      {
+        "command": "git diff --check",
+        "exitCode": 0
+      }
+    ],
+    "additionalFiles": [
+      "AGENTS.md",
+      "README.md",
+      "package.json",
+      "packages/providers/src/codex.ts",
+      "packages/providers/src/evidence.ts",
+      "scripts/verify-provider.mjs",
+      "tests/unit/provider-evidence.test.ts",
+      "validation/m2-full-suite-replay.json",
+      "validation/m2-isolation-recheck.json",
+      "validation/m2-token-rotation.json",
+      "validation/m2-report.json"
+    ],
+    "failures": [],
+    "blockers": [],
+    "existingStagedChangesPreserved": true,
+    "scope": "M2 verification only; no M3 work."
+  }
+}

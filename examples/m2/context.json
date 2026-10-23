@@ -1,0 +1,1 @@
+{"applicationId":"benchmark","environmentId":"development","roleIds":["guest","admin","user"],"build":"m1-smoke","tenant":"public","featureFlags":{}}

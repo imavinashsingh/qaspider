@@ -3,9 +3,9 @@ import { mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
-import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
-import { budgetsSchema, findPath, httpUrlSchema, isSafeNavigation, navigationConfigSchema, normalizeObservation, normalizeUrl, type LocatorSpec, type NavigationAction, type NavigationBudgets, type NavigationConfig, type NavigationRun, type NormalizedObservation, type Observation, type Scope, type Transition, type UIState } from '../../core/src/index.js';
-class NavigationError extends Error { constructor(message: string, readonly status: NavigationRun['status']) { super(message); } }
+import { SqliteStore } from '../../storage/src/index.js';
+import { budgetsSchema, findPath, httpUrlSchema, isSafeNavigation, navigationConfigSchema, normalizeObservation, normalizeUrl, type ArtifactStorage, type LocatorSpec, type NavigationAction, type NavigationBudgets, type NavigationConfig, type NavigationRun, type NormalizedObservation, type Observation, type Scope, type Transition, type UIState } from '../../core/src/index.js';
+export class NavigationError extends Error { constructor(message: string, readonly status: NavigationRun['status']) { super(message); } }
 class Budget {
   actions = 0; requests = 0; states = 0; private lastAction = 0;
   constructor(readonly limits: NavigationBudgets, readonly signal: AbortSignal) {}
@@ -41,16 +41,17 @@ async function observe(page: Page, config: NavigationConfig, secrets: string[], 
   }, config) as Observation;
   return normalizeObservation(snapshot, config, secrets);
 }
-interface Session { context: BrowserContext; page: Page; budget: Budget; secrets: string[]; origins: string[]; }
+export interface WorkflowSession { context: BrowserContext; page: Page; budget: Budget; secrets: string[]; origins: string[]; permitWrite<T>(url: string, work: () => Promise<T>): Promise<T>; }
+type Session = WorkflowSession;
 export class NavigationEngine {
-  constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStore, private readonly browser?: Browser) {}
+  constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStorage, private readonly browser?: Browser) {}
   private validate(scope: Scope) {
     const environment = this.store.getEnvironment(scope.environmentId); const role = this.store.getRole(scope.roleId);
     if (!environment || !role || environment.applicationId !== scope.applicationId || role.environmentId !== scope.environmentId) throw new NavigationError('Invalid role/environment scope', 'blocked');
     if (environment.kind === 'production') throw new NavigationError('M1 mapping/replay is limited to development and QA', 'blocked');
     return { environment, role };
   }
-  private async session(browser: Browser, scope: Scope, config: NavigationConfig, budget: Budget, env: NodeJS.ProcessEnv): Promise<Session> {
+  private async session(browser: Browser, scope: Scope, config: NavigationConfig, budget: Budget, env: NodeJS.ProcessEnv, grants: string[] = []): Promise<Session> {
     const { environment, role } = this.validate(scope); const origins = environment.allowedOrigins; const secrets: string[] = [];
     let storageState: Awaited<ReturnType<BrowserContext['storageState']>> | undefined;
     if (role.auth.kind === 'storage-state') {
@@ -64,12 +65,14 @@ export class NavigationEngine {
     const context = await browser.newContext({ serviceWorkers: 'block', acceptDownloads: false, ...(storageState ? { storageState } : {}) });
     const close = () => { void context.close().catch(() => {}); }; budget.signal.addEventListener('abort', close, { once: true });
     context.on('close', () => budget.signal.removeEventListener('abort', close));
-    let authWriteOpen = false;
+    let authWriteOpen = false; let approvedWrite: string | null = null;
+    if (grants.some(url => !httpUrlSchema.safeParse(url).success || !origins.includes(new URL(url).origin))) { await context.close(); throw new NavigationError('Write grant outside scope', 'blocked'); }
     await context.route('**/*', async route => {
       try {
         budget.request(); const request = route.request(); const url = new URL(request.url());
         if (!origins.includes(url.origin) || url.username || url.password) { await route.abort(); return; }
-        if (!['GET', 'HEAD'].includes(request.method()) && !(authWriteOpen && request.method() === 'POST' && config.auth && url.toString() === config.auth.submitUrl)) { await route.abort(); return; }
+        if (!['GET', 'HEAD'].includes(request.method()) && !((authWriteOpen && request.method() === 'POST' && config.auth && url.toString() === config.auth.submitUrl) || (request.method() === 'POST' && approvedWrite === url.toString()))) { await route.abort(); return; }
+        if (request.method() === 'POST' && approvedWrite === url.toString()) approvedWrite = null;
         if (['GET', 'HEAD'].includes(request.method()) && !isSafeNavigation({ kind: 'link', locator: { kind: 'role', role: 'link', name: 'Resource' }, targetUrl: url.toString() }, origins, config)) { await route.abort(); return; }
         await route.continue();
       } catch (error) { if (error instanceof NavigationError) this.requestFailure = error; await route.abort().catch(() => {}); }
@@ -78,7 +81,7 @@ export class NavigationEngine {
     const page = await context.newPage(); context.on('page', other => { if (other !== page) void other.close().catch(() => {}); });
     page.on('dialog', dialog => { void dialog.dismiss(); }); page.on('download', download => { void download.cancel(); });
     page.setDefaultTimeout(budget.limits.actionTimeoutMs); page.setDefaultNavigationTimeout(budget.limits.actionTimeoutMs);
-    const session: Session = { context, page, budget, secrets, origins };
+    const session: Session = { context, page, budget, secrets, origins, async permitWrite(url, work) { if (!grants.includes(url) || approvedWrite) throw new NavigationError('Unapproved write', 'blocked'); approvedWrite = url; try { return await work(); } finally { approvedWrite = null; } } };
     try {
       if (role.auth.kind === 'guest') { if (config.auth) throw new NavigationError('Guest scope cannot use authenticated bootstrap', 'blocked'); }
       else {
@@ -151,7 +154,7 @@ export class NavigationEngine {
     const evidenceId = this.event(runId, { kind: 'state-observation', observation, screenshotId }, evidenceIds);
     return this.store.navigation.saveState(scope, observation, evidenceId);
   }
-  async map(scope: Scope, seedUrl: string, configInput: NavigationConfig = navigationConfigSchema.parse({}), limitsInput: Partial<NavigationBudgets> = {}, signal?: AbortSignal, env: NodeJS.ProcessEnv = process.env): Promise<NavigationRun> {
+  async map(scope: Scope, seedUrl: string, configInput: NavigationConfig = navigationConfigSchema.parse({}), limitsInput: Partial<NavigationBudgets> = {}, signal?: AbortSignal, env: NodeJS.ProcessEnv = process.env, relevantTerms?: string[]): Promise<NavigationRun> {
     const config = navigationConfigSchema.parse(configInput); const { role } = this.validate(scope);
     const credentialValues = role.auth.kind === 'form' ? [env[role.auth.usernameEnv], env[role.auth.passwordEnv]].filter((value): value is string => !!value) : [];
     const serialized = JSON.stringify({ seedUrl, config });
@@ -171,7 +174,7 @@ export class NavigationEngine {
       for (let cursor = 0; cursor < queue.length; cursor++) {
         const entry = queue[cursor]!; if (entry.depth >= session.budget.limits.depth) continue;
         await restore(entry.path, entry.state);
-        const actions = this.actions(await observe(session.page, config, session.secrets, session.origins), session, config);
+        const actions = this.actions(await observe(session.page, config, session.secrets, session.origins), session, config).filter(action => !relevantTerms || relevantTerms.some(term => JSON.stringify(action).toLowerCase().includes(term.toLowerCase())));
         for (const action of actions) {
           let edge: Transition | undefined;
           try {
@@ -198,12 +201,18 @@ export class NavigationEngine {
     });
   }
   async replay(scope: Scope, from: string, to: string, signal?: AbortSignal, env: NodeJS.ProcessEnv = process.env, limits: Partial<NavigationBudgets> = {}): Promise<NavigationRun> {
+    return this.replayWork(scope, from, to, signal, env, limits);
+  }
+  async runApprovedWorkflow(scope: Scope, to: string, grants: string[], work: (session: WorkflowSession) => Promise<void>, signal?: AbortSignal, env: NodeJS.ProcessEnv = process.env, limits: Partial<NavigationBudgets> = {}): Promise<NavigationRun> {
+    return this.replayWork(scope, null, to, signal, env, limits, work, grants);
+  }
+  private async replayWork(scope: Scope, from: string | null, to: string, signal: AbortSignal | undefined, env: NodeJS.ProcessEnv, limits: Partial<NavigationBudgets>, work?: (session: WorkflowSession) => Promise<void>, grants: string[] = []): Promise<NavigationRun> {
     this.validate(scope); const graph = this.store.navigation.snapshot(scope); if (!graph.scope) throw new NavigationError('Unknown navigation scope', 'blocked');
-    const config = graph.scope.config; const selected = findPath(graph, from, to);
+    const config = graph.scope.config; const selected = from ? findPath(graph, from, to) : [];
     return this.execute(scope, 'replay', limits, signal, env, async (session, run, evidenceIds) => {
       await this.goto(session, graph.scope!.seedUrl); const current = await observe(session.page, config, session.secrets, session.origins);
       const initial = graph.states.find(state => state.observation.fingerprint === current.fingerprint); if (!initial) throw new NavigationError('Entry state is unknown or changed', 'failed');
-      const path = [...findPath(graph, initial.id, from), ...selected];
+      let path: Transition[]; try { path = from ? [...findPath(graph, initial.id, from), ...selected] : findPath(graph, initial.id, to); } catch { throw new NavigationError('No approved navigation path in this scope', 'blocked'); }
       for (const edge of path) {
         try {
           const live = this.store.navigation.snapshot(scope).transitions.find(item => item.id === edge.id);
@@ -218,9 +227,10 @@ export class NavigationEngine {
       }
       const destination = graph.states.find(state => state.id === to)!; await this.checked(session, destination, config);
       if (!path.length) this.event(run.id, { kind: 'state-replay', passed: true, postcondition: destination.observation }, evidenceIds);
-    });
+      if (work) await work(session);
+    }, grants);
   }
-  private async execute(scope: Scope, kind: 'map' | 'replay', input: Partial<NavigationBudgets>, signal: AbortSignal | undefined, env: NodeJS.ProcessEnv, work: (session: Session, run: NavigationRun, evidenceIds: string[]) => Promise<void>): Promise<NavigationRun> {
+  private async execute(scope: Scope, kind: 'map' | 'replay', input: Partial<NavigationBudgets>, signal: AbortSignal | undefined, env: NodeJS.ProcessEnv, work: (session: Session, run: NavigationRun, evidenceIds: string[]) => Promise<void>, grants: string[] = []): Promise<NavigationRun> {
     const limits = budgetsSchema.parse(input); const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(new NavigationError('Runtime budget exhausted', 'budget-exhausted')), limits.maxMs);
     const combined = signal ? AbortSignal.any([controller.signal, signal]) : controller.signal; const budget = new Budget(limits, combined);
@@ -228,7 +238,7 @@ export class NavigationEngine {
     let browser: Browser | undefined; let session: Session | undefined; let tracing = false; let status: NavigationRun['status'] = 'complete'; let message = 'Navigation work completed'; this.requestFailure = undefined;
     try {
       budget.check(); browser = this.browser ?? await chromium.launch({ timeout: Math.min(limits.maxMs, limits.actionTimeoutMs) }); budget.check();
-      const config = this.store.navigation.snapshot(scope).scope!.config; session = await this.session(browser, scope, config, budget, env);
+      const config = this.store.navigation.snapshot(scope).scope!.config; session = await this.session(browser, scope, config, budget, env, grants);
       if (this.store.getSettings().captureFullTraces) { await session.context.tracing.start({ screenshots: true, snapshots: true, sources: false }); tracing = true; }
       await work(session, run, evidenceIds); budget.check(); if (this.requestFailure) throw this.requestFailure;
     } catch (error) {

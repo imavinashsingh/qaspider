@@ -4,7 +4,7 @@ import { scopeSchema, type Scope } from './contracts.js';
 export const locatorSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('testId'), value: z.string().min(1).max(200) }).strict(),
   z.object({ kind: z.literal('label'), value: z.string().min(1).max(200) }).strict(),
-  z.object({ kind: z.literal('role'), role: z.enum(['link', 'button', 'tab', 'heading', 'dialog', 'textbox']), name: z.string().min(1).max(200) }).strict()
+  z.object({ kind: z.literal('role'), role: z.enum(['link', 'button', 'tab', 'heading', 'dialog', 'textbox', 'alert', 'status']), name: z.string().max(200) }).strict()
 ]);
 export type LocatorSpec = z.infer<typeof locatorSchema>;
 const sensitiveKey = /password|secret|token|session|auth|cookie|credential|key|email/i;

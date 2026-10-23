@@ -1,0 +1,834 @@
+{
+  "workspace": ".qaspider/m1-reconciliation",
+  "storyRevisionId": "ebc6d554-2cff-48b3-9132-d2e8d67adc51",
+  "planRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+  "approvedHash": "0b7650e3974b7da1c43ba1c3be730be0100cee55381d9a56f3ab140f78d65bd0",
+  "requirementsPreserved": true,
+  "retrievedAfterRestart": true,
+  "baseline": {
+    "runId": "0b7da57f-9015-4559-8e97-5f823b18f056",
+    "status": "complete",
+    "summary": {
+      "PASS": 6,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 0
+    },
+    "results": [
+      {
+        "scenarioId": "registration-valid",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-valid-status",
+                "requirementId": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+                "status": "PASS",
+                "expected": "Account created",
+                "actual": "Account created",
+                "evidenceId": "a6e98a41-f92b-4769-9d4a-6a63ca91270c"
+              }
+            ],
+            "evidenceIds": [
+              "d2d2286c-917a-49c7-9ca8-7f29dc1045e9",
+              "a6e98a41-f92b-4769-9d4a-6a63ca91270c",
+              "170fe64b-567c-433f-909e-5c09f8421f40",
+              "dbca09b2-5f20-4d14-8335-24ceced44d41"
+            ],
+            "navigationRunId": "cb0e97a5-24b3-411d-9844-850c5d5e9786",
+            "evidence": [
+              {
+                "id": "d2d2286c-917a-49c7-9ca8-7f29dc1045e9",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 19156
+              },
+              {
+                "id": "a6e98a41-f92b-4769-9d4a-6a63ca91270c",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 275
+              },
+              {
+                "id": "170fe64b-567c-433f-909e-5c09f8421f40",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "dbca09b2-5f20-4d14-8335-24ceced44d41",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 96061
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "registration-invalid-email",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-invalid-email-alert",
+                "requirementId": "56b83194-2fae-400b-9571-401467083ed0",
+                "status": "PASS",
+                "expected": "Invalid email",
+                "actual": "Invalid email",
+                "evidenceId": "7874daa3-a14b-422e-bc92-2619bc8ad13e"
+              }
+            ],
+            "evidenceIds": [
+              "05462f5f-4c73-4801-91fd-62e2f7ae82d4",
+              "7874daa3-a14b-422e-bc92-2619bc8ad13e",
+              "e4c81972-928b-464f-a0df-32a47cd9e3e4",
+              "3ce71ce8-a423-415b-993d-702ccba54a3b"
+            ],
+            "navigationRunId": "0b1ca6a5-ab31-4609-80b0-931a1c5fa253",
+            "evidence": [
+              {
+                "id": "05462f5f-4c73-4801-91fd-62e2f7ae82d4",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 18915
+              },
+              {
+                "id": "7874daa3-a14b-422e-bc92-2619bc8ad13e",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 286
+              },
+              {
+                "id": "e4c81972-928b-464f-a0df-32a47cd9e3e4",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "3ce71ce8-a423-415b-993d-702ccba54a3b",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 85102
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "registration-duplicate-email",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-duplicate-email-alert",
+                "requirementId": "5aecb6ec-9fe3-42c3-9a74-16bc809debfd",
+                "status": "PASS",
+                "expected": "Email already exists",
+                "actual": "Email already exists",
+                "evidenceId": "da874a44-f7ff-4c06-8a07-3db27024719a"
+              }
+            ],
+            "evidenceIds": [
+              "29a4d834-a8b8-4e24-a180-88ef16892618",
+              "da874a44-f7ff-4c06-8a07-3db27024719a",
+              "a7c66e24-eb98-44eb-bc03-5c32244073de",
+              "d1242965-0d88-49a3-a369-eb54cdba8982"
+            ],
+            "navigationRunId": "d0f51500-2d27-440c-8f3a-f43d00f45c7c",
+            "evidence": [
+              {
+                "id": "29a4d834-a8b8-4e24-a180-88ef16892618",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 19627
+              },
+              {
+                "id": "da874a44-f7ff-4c06-8a07-3db27024719a",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 304
+              },
+              {
+                "id": "a7c66e24-eb98-44eb-bc03-5c32244073de",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "d1242965-0d88-49a3-a369-eb54cdba8982",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 87339
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-guest",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-guest-status",
+                "requirementId": "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8",
+                "status": "PASS",
+                "expected": 401,
+                "actual": 401,
+                "evidenceId": "84d72d61-8e99-4279-b7bb-2feaeae35ff0"
+              }
+            ],
+            "evidenceIds": [
+              "90fedd2e-557e-43ac-b443-e166a828ab09",
+              "84d72d61-8e99-4279-b7bb-2feaeae35ff0",
+              "a880cac8-53f3-487c-9ff6-96fb6306555d",
+              "825862d2-de89-4943-a315-37b0a8b4004c"
+            ],
+            "navigationRunId": "76dafdee-f150-483a-8cbf-528563aa7903",
+            "evidence": [
+              {
+                "id": "90fedd2e-557e-43ac-b443-e166a828ab09",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 19642
+              },
+              {
+                "id": "84d72d61-8e99-4279-b7bb-2feaeae35ff0",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 245
+              },
+              {
+                "id": "a880cac8-53f3-487c-9ff6-96fb6306555d",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 973
+              },
+              {
+                "id": "825862d2-de89-4943-a315-37b0a8b4004c",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 14542
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-standard-user",
+        "roleId": "user",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-standard-user-status",
+                "requirementId": "da312603-6400-4382-b3cf-d18190598efa",
+                "status": "PASS",
+                "expected": 403,
+                "actual": 403,
+                "evidenceId": "e248beee-e2d5-43c4-b8c2-acefb5b97cb6"
+              }
+            ],
+            "evidenceIds": [
+              "6b68ebb3-dea5-45c7-bb95-01bfb53c2137",
+              "e248beee-e2d5-43c4-b8c2-acefb5b97cb6",
+              "616d9af5-8683-497a-875e-57172220654b",
+              "594ecf53-c6c4-4a34-b3e0-bbaea1500eae"
+            ],
+            "navigationRunId": "b4bfc240-8d98-4561-a119-535e0795bb8a",
+            "evidence": [
+              {
+                "id": "6b68ebb3-dea5-45c7-bb95-01bfb53c2137",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 21558
+              },
+              {
+                "id": "e248beee-e2d5-43c4-b8c2-acefb5b97cb6",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 261
+              },
+              {
+                "id": "616d9af5-8683-497a-875e-57172220654b",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 1281
+              },
+              {
+                "id": "594ecf53-c6c4-4a34-b3e0-bbaea1500eae",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 23402
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-admin",
+        "roleId": "admin",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-admin-status",
+                "requirementId": "7266b3ed-19ec-4773-a378-6d5027869e5f",
+                "status": "PASS",
+                "expected": 200,
+                "actual": 200,
+                "evidenceId": "4e9155d5-3a44-4b8a-a737-fb8c6fb5533a"
+              }
+            ],
+            "evidenceIds": [
+              "6eb76ac0-0ac5-4bad-84c9-ad6b422b5eeb",
+              "4e9155d5-3a44-4b8a-a737-fb8c6fb5533a",
+              "a50a78eb-a3d8-4a41-855f-3a3f5fdb3343",
+              "ee6a5c80-ddc5-4343-b423-7c30e2e896f0"
+            ],
+            "navigationRunId": "b9aa64c1-f604-4dc7-b415-a770179fefae",
+            "evidence": [
+              {
+                "id": "6eb76ac0-0ac5-4bad-84c9-ad6b422b5eeb",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 22373
+              },
+              {
+                "id": "4e9155d5-3a44-4b8a-a737-fb8c6fb5533a",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 245
+              },
+              {
+                "id": "a50a78eb-a3d8-4a41-855f-3a3f5fdb3343",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 1438
+              },
+              {
+                "id": "ee6a5c80-ddc5-4343-b423-7c30e2e896f0",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 25010
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "fixtures": [
+      {
+        "id": "3a128e13-a7b7-4ad6-b8f4-659906de09e5",
+        "runId": "0b7da57f-9015-4559-8e97-5f823b18f056",
+        "scenarioId": "registration-valid",
+        "attempt": 1,
+        "kind": "unique-email",
+        "status": "cleaned",
+        "message": ""
+      },
+      {
+        "id": "dafe67ef-cad7-4354-b3bf-9d44a41e8f80",
+        "runId": "0b7da57f-9015-4559-8e97-5f823b18f056",
+        "scenarioId": "registration-duplicate-email",
+        "attempt": 1,
+        "kind": "duplicate-email",
+        "status": "cleaned",
+        "message": ""
+      }
+    ]
+  },
+  "defect": {
+    "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+    "status": "complete",
+    "summary": {
+      "PASS": 5,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 0
+    },
+    "results": [
+      {
+        "scenarioId": "registration-valid",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-valid-status",
+                "requirementId": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+                "status": "PASS",
+                "expected": "Account created",
+                "actual": "Account created",
+                "evidenceId": "9eadd85d-f5ff-4349-8a54-99e6d93ce49d"
+              }
+            ],
+            "evidenceIds": [
+              "9efe494e-e7b2-4630-a04c-3aea390f5c06",
+              "9eadd85d-f5ff-4349-8a54-99e6d93ce49d",
+              "56a1823b-cf72-4b0c-b2d1-1a23de688ce0",
+              "70b58bd9-1c85-4fc5-aa25-6f4795f5422f"
+            ],
+            "navigationRunId": "d35b2bd9-2e9d-4ee6-b84b-b3b488ab6d25",
+            "evidence": [
+              {
+                "id": "9efe494e-e7b2-4630-a04c-3aea390f5c06",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 18881
+              },
+              {
+                "id": "9eadd85d-f5ff-4349-8a54-99e6d93ce49d",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 275
+              },
+              {
+                "id": "56a1823b-cf72-4b0c-b2d1-1a23de688ce0",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "70b58bd9-1c85-4fc5-aa25-6f4795f5422f",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 86992
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "registration-invalid-email",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-invalid-email-alert",
+                "requirementId": "56b83194-2fae-400b-9571-401467083ed0",
+                "status": "PASS",
+                "expected": "Invalid email",
+                "actual": "Invalid email",
+                "evidenceId": "729f4460-d205-45cf-8637-3374fb611d62"
+              }
+            ],
+            "evidenceIds": [
+              "7e29df8f-6069-4818-b00d-c8ae5d025050",
+              "729f4460-d205-45cf-8637-3374fb611d62",
+              "9bc9546e-d9b6-4ba5-8f40-59b353d4bdbb",
+              "2fca083d-1dc2-49ef-b4f8-0517ef688257"
+            ],
+            "navigationRunId": "b7584a35-4e67-419b-8f67-2d959a7e32aa",
+            "evidence": [
+              {
+                "id": "7e29df8f-6069-4818-b00d-c8ae5d025050",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 18755
+              },
+              {
+                "id": "729f4460-d205-45cf-8637-3374fb611d62",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 286
+              },
+              {
+                "id": "9bc9546e-d9b6-4ba5-8f40-59b353d4bdbb",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "2fca083d-1dc2-49ef-b4f8-0517ef688257",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 76979
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "registration-duplicate-email",
+        "roleId": "guest",
+        "status": "FAIL",
+        "attempts": [
+          {
+            "status": "FAIL",
+            "reason": "Observed behavior differs from an approved requirement",
+            "assertions": [
+              {
+                "id": "registration-duplicate-email-alert",
+                "requirementId": "5aecb6ec-9fe3-42c3-9a74-16bc809debfd",
+                "status": "FAIL",
+                "expected": "Email already exists",
+                "actual": "",
+                "evidenceId": "77354eab-f8c9-4fe7-9da9-76e865126fce"
+              }
+            ],
+            "evidenceIds": [
+              "7065cd38-5c25-4c32-953d-2eb773ff5d21",
+              "77354eab-f8c9-4fe7-9da9-76e865126fce",
+              "82ec28ea-4f65-4aa0-8dfe-cec10fb20462",
+              "98ee25e1-8c49-4cad-94ef-8c375825d46f"
+            ],
+            "navigationRunId": "26fd5f23-de08-40e4-aee4-7cdc4fec952e",
+            "evidence": [
+              {
+                "id": "7065cd38-5c25-4c32-953d-2eb773ff5d21",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 18940
+              },
+              {
+                "id": "77354eab-f8c9-4fe7-9da9-76e865126fce",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 285
+              },
+              {
+                "id": "82ec28ea-4f65-4aa0-8dfe-cec10fb20462",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "98ee25e1-8c49-4cad-94ef-8c375825d46f",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 99048
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-guest",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-guest-status",
+                "requirementId": "ea5b5788-1ece-4a18-9cfc-67d1c35ab2d8",
+                "status": "PASS",
+                "expected": 401,
+                "actual": 401,
+                "evidenceId": "aff3a585-b9ce-4440-b154-8a7092c9d3d4"
+              }
+            ],
+            "evidenceIds": [
+              "b2b2421f-b6e6-443d-ae74-1231ec75185f",
+              "aff3a585-b9ce-4440-b154-8a7092c9d3d4",
+              "ececdc37-babb-4a60-9f3c-65944d1a6e4f",
+              "06f1ce82-16b4-4759-b8a1-f29b08bf2032"
+            ],
+            "navigationRunId": "aa24ca41-5d8d-4fa1-ad11-a4ef187ed34a",
+            "evidence": [
+              {
+                "id": "b2b2421f-b6e6-443d-ae74-1231ec75185f",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 19290
+              },
+              {
+                "id": "aff3a585-b9ce-4440-b154-8a7092c9d3d4",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 245
+              },
+              {
+                "id": "ececdc37-babb-4a60-9f3c-65944d1a6e4f",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 973
+              },
+              {
+                "id": "06f1ce82-16b4-4759-b8a1-f29b08bf2032",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 14585
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-standard-user",
+        "roleId": "user",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-standard-user-status",
+                "requirementId": "da312603-6400-4382-b3cf-d18190598efa",
+                "status": "PASS",
+                "expected": 403,
+                "actual": 403,
+                "evidenceId": "e4b7a70f-ab23-4d2c-868e-f2f14a6dfc52"
+              }
+            ],
+            "evidenceIds": [
+              "3e60e968-0626-4150-9902-dc50426ad490",
+              "e4b7a70f-ab23-4d2c-868e-f2f14a6dfc52",
+              "acc04fb3-9c47-4e08-b656-01ba1fb01d8c",
+              "5369d28e-51a6-4a01-bfee-c8429ba72d00"
+            ],
+            "navigationRunId": "b30faffb-2814-4b5e-b266-dfbd55d380ca",
+            "evidence": [
+              {
+                "id": "3e60e968-0626-4150-9902-dc50426ad490",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 21537
+              },
+              {
+                "id": "e4b7a70f-ab23-4d2c-868e-f2f14a6dfc52",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 261
+              },
+              {
+                "id": "acc04fb3-9c47-4e08-b656-01ba1fb01d8c",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 1281
+              },
+              {
+                "id": "5369d28e-51a6-4a01-bfee-c8429ba72d00",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 23417
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "admin-users-admin",
+        "roleId": "admin",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "admin-users-admin-status",
+                "requirementId": "7266b3ed-19ec-4773-a378-6d5027869e5f",
+                "status": "PASS",
+                "expected": 200,
+                "actual": 200,
+                "evidenceId": "906bfe15-da1d-4dae-8ef6-2d80c06d5ab1"
+              }
+            ],
+            "evidenceIds": [
+              "de70b2a9-288a-4f6e-a9b5-e407c85a2c7b",
+              "906bfe15-da1d-4dae-8ef6-2d80c06d5ab1",
+              "037f3096-2d07-4585-84ae-5512fd50156c",
+              "475b3c17-fac8-42e3-a8a6-c3661ea530d2"
+            ],
+            "navigationRunId": "cf96f31e-01d4-45ac-8921-5a60026306b0",
+            "evidence": [
+              {
+                "id": "de70b2a9-288a-4f6e-a9b5-e407c85a2c7b",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 22244
+              },
+              {
+                "id": "906bfe15-da1d-4dae-8ef6-2d80c06d5ab1",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 245
+              },
+              {
+                "id": "037f3096-2d07-4585-84ae-5512fd50156c",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 1438
+              },
+              {
+                "id": "475b3c17-fac8-42e3-a8a6-c3661ea530d2",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 35360
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "fixtures": [
+      {
+        "id": "c812322f-ab5c-43e6-9ec4-bf289578b504",
+        "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+        "scenarioId": "registration-valid",
+        "attempt": 1,
+        "kind": "unique-email",
+        "status": "cleaned",
+        "message": ""
+      },
+      {
+        "id": "1cb6cc1f-52c6-4118-acb6-33f6639a1ca3",
+        "runId": "2dce03f3-13c1-47f3-8f6f-93da3ca7965d",
+        "scenarioId": "registration-duplicate-email",
+        "attempt": 1,
+        "kind": "duplicate-email",
+        "status": "cleaned",
+        "message": ""
+      }
+    ]
+  },
+  "aiFreeReplay": {
+    "runId": "f7a969f3-65b6-4bc6-a227-1ccd610152b8",
+    "status": "complete",
+    "summary": {
+      "PASS": 1,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 5
+    },
+    "results": [
+      {
+        "scenarioId": "registration-valid",
+        "roleId": "guest",
+        "status": "PASS",
+        "attempts": [
+          {
+            "status": "PASS",
+            "reason": "Every approved assertion passed",
+            "assertions": [
+              {
+                "id": "registration-valid-status",
+                "requirementId": "396bc7c0-88f1-4b68-a1b5-dcb85aadfd91",
+                "status": "PASS",
+                "expected": "Account created",
+                "actual": "Account created",
+                "evidenceId": "35c67240-be4d-4510-885c-601b3b5934cd"
+              }
+            ],
+            "evidenceIds": [
+              "087deee0-5c2b-40d9-9fb3-5179d60f01da",
+              "35c67240-be4d-4510-885c-601b3b5934cd",
+              "612ea576-e159-4651-a769-6f82e819d145",
+              "112f2683-4862-4322-bfd7-0500f4640625"
+            ],
+            "navigationRunId": "aa2c9a4d-823d-486b-a51e-e9bf7abef218",
+            "evidence": [
+              {
+                "id": "087deee0-5c2b-40d9-9fb3-5179d60f01da",
+                "kind": "screenshot",
+                "status": "available",
+                "sizeBytes": 19031
+              },
+              {
+                "id": "35c67240-be4d-4510-885c-601b3b5934cd",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 275
+              },
+              {
+                "id": "612ea576-e159-4651-a769-6f82e819d145",
+                "kind": "event-log",
+                "status": "available",
+                "sizeBytes": 2714
+              },
+              {
+                "id": "112f2683-4862-4322-bfd7-0500f4640625",
+                "kind": "trace",
+                "status": "available",
+                "sizeBytes": 72401
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scenarioId": "registration-invalid-email",
+        "roleId": "guest",
+        "status": "NOT RUN",
+        "attempts": []
+      },
+      {
+        "scenarioId": "registration-duplicate-email",
+        "roleId": "guest",
+        "status": "NOT RUN",
+        "attempts": []
+      },
+      {
+        "scenarioId": "admin-users-guest",
+        "roleId": "guest",
+        "status": "NOT RUN",
+        "attempts": []
+      },
+      {
+        "scenarioId": "admin-users-standard-user",
+        "roleId": "user",
+        "status": "NOT RUN",
+        "attempts": []
+      },
+      {
+        "scenarioId": "admin-users-admin",
+        "roleId": "admin",
+        "status": "NOT RUN",
+        "attempts": []
+      }
+    ],
+    "fixtures": [
+      {
+        "id": "f7fb641f-94f8-43ff-8bc8-f43ece9c4e12",
+        "runId": "f7a969f3-65b6-4bc6-a227-1ccd610152b8",
+        "scenarioId": "registration-valid",
+        "attempt": 1,
+        "kind": "unique-email",
+        "status": "cleaned",
+        "message": ""
+      }
+    ],
+    "providerUsed": false
+  }
+}

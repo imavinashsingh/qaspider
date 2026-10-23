@@ -1,0 +1,10 @@
+{
+  "actionGrants": [{"roleId":"guest","url":"http://127.0.0.1:4317/api/register","method":"POST"}],
+  "readGrants": [
+    {"roleId":"guest","url":"http://127.0.0.1:4317/api/admin/users"},
+    {"roleId":"admin","url":"http://127.0.0.1:4317/api/admin/users"},
+    {"roleId":"user","url":"http://127.0.0.1:4317/api/admin/users"}
+  ],
+  "fixtures":{"setupUrl":"http://127.0.0.1:4317/__fixtures/setup","cleanupUrl":"http://127.0.0.1:4317/__fixtures/cleanup","tokenEnv":"BENCHMARK_FIXTURE_TOKEN","emailDomain":"example.test"},
+  "discovery": false
+}
