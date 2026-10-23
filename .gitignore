@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.qaspider/
+test-results/
+playwright-report/
+*.db
+*.db-shm
+*.db-wal
+.env
+playwright/.auth/

@@ -1,0 +1,117 @@
+{
+  "milestone": "M0",
+  "status": "complete",
+  "stoppedBefore": "M1",
+  "date": "2026-10-23",
+  "node": "v24.11.1",
+  "project": "/home/avi/Opensource/qaspider",
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "note": "Repeated build also passed after fixing generated declaration inputs."
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "files": 5,
+      "tests": 20
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "status": "passed",
+      "tests": 2,
+      "note": "Approved execution outside restricted sandbox; only loopback benchmark used."
+    },
+    {
+      "command": "node_modules/.bin/qaspider init --workspace /tmp/qaspider-m0-cli-validation",
+      "status": "passed"
+    },
+    {
+      "command": "node_modules/.bin/qaspider doctor --workspace /tmp/qaspider-m0-cli-validation",
+      "status": "passed",
+      "note": "Missing credential references reported as warnings; no credentials are required for M0."
+    }
+  ],
+  "testFirstEvidence": [
+    "Tests were authored before their implementation modules.",
+    "Initial SQLite/artifact suites failed on missing storage implementation, then passed.",
+    "CLI integration suite failed on missing CLI implementation, then passed.",
+    "Initial smoke run failed on missing compiled benchmark, then passed after implementation and build."
+  ],
+  "resolvedFailures": [
+    "Restricted network DNS failure during initial npm installation; approved dependency installation succeeded.",
+    "Repeated build TS5055 from declaration bridges importing generated output; source include globs corrected.",
+    "Sandbox EPERM when binding loopback; approved local smoke execution passed."
+  ],
+  "currentFailures": [],
+  "blockers": [],
+  "warnings": [
+    "npm reported transitive prebuild-install deprecation.",
+    "Smoke traces are local development outputs, separate from managed workspace artifact quotas/retention."
+  ],
+  "limitations": [
+    "Artifact lifecycle is a synchronous API; no background daemon is implemented. Call finishRun and prune explicitly.",
+    "Abrupt-crash orphan files consume quota and need operator reconciliation; active interrupted artifacts are not automatically expired.",
+    "Full local traces can contain sensitive fixture content; they are not provider context or exportable MCP evidence.",
+    "Fake provider is synthetic only; no actual AI adapter was invoked."
+  ],
+  "deferred": [
+    "M1 mapping/navigation memory and UI",
+    "M2 story execution, Codex adapter and isolation capability validation",
+    "M3 learning/promotion and batch navigation approval workflow",
+    "M4 MCP TypeScript SDK v2, remaining UI and release hardening"
+  ],
+  "generatedOutputs": [
+    "dist/",
+    "node_modules/",
+    "test-results/",
+    "playwright-report/"
+  ],
+  "filesCreated": [
+    ".gitignore",
+    ".nvmrc",
+    "LICENSE",
+    "README.md",
+    "apps/benchmark/package.json",
+    "apps/benchmark/src/main.ts",
+    "apps/benchmark/src/server.ts",
+    "package-lock.json",
+    "package.json",
+    "packages/cli/bin/qaspider.js",
+    "packages/cli/package.json",
+    "packages/cli/src/cli.ts",
+    "packages/cli/src/main.ts",
+    "packages/core/index.d.ts",
+    "packages/core/index.js",
+    "packages/core/package.json",
+    "packages/core/src/contracts.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/policy.ts",
+    "packages/core/src/provider.ts",
+    "packages/storage/index.d.ts",
+    "packages/storage/index.js",
+    "packages/storage/migrations/001_foundation.sql",
+    "packages/storage/package.json",
+    "packages/storage/src/artifacts.ts",
+    "packages/storage/src/filesystem.ts",
+    "packages/storage/src/index.ts",
+    "packages/storage/src/sqlite.ts",
+    "playwright.config.ts",
+    "scripts/build.mjs",
+    "tests/integration/artifacts.test.ts",
+    "tests/integration/cli.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/smoke/benchmark.spec.ts",
+    "tests/unit/policy.test.ts",
+    "tests/unit/provider.test.ts",
+    "tsconfig.build.json",
+    "tsconfig.json",
+    "validation/m0-report.json",
+    "vitest.config.ts"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@qaspider/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "qaspider": "./bin/qaspider.js"
+  },
+  "dependencies": {
+    "@qaspider/core": "0.0.0",
+    "@qaspider/storage": "0.0.0"
+  }
+}
