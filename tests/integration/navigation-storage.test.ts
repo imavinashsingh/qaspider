@@ -46,7 +46,7 @@ it('approves batches atomically only when every scoped edge has passing replay e
 it('upgrades an actual M0 database without modifying the original migration or losing roles/settings', () => {
   const root = mkdtempSync(join(tmpdir(), 'qaspider-upgrade-')); const path = join(root, 'memory.db'); resources.push(() => rmSync(root, { force: true, recursive: true }));
   const db = new Database(path); db.exec(readFileSync('packages/storage/migrations/001_foundation.sql', 'utf8')); db.exec("INSERT INTO applications VALUES ('old', 'Existing M0')"); db.exec('CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY, checksum TEXT NOT NULL, applied_at TEXT NOT NULL) STRICT'); db.prepare('INSERT INTO schema_migrations VALUES (1, ?, ?)').run(createHash('sha256').update(readFileSync('packages/storage/migrations/001_foundation.sql')).digest('hex'), 'm0'); db.close();
-  const upgraded = new SqliteStore(path); try { expect(upgraded.migrationVersions()).toEqual([1, 2, 3]); expect(upgraded.getApplication('old')?.name).toBe('Existing M0'); } finally { upgraded.close(); }
+  const upgraded = new SqliteStore(path); try { expect(upgraded.migrationVersions()).toEqual([1, 2, 3, 4]); expect(upgraded.getApplication('old')?.name).toBe('Existing M0'); } finally { upgraded.close(); }
 });
 it('rejects states and evidence from another role, tenant, environment or build', () => {
   const { store, first, second, evidence, edge, run } = setup();

@@ -1,0 +1,8 @@
+{
+  "base": {"applicationId":"benchmark","environmentId":"development","roleId":"guest","build":"demo-1","tenant":"public","featureFlags":{}},
+  "head": {"applicationId":"benchmark","environmentId":"development","roleId":"guest","build":"demo-consent","tenant":"public","featureFlags":{}},
+  "terms": ["register","registration","consent","continue"],
+  "config": {"safeControls":[{"kind":"testId","value":"continue-registration"}]},
+  "limits": {"depth":3,"maxActions":100,"maxStates":12,"maxRequests":300,"maxMs":30000,"intervalMs":100},
+  "reviewer":"local-owner"
+}

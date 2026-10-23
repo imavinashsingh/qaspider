@@ -1,6 +1,6 @@
 # QASpider — Story-driven QA
 
-Local-first QA following the approved QASpider V2 architecture. **M0, M1 and M2 are implemented.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. MCP and learning agents remain deferred.
+Local-first QA following the approved QASpider V2 architecture. **M0–M3 are implemented.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. MCP remains deferred.
 
 ## Install and verify
 
@@ -166,3 +166,25 @@ Limitations: typed browser actions and explicitly declared HTTP status checks ar
 M3: learning agents, build-change analysis and governed memory promotion/revision workflows. M4: **MCP TypeScript SDK v2**, remaining dashboard screens and release hardening. No M3/M4 implementation or MCP dependency is included.
 
 Licensed under Apache-2.0; see `LICENSE`.
+
+## M3 — Governed learning and Memory Center
+
+M3 compares immutable build scopes and proposes navigation changes with replay evidence. Open **Memory Center** in the local viewer to inspect real change sets, impacted scenarios, candidates and append-only decisions. Select matching base/head scopes (same application, environment, role, tenant and flags; different builds). Comparisons preserve historical graphs. Failed live replay marks its transition suspect and retains its original evidence.
+
+Targeted exploration uses explicit terms, configured safe controls and normal navigation budgets. The new head-build field can create a build scope from a mapped base entry point. A complete exploration proposes experimentally verified transitions; it does not approve them. Review the candidate's scope, provenance, evidence references and graph before selecting **Approve verified navigation batch**. Every item must have available scoped replay evidence and remain safe. Rejection records a decision without promoting paths.
+
+Each navigation promotion records previous/new statuses and can be rolled back. Rollback revokes that promotion atomically; it refuses overlapping later revisions or edges whose verification status has since changed. Evidence, candidates, decisions and original requirements remain intact. Expectation proposals require individual approval with their matching authoritative source. Endorsement is recorded separately; applying an expectation still requires an explicit new story/plan revision and approval through Test Studio.
+
+CLI equivalents (scope IDs come from `graph`):
+
+```sh
+node_modules/.bin/qaspider diff --base BASE_SCOPE_ID --head HEAD_SCOPE_ID --reviewer local-owner
+node_modules/.bin/qaspider explore --file examples/m3/explore-registration.json
+node_modules/.bin/qaspider memory list --scope HEAD_SCOPE_ID
+node_modules/.bin/qaspider memory approve --scope HEAD_SCOPE_ID --ids CANDIDATE_ID --reviewer local-owner --reason 'Reviewed replay evidence'
+node_modules/.bin/qaspider memory rollback --scope HEAD_SCOPE_ID --revision REVISION_ID --reviewer local-owner --reason 'Revoke navigation promotion'
+```
+
+All commands accept `--workspace`. `memory reject` uses the same options as `approve`; `memory approve-expectation` requires one `--ids` value, `--reviewer` and exact `--source`. Discovery and navigation replay remain AI-free. There is no autonomous expectation mutation.
+
+The benchmark's token-protected `/__fixtures/change` accepts `registrationConsent: true` to insert a local presentation-only consent dialog. This is an explicitly configured safe navigation control, not a business-rule consent assertion. `tests/smoke/learning.spec.ts` demonstrates change detection, targeted discovery, UI approval, separate-process replay, duplicate-email defect detection and rollback. Raw Chromium evidence remains private in ignored `test-results/`.

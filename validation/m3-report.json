@@ -1,0 +1,134 @@
+{
+  "milestone": "M3",
+  "status": "complete",
+  "baselineCommit": "4c5def1",
+  "branch": "feat/qaspider-m3-m5",
+  "baseline": {
+    "workingTree": "clean",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "unitIntegrationTests": 40,
+    "chromiumTests": 8,
+    "fullSixScenarioReplay": "validation/m3-baseline-full-suite-replay.json",
+    "syntheticProviderIsolation": "validation/m3-baseline-isolation-recheck.json",
+    "originalM2ReportsPreserved": true
+  },
+  "migrations": [
+    {
+      "file": "packages/storage/migrations/004_governed_learning.sql",
+      "version": 4,
+      "priorChecksumsUnchanged": true,
+      "tables": [
+        "memory_change_sets",
+        "memory_candidates",
+        "memory_revisions"
+      ],
+      "immutableHistory": true,
+      "sha256": "57129f3dec10a9db8614041eac3d84170ea2b8359493f278fb8e4216030bcfd0"
+    }
+  ],
+  "features": [
+    "Scoped graph build comparison and changed/suspect transition identification",
+    "Conservative downstream scenario regression impact",
+    "Bounded AI-free targeted exploration with explicit configured safe controls",
+    "Persistent evidence-backed candidates and provenance",
+    "Atomic per-item validated navigation batch approval/rejection",
+    "Individual authoritative expectation endorsement, separate from immutable requirements",
+    "Append-only revision/approval/verification history",
+    "Rollback lineage, stale-status and overlapping later-approval protection",
+    "SQLite-backed Memory Center review, comparison, exploration and rollback UI",
+    "CLI diff/explore/memory list/approve/reject/rollback/approve-expectation"
+  ],
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "tests": 42,
+      "files": 15
+    },
+    {
+      "command": "npm run build",
+      "result": "passed"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "passed",
+      "tests": 9,
+      "durationSeconds": 66
+    }
+  ],
+  "evidence": {
+    "learningWorkflow": "validation/m3-learning-evidence.json",
+    "privateScreenshot": "test-results/learning-consent-modal-cha-9eba3-thout-changing-requirements/memory-center.png",
+    "privateBrowserArtifacts": "test-results/",
+    "rawArtifactsCommitted": false,
+    "screenshotVisuallyInspected": true
+  },
+  "resolvedDevelopmentFailures": [
+    "Initial learning behavior tests failed before implementation",
+    "Schema-version assertions updated for additive migration; future-schema sentinel moved to version 999",
+    "Rollback test corrected to assert pre-run rejection of unapproved paths",
+    "One concurrent regression run correctly detected changed draft migration checksum; final suite rerun against frozen migration"
+  ],
+  "securityReview": [
+    "No arbitrary AI code/SQL/shell execution introduced",
+    "M1 origin/action/authentication/role/tenant and budget enforcement reused",
+    "Batch operations validate every transition atomically with available scoped replay evidence",
+    "Expectations cannot enter navigation batch promotion or mutate approved requirements",
+    "Rollback refuses later overlapping approvals and never restores a changed/suspect edge",
+    "Viewer APIs retain bearer authentication, Host/Origin validation and same-origin JSON enforcement",
+    "Original SQLite migrations unchanged; raw artifacts and private workspace data excluded"
+  ],
+  "knownLimitations": [
+    "Graph differences compare bounded observations; missing observations are change candidates, not proof a feature was removed",
+    "Regression impact is conservative and uses stored graph dependencies, not semantic proof of coverage",
+    "Expectation endorsement records approval/provenance only; applying it requires explicit new story and plan revisions",
+    "Exploration remains deterministic term matching with user-declared safe controls; no autonomous business-rule learning",
+    "Abrupt process termination still needs operator reconciliation; no crash resumption"
+  ],
+  "failures": [],
+  "blockers": [],
+  "completedAtUtc": "2026-10-23T19:13:42.027242+00:00",
+  "qualityGate": {
+    "typecheck": true,
+    "productionBuild": true,
+    "allUnitIntegrationTests": true,
+    "allChromiumTests": true,
+    "consentDiscoveryPromotionReplayRollback": true,
+    "duplicateDefectDetectable": true,
+    "noUnresolvedCriticalDefects": true
+  },
+  "changedFiles": [
+    "README.md",
+    "apps/benchmark/src/server.ts",
+    "apps/viewer/src/main.tsx",
+    "apps/viewer/src/memory.tsx",
+    "apps/viewer/src/style.css",
+    "examples/m3/explore-registration.json",
+    "package-lock.json",
+    "packages/cli/src/learning.ts",
+    "packages/cli/src/main.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/learning.ts",
+    "packages/learning/package.json",
+    "packages/learning/src/http.ts",
+    "packages/learning/src/service.ts",
+    "packages/navigation/src/viewer.ts",
+    "packages/storage/migrations/004_governed_learning.sql",
+    "packages/storage/src/learning.ts",
+    "packages/storage/src/sqlite.ts",
+    "tests/integration/cli.test.ts",
+    "tests/integration/learning.test.ts",
+    "tests/integration/navigation-storage.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/smoke/learning.spec.ts",
+    "validation/m3-baseline-full-suite-replay.json",
+    "validation/m3-baseline-isolation-recheck.json",
+    "validation/m3-learning-evidence.json",
+    "validation/m3-report.json"
+  ]
+}

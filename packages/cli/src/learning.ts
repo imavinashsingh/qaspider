@@ -1,0 +1,16 @@
+import { parseArgs } from 'node:util';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
+import { LearningService, explorationRequestSchema } from '../../learning/src/service.js';
+export async function runLearningCli(args:string[],output:(line:string)=>void=console.log){let store:SqliteStore|undefined;const controller=new AbortController();const stop=()=>controller.abort();process.on('SIGINT',stop);process.on('SIGTERM',stop);
+ try{const{values,positionals}=parseArgs({args,allowPositionals:true,options:{workspace:{type:'string'},scope:{type:'string'},base:{type:'string'},head:{type:'string'},reviewer:{type:'string'},ids:{type:'string'},revision:{type:'string'},reason:{type:'string'},file:{type:'string'},source:{type:'string'}}});
+ const[command,operation,...extra]=positionals;if(extra.length)throw new Error('Unexpected arguments');const root=join(resolve(values.workspace??'.'),'.qaspider');if(!existsSync(join(root,'memory.db')))throw new Error('Workspace not initialized');store=new SqliteStore(join(root,'memory.db'));const scopes=store.navigation.listScopes();const selected=scopes.find(s=>s.id===values.scope);const service=new LearningService(store,new ArtifactStore(store,join(root,'artifacts')));let result:unknown;
+ if(command==='diff'){const a=scopes.find(s=>s.id===values.base),b=scopes.find(s=>s.id===values.head);if(!a||!b||!values.reviewer)throw new Error('Base/head scope IDs and reviewer required');result=store.learning.compare(a.scope,b.scope,values.reviewer);}
+ else if(command==='explore'){if(!values.file)throw new Error('Exploration request file required');const v=explorationRequestSchema.parse(JSON.parse(readFileSync(values.file,'utf8')));result=await service.explore(v.base,v.head,v.terms,v.config,v.limits,v.reviewer,controller.signal);}
+ else if(command==='memory'&&selected){if(operation==='list')result={changes:store.learning.listChanges(selected.scope),candidates:store.learning.listCandidates(selected.scope),revisions:store.learning.listRevisions(selected.scope)};
+ else if(operation==='approve'||operation==='reject'){if(!values.ids||!values.reviewer||!values.reason)throw new Error('IDs, reviewer and reason required');result=store.learning.decide(selected.scope,values.ids.split(','),operation,values.reviewer,values.reason);}
+ else if(operation==='rollback'){if(!values.revision||!values.reviewer||!values.reason)throw new Error('Revision/reviewer/reason required');result=store.learning.rollback(selected.scope,values.revision,values.reviewer,values.reason);}
+ else if(operation==='approve-expectation'){if(!values.ids||values.ids.includes(',')||!values.reviewer||!values.source)throw new Error('One candidate and authoritative source required');result=store.learning.approveExpectation(selected.scope,values.ids,values.reviewer,values.source);}
+ else throw new Error('Unknown memory operation');}else throw new Error('Unknown command or scope');output(JSON.stringify(result));return 0;
+ }catch(error){output(JSON.stringify({status:'error',message:error instanceof Error?error.message:'Memory operation failed'}));return 1;}finally{store?.close();process.off('SIGINT',stop);process.off('SIGTERM',stop);}}

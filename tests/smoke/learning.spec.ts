@@ -1,0 +1,47 @@
+import { test, expect } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { runCli } from '../../packages/cli/src/cli.js';
+import { SqliteStore, ArtifactStore } from '../../packages/storage/src/index.js';
+import { NavigationEngine } from '../../packages/navigation/src/engine.js';
+import { createGraphServer } from '../../packages/navigation/src/viewer.js';
+import { LearningService } from '../../packages/learning/src/service.js';
+import { TestExecutor } from '../../packages/qa/src/execution.js';
+import { navigationConfigSchema, findPath, type Scope, type PlanProposal, type TestPolicy } from '../../packages/core/src/index.js';
+test.use({trace:'off'});
+test('consent-modal change is discovered, reviewed, replayed, persisted and rolled back without changing requirements',async({browser,request,baseURL},info)=>{
+ test.setTimeout(90000);const headers={'x-fixture-token':'smoke-fixture-token'};await request.post('/__fixtures/reset',{headers});
+ const workspace=info.outputPath('workspace');mkdirSync(workspace,{recursive:true});runCli(['init','--workspace',workspace,'--origin',baseURL!],()=>{},{});
+ const database=join(workspace,'.qaspider/memory.db'),directory=join(workspace,'.qaspider/artifacts');let store=new SqliteStore(database);let artifacts=new ArtifactStore(store,directory);
+ const base:Scope={applicationId:'benchmark',environmentId:'development',roleId:'guest',build:'before-consent',tenant:'public',featureFlags:{}};const head={...base,build:'with-consent'};
+ try{
+  let engine=new NavigationEngine(store,artifacts,browser);expect((await engine.map(base,`${baseURL}/`,navigationConfigSchema.parse({}),{depth:1,intervalMs:0})).status).toBe('complete');const original=store.navigation.snapshot(base);store.navigation.approveBatch(base,original.transitions.filter(t=>t.status==='verified').map(t=>t.id),'baseline-owner');
+  const oldTarget=original.states.find(s=>s.observation.headings.includes('Registration'))!;
+  const story=store.testing.importStory('# Registration\n## Acceptance Criteria\n- AC-1: Duplicate email displays Email already exists.','spec.md#registration',{applicationId:base.applicationId,environmentId:base.environmentId,roleIds:['guest'],build:base.build,tenant:base.tenant,featureFlags:{}});
+  const policy:TestPolicy={actionGrants:[{roleId:'guest',url:`${baseURL}/api/register`,method:'POST'}],readGrants:[],fixtures:{setupUrl:`${baseURL}/__fixtures/setup`,cleanupUrl:`${baseURL}/__fixtures/cleanup`,tokenEnv:'BENCHMARK_FIXTURE_TOKEN',emailDomain:'example.test'},discovery:false};
+  function proposal(target:string,requirementId:string):PlanProposal{return{title:'Approved duplicate-email regression',feature:'Registration',inferredRequirements:[],scenarios:[{id:'duplicate',title:'Reject duplicate email',roleId:'guest',requirementIds:[requirementId],targetStateId:target,data:[{key:'email',type:'email',source:{kind:'duplicate-email'}},{key:'password',type:'password',source:{kind:'generated-password'}}],steps:[{kind:'fill',locator:{kind:'label',value:'Email'},valueKey:'email'},{kind:'fill',locator:{kind:'label',value:'Password'},valueKey:'password'},{kind:'click',locator:{kind:'role',role:'button',name:'Create account'},submitUrl:`${baseURL}/api/register`}],assertions:[{id:'duplicate-alert',requirementId,kind:'text',locator:{kind:'role',role:'alert',name:''},expected:'Email already exists',comparison:'equals'}],allowedActions:policy.actionGrants,cleanup:'owned-fixtures',severity:'high',retries:0}]};}
+  const oldPlan=store.testing.savePlan(story.id,proposal(oldTarget.id,story.requirements[0]!.id),policy,{id:'explicit-human-test-fixture',synthetic:true,validationId:null});store.testing.approvePlan(oldPlan.id,'requirement-owner',story.requirements.map(r=>r.id));
+  await request.post('/__fixtures/change',{headers,data:{registrationConsent:true}});
+  const root=original.states.find(s=>s.observation.url===`${baseURL}/`)!;const stale=await engine.replay(base,root.id,oldTarget.id,undefined,{}, {intervalMs:0});expect(stale.status).toBe('failed');expect(store.navigation.snapshot(base).transitions.some(t=>t.status==='suspect')).toBe(true);
+  const service=new LearningService(store,artifacts,browser);const config=navigationConfigSchema.parse({safeControls:[{kind:'testId',value:'continue-registration'}]});
+  const explored=await service.explore(base,head,['register','registration','consent','continue'],config,{depth:3,maxActions:100,maxStates:12,maxRequests:300,maxMs:30000,intervalMs:0},'change-reviewer');
+  expect(explored.run.status,explored.run.message).toBe('complete');expect(explored.candidate).not.toBeNull();expect(explored.change?.impactedScenarioIds).toContain('duplicate');
+  const graph=store.navigation.snapshot(head);const from=graph.states.find(s=>s.observation.url===`${baseURL}/`)!;const target=graph.states.find(s=>s.observation.headings.includes('Registration')&&!s.observation.dialogs.length)!;expect(target).toBeDefined();expect(graph.states.some(s=>s.observation.dialogs.includes('Registration consent'))).toBe(true);expect(()=>findPath(graph,from.id,target.id)).toThrow('approved');
+  const viewer=createGraphServer(store,artifacts);await new Promise<void>(resolve=>viewer.server.listen(0,'127.0.0.1',resolve));let approvalId='';
+  try{
+   const address=viewer.server.address();if(!address||typeof address==='string')throw new Error('Missing viewer address');const origin=`http://127.0.0.1:${address.port}`;const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto(`${origin}/#token=${viewer.token}`);await page.getByRole('button',{name:'Memory Center',exact:true}).click();await page.getByLabel('Memory scope',{exact:true}).selectOption(graph.scope!.id);
+   await expect(page.getByTestId('memory-candidate')).toHaveCount(1);await expect(page.getByTestId('build-change')).toContainText('duplicate');
+   await page.getByLabel(`Select candidate ${explored.candidate!.id}`,{exact:true}).check();await page.getByLabel('Memory review reason').fill('Verified consent navigation and scoped evidence');await page.getByRole('button',{name:'Approve verified navigation batch',exact:true}).click();await expect(page.getByRole('status')).toContainText('Memory decision recorded');approvalId=store.learning.listRevisions(head).find(r=>r.kind==='approve')!.id;
+   expect(findPath(store.navigation.snapshot(head),from.id,target.id).some(t=>t.action.kind==='control')).toBe(true);
+   expect((await engine.replay(head,from.id,target.id,undefined,{}, {intervalMs:0})).status).toBe('complete');
+   const restarted=JSON.parse(execFileSync(process.execPath,['dist/packages/cli/src/main.js','replay','--workspace',workspace,'--role','guest','--build',head.build,'--from',from.id,'--to',target.id,'--interval','0','--no-ai'],{encoding:'utf8',env:{...process.env,QASPIDER_CODEX_BIN:'/unavailable-provider'}}));expect(restarted).toMatchObject({status:'complete',providerUsed:false});
+   const revisedStory=store.testing.importStory(story.markdown,story.sourceRef,{...story.context,build:head.build},story.storyId);const revisedPlan=store.testing.savePlan(revisedStory.id,proposal(target.id,revisedStory.requirements[0]!.id),policy,{id:'explicit-human-test-fixture',synthetic:true,validationId:null});store.testing.approvePlan(revisedPlan.id,'requirement-owner',revisedStory.requirements.map(r=>r.id));
+   const executor=new TestExecutor(store,artifacts,browser,{BENCHMARK_FIXTURE_TOKEN:'smoke-fixture-token'});expect((await executor.execute(revisedPlan.id)).summary.PASS).toBe(1);await request.post('/__fixtures/change',{headers,data:{duplicateEmailDefect:true}});const defect=await executor.execute(revisedPlan.id);expect(defect.summary.FAIL).toBe(1);expect(store.testing.getStory(story.id)?.markdown).toBe(story.markdown);expect(store.testing.getPlan(oldPlan.id)?.hash).toBe(oldPlan.hash);expect(defect.fixtures.every(f=>f.status==='cleaned')).toBe(true);
+   await page.screenshot({path:info.outputPath('memory-center.png'),fullPage:true});await page.getByRole('button',{name:'Rollback navigation approval',exact:true}).click();await expect(page.getByTestId('memory-revision')).toHaveCount(2);expect(()=>findPath(store.navigation.snapshot(head),from.id,target.id)).toThrow('approved');
+   expect((await request.get(`${origin}/api/memory/overview?scope=${graph.scope!.id}`)).status()).toBe(401);await page.close();
+   writeFileSync(info.outputPath('learning-evidence.json'),JSON.stringify({exploration:explored,approvalId,originalFailure:stale,restartedReplay:restarted,defectRun:defect.run.id,duplicateDefectDetected:true,originalRequirementsUnchanged:true,providerUsed:false},null,2));
+  }finally{await viewer.shutdown();await new Promise<void>(resolve=>viewer.server.close(()=>resolve()));}
+  store.close();store=new SqliteStore(database);artifacts=new ArtifactStore(store,directory);engine=new NavigationEngine(store,artifacts,browser);expect(store.learning.listRevisions(head)).toHaveLength(2);expect(store.learning.listCandidates(head)[0]?.id).toBe(explored.candidate?.id);await expect(engine.replay(head,from.id,target.id,undefined,{}, {intervalMs:0})).rejects.toThrow('No approved scoped path');expect(stale.evidenceIds.every(id=>store.getArtifact(id)?.status==='available')).toBe(true);
+ }finally{store.close();await request.post('/__fixtures/reset',{headers});}
+});

@@ -10,8 +10,8 @@ function equal(a: string, b: string): boolean { const x = Buffer.from(a); const 
 function layout(title: string, content: string, role?: Account['role']): string {
   return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} — QASpider benchmark</title><body><nav><a href="/">Home</a> <a href="/register">Register</a> <a href="/login">Login</a> <a href="/about?timestamp=${Date.now()}" data-testid="about">About</a> ${role ? '<a href="/dashboard">Dashboard</a> <a href="/settings">Settings</a>' : ''} ${role === 'admin' ? '<a href="/users">User management</a>' : ''} <button type="button" data-testid="open-help">Help</button></nav><main><h1>${title}</h1>${content}<div role="dialog" aria-labelledby="help-title" id="help" hidden><h2 id="help-title">Help</h2><p>Safe navigation fixture.</p><button type="button" id="close-help">Close help</button></div><time data-qaspider-volatile>${new Date().toISOString()}</time></main><script src="/navigation.js" defer></script></body></html>`;
 }
-function form(kind: 'register' | 'login'): string {
-  return layout(kind === 'register' ? 'Registration' : 'Sign in', `<form novalidate><p><label>Email <input name="email" type="email" autocomplete="username"></label></p><p><label>Password <input name="password" type="password" autocomplete="${kind === 'register' ? 'new-password' : 'current-password'}"></label></p><button>${kind === 'register' ? 'Create account' : 'Sign in'}</button></form><p role="alert"></p><p role="status"></p><script src="/form-${kind}.js" defer></script>`);
+function form(kind: 'register' | 'login', consent = false): string {
+  return layout(kind === 'register' ? 'Registration' : 'Sign in', `${consent ? '<div role="dialog" aria-label="Registration consent" id="consent"><h2>Registration consent</h2><p>Review registration information before continuing.</p><button type="button" data-testid="continue-registration">Continue registration</button></div>' : ''}<form novalidate ${consent ? 'hidden' : ''}><p><label>Email <input name="email" type="email" autocomplete="username"></label></p><p><label>Password <input name="password" type="password" autocomplete="${kind === 'register' ? 'new-password' : 'current-password'}"></label></p><button>${kind === 'register' ? 'Create account' : 'Sign in'}</button></form><p role="alert"></p><p role="status"></p><script src="/form-${kind}.js" defer></script>`);
 }
 async function body(request: IncomingMessage): Promise<unknown> {
   if (request.headers['content-type']?.split(';')[0] !== 'application/json') throw new Error('Expected JSON');
@@ -23,8 +23,8 @@ export function createBenchmark(fixtureToken: string) {
   if (fixtureToken.length < 16) throw new Error('Fixture token must contain at least 16 characters');
   const accounts = new Map<string, Account>(); const sessions = new Map<string, string>();
   const stats = { registrations: 0, unsafeVisits: 0 };
-  let aboutTitle = 'About the benchmark'; let duplicateEmailDefect = false;
-  function reset() { duplicateEmailDefect = false; aboutTitle = 'About the benchmark'; stats.registrations = 0; stats.unsafeVisits = 0; accounts.clear(); sessions.clear(); for (const role of ['admin', 'user'] as const) { const email = `${role}@example.test`; accounts.set(email, account(email, 'benchmark-password', role, false)); } }
+  let aboutTitle = 'About the benchmark'; let duplicateEmailDefect = false; let registrationConsent = false;
+  function reset() { registrationConsent = false; duplicateEmailDefect = false; aboutTitle = 'About the benchmark'; stats.registrations = 0; stats.unsafeVisits = 0; accounts.clear(); sessions.clear(); for (const role of ['admin', 'user'] as const) { const email = `${role}@example.test`; accounts.set(email, account(email, 'benchmark-password', role, false)); } }
   reset();
   return createServer((req, res) => { void handle(req, res).catch(() => { if (!res.headersSent) json(res, 400, { error: 'Invalid request' }); else res.end(); }); });
   function json(res: ServerResponse, status: number, data: unknown) { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); }
@@ -44,7 +44,7 @@ export function createBenchmark(fixtureToken: string) {
     if (req.method === 'GET' && path === '/health') { json(res, 200, { status: 'ok', benchmark: true }); return; }
     if (path.startsWith('/__fixtures/')) {
       if (req.method !== 'POST' || !equal(String(req.headers['x-fixture-token'] ?? ''), fixtureToken)) { json(res, 403, { error: 'Fixture authorization required' }); return; }
-      if (path === '/__fixtures/change') { const input = z.object({ aboutTitle: z.string().regex(/^[a-zA-Z ]{1,80}$/).optional(), duplicateEmailDefect: z.boolean().optional() }).strict().parse(await body(req)); if (input.aboutTitle) aboutTitle = input.aboutTitle; if (input.duplicateEmailDefect !== undefined) duplicateEmailDefect = input.duplicateEmailDefect; json(res, 200, { changed: true }); return; }
+      if (path === '/__fixtures/change') { const input = z.object({ aboutTitle: z.string().regex(/^[a-zA-Z ]{1,80}$/).optional(), registrationConsent: z.boolean().optional(), duplicateEmailDefect: z.boolean().optional() }).strict().parse(await body(req)); if (input.registrationConsent !== undefined) registrationConsent = input.registrationConsent; if (input.aboutTitle) aboutTitle = input.aboutTitle; if (input.duplicateEmailDefect !== undefined) duplicateEmailDefect = input.duplicateEmailDefect; json(res, 200, { changed: true }); return; }
       if (path === '/__fixtures/stats') { json(res, 200, stats); return; }
       if (path === '/__fixtures/reset') { reset(); json(res, 200, { reset: true }); return; }
       if (path === '/__fixtures/setup') {
@@ -74,10 +74,10 @@ export function createBenchmark(fixtureToken: string) {
     if (req.method === 'GET' && /^\/form-(register|login)\.js$/.test(path)) {
       const kind = path.includes('register') ? 'register' : 'login';
       res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
-      res.end(`document.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=new FormData(event.target);const response=await fetch('/api/${kind}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(form))});const result=await response.json();document.querySelector('[role=alert]').textContent=result.error||'';document.querySelector('[role=status]').textContent=result.message||'';${kind === 'login' ? "if(response.ok)location.assign('/dashboard');" : ''}});`); return;
+      res.end(`document.querySelector('[data-testid=continue-registration]')?.addEventListener('click',()=>{document.getElementById('consent').hidden=true;document.querySelector('form').hidden=false});document.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=new FormData(event.target);const response=await fetch('/api/${kind}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(form))});const result=await response.json();document.querySelector('[role=alert]').textContent=result.error||'';document.querySelector('[role=status]').textContent=result.message||'';${kind === 'login' ? "if(response.ok)location.assign('/dashboard');" : ''}});`); return;
     }
     if (req.method === 'GET' && path === '/') { html(res, layout('QASpider benchmark', '<p>Local test fixture application. No external services.</p>', current?.role)); return; }
-    if (req.method === 'GET' && (path === '/register' || path === '/login')) { html(res, form(path === '/register' ? 'register' : 'login')); return; }
+    if (req.method === 'GET' && (path === '/register' || path === '/login')) { html(res, form(path === '/register' ? 'register' : 'login', path === '/register' && registrationConsent)); return; }
     if (req.method === 'POST' && (path === '/api/register' || path === '/api/login')) {
       const input = credentials.parse(await body(req));
       if (!z.email().safeParse(input.email).success) { json(res, 400, { error: 'Invalid email' }); return; }

@@ -7,9 +7,12 @@ import { z } from 'zod';
 import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
 import { QaService } from '../../qa/src/service.js';
 import { createQaApi } from '../../qa/src/http.js';
+import { LearningService } from '../../learning/src/service.js';
+import { createLearningApi } from '../../learning/src/http.js';
 import type { NavigationGraph } from '../../core/src/index.js';
 export function createGraphServer(store: SqliteStore, artifacts: ArtifactStore, service = new QaService(store, artifacts)) {
   const qa = createQaApi(service);
+  const learning = createLearningApi(new LearningService(store, artifacts));
   const token = randomBytes(32).toString('hex');
   const compiled = fileURLToPath(new URL('../../../apps/viewer/public/', import.meta.url));
   const source = fileURLToPath(new URL('../../../dist/apps/viewer/public/', import.meta.url));
@@ -28,6 +31,7 @@ export function createGraphServer(store: SqliteStore, artifacts: ArtifactStore, 
     if (url.pathname.startsWith('/api/')) {
       const received = Buffer.from(String(request.headers['x-qaspider-token'] ?? '')); const expected = Buffer.from(token);
       if (received.length !== expected.length || !timingSafeEqual(received, expected)) { json(response, 401, { error: 'Open the local viewer URL printed by qaspider view' }); return; }
+      if (await learning.handle(request, response, url, origin)) return;
       if (await qa.handle(request, response, url, origin)) return;
       if (request.method === 'GET' && url.pathname === '/api/scopes') { json(response, 200, store.navigation.listScopes().map(({ id, scope, seedUrl }) => ({ id, scope, seedUrl }))); return; }
       let selected = url.searchParams.get('scope');
@@ -57,7 +61,7 @@ export function createGraphServer(store: SqliteStore, artifacts: ArtifactStore, 
     const types: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
     response.writeHead(200, { 'Content-Type': types[extname(path)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' }); response.end(readFileSync(path));
   }
-  return { server, token, shutdown: qa.shutdown };
+  return { server, token, shutdown: async () => { await learning.shutdown(); await qa.shutdown(); } };
 }
 function evidenceIds(graph: NavigationGraph): Set<string> {
   return new Set([...graph.states.map(state => state.evidenceId), ...graph.transitions.flatMap(edge => edge.evidenceId ? [edge.evidenceId] : []), ...graph.runs.flatMap(run => run.evidenceIds)]);
