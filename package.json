@@ -18,7 +18,13 @@
     "test:smoke": "playwright test",
     "benchmark": "tsx apps/benchmark/src/main.ts",
     "cli": "tsx packages/cli/src/main.ts",
-    "verify:provider": "npm run build && node scripts/verify-provider.mjs"
+    "verify:provider": "npm run build && node scripts/verify-provider.mjs",
+    "prestart": "npm run build",
+    "start": "node scripts/start.mjs",
+    "start:studio": "tsx packages/cli/src/main.ts studio",
+    "start:benchmark": "tsx apps/benchmark/src/main.ts",
+    "start:mcp": "node dist/packages/cli/src/main.js serve --mcp",
+    "start:demo": "npm run build && node scripts/start.mjs --benchmark"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",

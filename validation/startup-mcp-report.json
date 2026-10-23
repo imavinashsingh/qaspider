@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-23T20:45:07.704402+00:00",
+  "scope": "Startup commands, optional Studio-managed MCP lifecycle and documentation",
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "58 passed in 25 files"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "12 Chromium tests passed"
+    },
+    {
+      "command": "node scripts/check-release.mjs",
+      "result": "passed; migrations unchanged and private file/token checks clean"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "behavior": [
+    "npm run start builds and starts Studio only",
+    "npm run start:demo additionally starts the development benchmark",
+    "external stdio clients can use npm run --silent start:mcp with explicit workspace and authorization",
+    "Studio optional MCP enable/disable/restart and PID/protocol-health status are scoped to a project",
+    "desired enable state persists and is restored when Studio starts",
+    "unexpected process termination is detected; shutdown and disable close the owned process",
+    "authorization initialization uses exclusive creation, private mode and zero grants",
+    "no authorization file is overwritten and no new network MCP endpoint is created"
+  ],
+  "newTests": [
+    "default Studio-only startup while the benchmark port is occupied",
+    "demo startup/shutdown and sibling cleanup after port conflict",
+    "actual npm MCP stdio client/server round trip",
+    "managed MCP missing-auth denial, real handshake, ping health, restart restoration, crash detection and disable",
+    "Chromium authorization initialization, MCP enable/disable, monitoring and project isolation"
+  ],
+  "securityReview": {
+    "studioSessionAndCsrfGuardsPreserved": true,
+    "noNewGrants": true,
+    "projectMigrationsUnchanged": true,
+    "providerCodeAndContextUnchanged": true,
+    "credentialsTokensDatabasesAndTracesExcludedFromCommit": true
+  },
+  "limitations": [
+    "The panel monitors only Studio-owned processes; external clients launch and manage their own stdio processes.",
+    "A running process uses the authorization snapshot loaded at startup; restart after changing grants.",
+    "The enable preference persists, but jobs are not automatically resumed after a crash."
+  ],
+  "privateStudioEvidenceDirectory": ".qaspider/startup-mcp-acceptance/studio",
+  "publication": "Local commit only; no push or publication."
+}

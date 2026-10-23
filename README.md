@@ -2,6 +2,39 @@
 
 Local-first QA following the approved QASpider V2 architecture. **M0–M5.1 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
+## Start locally
+
+```sh
+npm ci
+npm run start
+```
+
+`start` builds the project and opens **Studio at http://127.0.0.1:4319/**. Complete administrator setup/login, then use Projects → Create Project. The default approved workspace directory is `.qaspider/projects`. Previously enabled Studio-managed MCP processes restart with Studio. Ctrl-C stops Studio and its managed processes.
+
+The development benchmark is optional:
+
+```sh
+npm run start:demo
+```
+
+This starts Studio plus the benchmark at **http://127.0.0.1:4317/**. Both demo services stop on Ctrl-C or if either fails; existing servers are never reused. Only demo mode generates a shared private benchmark fixture token when `BENCHMARK_FIXTURE_TOKEN` is unset. Generated tokens are never printed.
+
+Configure `QASPIDER_PROJECTS_ROOT`, `QASPIDER_STUDIO_PORT`, or `QASPIDER_BENCHMARK_PORT` before starting to change the relevant defaults.
+
+To start services separately:
+
+```sh
+npm run start:studio -- --projects-root /absolute/project-directory --port 4319
+npm run start:benchmark
+npm run --silent start:mcp -- --workspace /absolute/workspace --authorization /absolute/authorization.json
+```
+
+Build first when running services separately (`npm run build`). MCP uses **stdio**: an external MCP client normally launches its own process using the configuration from Studio Settings → MCP. You do not need to run `start:mcp` manually or enable the Studio toggle for that client. `start:mcp` is an optional command shortcut; use `--silent` to keep npm banners out of the protocol.
+
+**Settings → MCP** also provides an optional Studio-managed process with Enable/Disable/Restart, PID, last successful health check and failure status. Status refreshes every five seconds while the panel is open, using real protocol pings. The toggle applies only to that project's Studio-managed process; it cannot start, stop or monitor independently launched client processes. It creates no network MCP endpoint. Enable state persists across Studio restarts. Disabling stops that process and cancels any jobs owned by it; other project services are unaffected.
+
+A valid project authorization file is required. **Initialize MCP authorization (no grants)** creates a new private file with an empty grants list and never overwrites an existing file. Add explicitly reviewed scopes/actions locally before using application tools. Neither startup nor enabling MCP invents grants. Restart a managed process after changing its authorization file to load the new grants.
+
 ## Install and verify
 
 Use Node **24.x** and npm:

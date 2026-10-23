@@ -1,0 +1,9 @@
+import{it,expect}from'vitest';import{mkdtempSync,rmSync,writeFileSync}from'node:fs';import{tmpdir}from'node:os';import{join}from'node:path';import{StudioStore}from'../../packages/studio/src/store.js';import{ProjectRegistry}from'../../packages/studio/src/projects.js';import{initializeWorkspace}from'../../packages/application/src/workspace.js';import{ManagedMcp}from'../../packages/studio/src/mcp-lifecycle.js';
+it('starts a real pinned MCP process, monitors health, retains desired state and stops it cleanly',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-mcp-lifecycle-'));const store=new StudioStore(join(root,'registry'));const registry=new ProjectRegistry(store);initializeWorkspace(join(root,'project'),'Project','http://127.0.0.1:4317');const project=registry.register(join(root,'project'),'Project');let manager=new ManagedMcp(store,registry);
+ try{
+  expect((await manager.status(project.id)).status).toBe('stopped');await expect(manager.enable(project.id)).rejects.toThrow();expect((await manager.status(project.id)).enabled).toBe(false);
+  writeFileSync(join(project.path,'.qaspider/mcp-authorization.json'),JSON.stringify({grants:[]}),{mode:0o600});const running=await manager.enable(project.id);expect(running.status).toBe('running');expect(running.pid).toBeGreaterThan(0);expect(running.tools).toContain('get_report');expect((await manager.status(project.id)).lastCheckedAt).not.toBeNull();
+  await manager.shutdown();manager=new ManagedMcp(store,registry);await manager.restore();expect((await manager.status(project.id)).status).toBe('running');const pid=(await manager.status(project.id)).pid!;process.kill(pid,'SIGKILL');await expect.poll(async()=>(await manager.status(project.id)).status).toBe('failed');await manager.disable(project.id);expect((await manager.status(project.id))).toMatchObject({enabled:false,status:'stopped',pid:null});
+ }finally{await manager.shutdown();store.close();rmSync(root,{recursive:true,force:true});}
+},20000);
