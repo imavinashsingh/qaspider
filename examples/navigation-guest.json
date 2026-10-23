@@ -1,0 +1,8 @@
+{
+  "safeControls": [
+    { "kind": "testId", "value": "open-help" },
+    { "kind": "role", "role": "button", "name": "Close help" }
+  ],
+  "volatileSelectors": ["[data-qaspider-volatile]"],
+  "privateSelectors": ["[data-qaspider-private]"]
+}

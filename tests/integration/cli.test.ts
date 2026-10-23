@@ -13,7 +13,7 @@ it('initializes persistent local configuration, is repeatable, and diagnoses mis
   expect(runCli(['init', '--workspace', root], output, {})).toBe(0);
   expect(runCli(['doctor', '--workspace', root], output, {})).toBe(0);
   const report = JSON.parse(lines.at(-1)!);
-  expect(report).toMatchObject({ status: 'ok', schemaVersions: [1], provider: 'not-configured', productionWrites: false });
+  expect(report).toMatchObject({ status: 'ok', schemaVersions: [1, 2], provider: 'not-configured', productionWrites: false });
   expect(report.warnings).toContain('Missing credential references: QASPIDER_ADMIN_EMAIL, QASPIDER_ADMIN_PASSWORD, QASPIDER_USER_EMAIL, QASPIDER_USER_PASSWORD');
 });
 it('rejects unsupported flags and inline credential options', () => {

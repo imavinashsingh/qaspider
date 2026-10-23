@@ -1,0 +1,246 @@
+{
+  "milestone": "M1",
+  "status": "complete",
+  "stoppedBefore": "M2",
+  "date": "2026-10-23",
+  "project": "/home/avi/Opensource/qaspider",
+  "baseline": {
+    "commit": "1fc4c21",
+    "workingTreeInitiallyClean": true,
+    "existingChangesPreserved": true,
+    "typecheck": "passed",
+    "build": "passed",
+    "unitIntegrationTests": 20,
+    "chromiumSmokeTests": 2
+  },
+  "filesChanged": [
+    "README.md",
+    "apps/benchmark/src/server.ts",
+    "apps/viewer/index.html",
+    "apps/viewer/package.json",
+    "apps/viewer/src/env.d.ts",
+    "apps/viewer/src/main.tsx",
+    "apps/viewer/src/style.css",
+    "examples/navigation-admin.json",
+    "examples/navigation-guest.json",
+    "examples/navigation-user.json",
+    "package-lock.json",
+    "package.json",
+    "packages/cli/src/cli.ts",
+    "packages/cli/src/main.ts",
+    "packages/cli/src/navigation.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/navigation.ts",
+    "packages/navigation/package.json",
+    "packages/navigation/src/engine.ts",
+    "packages/navigation/src/viewer.ts",
+    "packages/storage/migrations/002_navigation.sql",
+    "packages/storage/src/navigation.ts",
+    "packages/storage/src/sqlite.ts",
+    "tests/integration/cli.test.ts",
+    "tests/integration/navigation-storage.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/smoke/navigation.spec.ts",
+    "tests/unit/navigation.test.ts",
+    "tsconfig.json",
+    "validation/m1-report.json",
+    "vite.config.ts"
+  ],
+  "migration": {
+    "versions": [
+      1,
+      2
+    ],
+    "added": "packages/storage/migrations/002_navigation.sql",
+    "m0MigrationUnchanged": true,
+    "m0MigrationSha256": "463667121ecff9266f0f78e070eb5e3cd147b8b2c753fe08cb7afa42ac6b6864",
+    "tablesAdded": [
+      "navigation_scopes",
+      "ui_locations",
+      "ui_states",
+      "navigation_actions",
+      "navigation_transitions",
+      "navigation_runs",
+      "navigation_verifications",
+      "navigation_approvals"
+    ]
+  },
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "files": 7,
+      "tests": 28
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "includes": "Strict TypeScript, SQL migration copy and React/Vite production build"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "status": "passed",
+      "tests": 5,
+      "durationSeconds": 43.3,
+      "note": "Approved execution outside restricted sandbox; local benchmark and viewer only"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "cliCommandsExercised": [
+    "init",
+    "doctor (baseline/integration)",
+    "graph --role ROLE --build m1-smoke (separate processes)",
+    "replay --role guest --build m1-smoke --from SOURCE --to DESTINATION --no-ai --interval 0 (separate process)"
+  ],
+  "coverage": [
+    "Scoped semantic normalization and volatile query/text deduplication",
+    "Weighted approved-only pathfinding",
+    "M0 database upgrade and persistence",
+    "Atomic verified-only batch approval with scoped evidence",
+    "Independent guest/admin/user Chromium discovery",
+    "Graph retrieval after actual CLI process restarts",
+    "AI-free approved replay with checked live preconditions/postconditions",
+    "React node counts/details match SQLite records",
+    "Two-transition batch approval through viewer",
+    "Changed heading at unchanged URL fails replay and marks edge suspect",
+    "Backend role isolation",
+    "Cross-role/tenant/environment/build state and evidence rejection",
+    "Unsafe origins/actions rejected; no discovery registrations or destructive visits",
+    "Action budget, cancellation and missing credentials",
+    "Imported storage-state values/file paths excluded from graph",
+    "Viewer token/origin checks and raw-trace access denial"
+  ],
+  "persistentNavigation": {
+    "scopes": [
+      {
+        "scopeId": "273fd9a649d0c75bae63a36e928f4b69fa804a67df251579896bd4f949c20303",
+        "role": "admin",
+        "tenant": "public",
+        "environment": "development",
+        "build": "m1-smoke",
+        "locations": 7,
+        "states": 14,
+        "transitions": 59,
+        "approvedTransitions": 59,
+        "suspectTransitions": 0,
+        "approvalBatches": 2,
+        "stateIdsUnchangedAfterProcessRestart": true,
+        "mapStatus": "complete",
+        "replayStatus": "complete"
+      },
+      {
+        "scopeId": "42110c516583ebc023062b9dbe947504502e3903000423c5a151c35421dd916a",
+        "role": "user",
+        "tenant": "public",
+        "environment": "development",
+        "build": "m1-smoke",
+        "locations": 6,
+        "states": 7,
+        "transitions": 7,
+        "approvedTransitions": 7,
+        "suspectTransitions": 0,
+        "approvalBatches": 1,
+        "stateIdsUnchangedAfterProcessRestart": true,
+        "mapStatus": "complete",
+        "replayStatus": "complete"
+      },
+      {
+        "scopeId": "b1f6976e1cd8e19e070398839f4d6f112f4657151ea6d3a29021d00081fdd0d2",
+        "role": "guest",
+        "tenant": "public",
+        "environment": "development",
+        "build": "m1-smoke",
+        "locations": 4,
+        "states": 5,
+        "transitions": 5,
+        "approvedTransitions": 4,
+        "suspectTransitions": 1,
+        "approvalBatches": 1,
+        "stateIdsUnchangedAfterProcessRestart": true,
+        "mapStatus": "complete",
+        "replayStatus": "complete"
+      }
+    ],
+    "totalStates": 26,
+    "totalTransitions": 71,
+    "separateProcessReplay": {
+      "id": "56d6ad2a-1935-4bc4-a3ea-120bbd703da2",
+      "scopeId": "b1f6976e1cd8e19e070398839f4d6f112f4657151ea6d3a29021d00081fdd0d2",
+      "kind": "replay",
+      "status": "complete",
+      "startedAt": 1792777822197,
+      "finishedAt": 1792777822468,
+      "actions": 2,
+      "requests": 4,
+      "states": 1,
+      "message": "Navigation work completed",
+      "evidenceIds": [
+        "b274b95f-f9d0-4e70-b675-5f382d06d077",
+        "3bd38e7c-ca03-4445-a1b9-513506f4b231"
+      ],
+      "providerUsed": false,
+      "fromStateId": "abfe922b35720d989bf430887aef53251ed778ef8d00f2c1d54542382786dd4a",
+      "toStateId": "2d3aee04b5d84c1f8998e18312c005e8f1b53e96ddaa6d31314161365163975a",
+      "checkedPrecondition": {
+        "url": "http://127.0.0.1:4317/",
+        "fingerprint": "6460670dd8540dfb85403dd54ce6c109cc3b1e9986fc45560429b83b4c105ca8",
+        "headings": [
+          "QASpider benchmark"
+        ]
+      },
+      "checkedPostcondition": {
+        "url": "http://127.0.0.1:4317/about",
+        "fingerprint": "f19efd9902a1a10519961c19c757959e3213f1e1fb92f4c59c9591621b57e99b",
+        "headings": [
+          "About the benchmark"
+        ]
+      },
+      "evidencePassed": true
+    },
+    "negativeDestinationCheck": {
+      "expected": "failed",
+      "actual": "failed",
+      "runId": "8c1d744b-82e0-4e72-bd5d-c9b53a078342",
+      "note": "Intentional negative acceptance test; guest edge remains suspect after restoring the fixture"
+    }
+  },
+  "evidence": {
+    "proof": "test-results/navigation-maps-isolated-r-6b2be-nders-actual-SQLite-records/persistent-replay.json",
+    "database": "/home/avi/Opensource/qaspider/test-results/navigation-maps-isolated-r-6b2be-nders-actual-SQLite-records/workspace/.qaspider/memory.db",
+    "graphScreenshot": "test-results/navigation-maps-isolated-r-6b2be-nders-actual-SQLite-records/graph-ui.png",
+    "visualInspection": "Final 1440x1000 graph screenshot inspected",
+    "rawTracePolicy": "Private managed artifacts only; raw trace downloads denied by viewer"
+  },
+  "resolvedDevelopmentFailures": [
+    "Tests initially failed on missing navigation modules before implementation",
+    "Engine and Playwright test harness double-owned traces; acceptance now uses engine-managed tracing",
+    "Richer exploration exceeded a 300-action test budget; acceptance explicitly uses 800 while defaults remain unchanged",
+    "Test assertions corrected to distinguish dialog states and pending navigation approval"
+  ],
+  "currentFailures": [],
+  "blockers": [],
+  "remainingLimitations": [
+    "Chromium only",
+    "Explicit form/storage-state authentication; no automated MFA or tenant switching",
+    "Non-public tenants require user-configured identity assertions; no backend tenant oracle is inferred",
+    "Unknown forms/unconfigured controls remain unexplored; GET safety cannot be guaranteed from UI semantics",
+    "Normalization is semantic evidence, not proof of business correctness/equivalence",
+    "Exact locators fail closed; no automatic locator repair",
+    "Restoration/verification consume budgets; richer maps may retain partial results",
+    "Abrupt jobs and physical artifact orphans need operator reconciliation; no automatic resumption",
+    "Development test-results artifacts are outside managed retention; raw traces can contain sensitive content"
+  ],
+  "deferred": [
+    "Story planning/testing and Test Studio (M2)",
+    "Real Codex/provider integration and isolation validation (M2)",
+    "Learning agents and broader memory revision workflow (M3)",
+    "MCP TypeScript SDK v2 and remaining release UI (M4)"
+  ]
+}

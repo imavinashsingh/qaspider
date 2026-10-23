@@ -1,0 +1,41 @@
+{
+  "safeControls": [
+    {
+      "kind": "testId",
+      "value": "open-help"
+    },
+    {
+      "kind": "role",
+      "role": "button",
+      "name": "Close help"
+    }
+  ],
+  "volatileSelectors": [
+    "[data-qaspider-volatile]"
+  ],
+  "privateSelectors": [
+    "[data-qaspider-private]"
+  ],
+  "auth": {
+    "url": "http://127.0.0.1:4317/login",
+    "submitUrl": "http://127.0.0.1:4317/api/login",
+    "username": {
+      "kind": "label",
+      "value": "Email"
+    },
+    "password": {
+      "kind": "label",
+      "value": "Password"
+    },
+    "submit": {
+      "kind": "role",
+      "role": "button",
+      "name": "Sign in"
+    },
+    "ready": {
+      "kind": "role",
+      "role": "heading",
+      "name": "Admin dashboard"
+    }
+  }
+}

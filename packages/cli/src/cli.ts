@@ -8,7 +8,7 @@ export function runCli(args: string[], output: (line: string) => void = console.
   try {
     const parsed = parseArgs({ args, options: { workspace: { type: 'string' }, name: { type: 'string' }, origin: { type: 'string' } }, allowPositionals: true, strict: true });
     const [command, ...extra] = parsed.positionals;
-    if (!['init', 'doctor'].includes(command ?? '') || extra.length) throw new Error('Usage: qaspider <init|doctor> [--workspace path] [--name name] [--origin origin]');
+    if (!['init', 'doctor'].includes(command ?? '') || extra.length) throw new Error('Usage: qaspider <init|doctor|map|graph|path|approve|replay|view> [--workspace path] [--name name] [--origin origin]');
     const workspace = resolve(parsed.values.workspace ?? '.'); const directory = join(workspace, '.qaspider'); const database = join(directory, 'memory.db');
     if (command === 'doctor' && !existsSync(database)) throw new Error('Workspace is not initialized; run qaspider init');
     store = new SqliteStore(database);

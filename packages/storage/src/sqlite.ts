@@ -5,10 +5,12 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { applicationSchema, environmentSchema, roleSchema, settingsSchema, type Application, type Environment, type RoleProfile, type WorkspaceRepository, type WorkspaceSettings, type ArtifactRecord, type ArtifactRepository } from '../../core/src/index.js';
 import { assertNoSymlinks, privateDirectory } from './filesystem.js';
+import { SqliteNavigationRepository } from './navigation.js';
 type Row = Record<string, unknown>;
 export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
   private readonly db: Database.Database;
   private closed = false;
+  readonly navigation: SqliteNavigationRepository;
   constructor(path: string) {
     if (path === ':memory:') this.db = new Database(path);
     else {
@@ -21,6 +23,7 @@ export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
       this.migrate();
       if (path !== ':memory:') for (const suffix of ['-wal', '-shm']) { const sidecar = `${resolve(path)}${suffix}`; if (existsSync(sidecar)) chmodSync(sidecar, 0o600); }
     } catch (error) { this.db.close(); throw error; }
+    this.navigation = new SqliteNavigationRepository(this.db, id => this.getEnvironment(id), id => this.getRole(id));
   }
   migrate(): void {
     const directory = fileURLToPath(new URL('../migrations/', import.meta.url));
