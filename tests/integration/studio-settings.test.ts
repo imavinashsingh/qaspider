@@ -10,3 +10,6 @@ it('fails closed on unsupported executables and does not save a verified receipt
  const root=mkdtempSync(join(tmpdir(),'qaspider-unsupported-'));const store=new StudioStore(root);const settings=new ProviderSettings(store,process.execPath);
  try{await expect(settings.verify()).rejects.toThrow();expect(settings.status().status).toBe('unverified');expect(settings.status().verification).toBeNull();}finally{store.close();rmSync(root,{recursive:true,force:true});}
 });
+it('persists provider overrides across independent registry connections',()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-settings-reopen-'));let store=new StudioStore(root);try{const settings=new ProviderSettings(store,process.execPath);settings.save('',{...settings.get(),timeoutMs:60000});settings.save('project-a',{...settings.get(),timeoutMs:30000});store.close();store=new StudioStore(root);const reopened=new ProviderSettings(store,process.execPath);expect(reopened.get('project-a').timeoutMs).toBe(30000);expect(reopened.get('project-b').timeoutMs).toBe(60000);}finally{store.close();rmSync(root,{recursive:true,force:true});}
+});

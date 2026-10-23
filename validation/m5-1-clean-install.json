@@ -1,0 +1,278 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-23T20:17:21.777Z",
+  "node": "v24.11.1",
+  "sourceFileCount": 176,
+  "freshDependencies": true,
+  "noExistingWorkspace": true,
+  "commands": [
+    {
+      "command": "npm ci",
+      "durationMs": 23694,
+      "exitCode": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "durationMs": 2852,
+      "exitCode": 0
+    },
+    {
+      "command": "npm run build",
+      "durationMs": 2365,
+      "exitCode": 0
+    },
+    {
+      "command": "npm test",
+      "durationMs": 4575,
+      "exitCode": 0
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js init --workspace /tmp/qaspider-clean-zHj5FC/new-workspace",
+      "durationMs": 136,
+      "exitCode": 0
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js doctor --workspace /tmp/qaspider-clean-zHj5FC/new-workspace",
+      "durationMs": 119,
+      "exitCode": 0
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js onboard --workspace /tmp/qaspider-clean-zHj5FC/new-workspace --file examples/m4/onboarding.json",
+      "durationMs": 472,
+      "exitCode": 0
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js configuration --workspace /tmp/qaspider-clean-zHj5FC/new-workspace",
+      "durationMs": 466,
+      "exitCode": 0
+    }
+  ],
+  "init": {
+    "status": "initialized",
+    "workspace": "/tmp/qaspider-clean-zHj5FC/new-workspace",
+    "database": "/tmp/qaspider-clean-zHj5FC/new-workspace/.qaspider/memory.db",
+    "settings": {
+      "retentionDays": 14,
+      "globalQuotaBytes": 10737418240,
+      "perRunQuotaBytes": 1073741824,
+      "captureFullTraces": true
+    },
+    "provider": "not-configured"
+  },
+  "doctor": {
+    "status": "ok",
+    "workspace": "/tmp/qaspider-clean-zHj5FC/new-workspace",
+    "node": "24.11.1",
+    "schemaVersions": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "provider": "not-configured",
+    "productionWrites": false,
+    "settings": {
+      "retentionDays": 14,
+      "globalQuotaBytes": 10737418240,
+      "perRunQuotaBytes": 1073741824,
+      "captureFullTraces": true
+    },
+    "artifactUsageBytes": 0,
+    "warnings": [
+      "Missing credential references: QASPIDER_ADMIN_EMAIL, QASPIDER_ADMIN_PASSWORD, QASPIDER_USER_EMAIL, QASPIDER_USER_PASSWORD"
+    ]
+  },
+  "onboarding": {
+    "applications": [
+      {
+        "id": "benchmark",
+        "name": "QASpider benchmark"
+      },
+      {
+        "id": "my-app",
+        "name": "My local application"
+      }
+    ],
+    "environments": [
+      {
+        "id": "development",
+        "applicationId": "benchmark",
+        "name": "Development",
+        "kind": "development",
+        "allowedOrigins": [
+          "http://127.0.0.1:4317"
+        ]
+      },
+      {
+        "id": "my-app-qa",
+        "applicationId": "my-app",
+        "name": "QA",
+        "kind": "qa",
+        "allowedOrigins": [
+          "http://127.0.0.1:3000"
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "id": "admin",
+        "environmentId": "development",
+        "name": "admin",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "QASPIDER_ADMIN_EMAIL",
+          "passwordEnv": "QASPIDER_ADMIN_PASSWORD"
+        }
+      },
+      {
+        "id": "guest",
+        "environmentId": "development",
+        "name": "guest",
+        "auth": {
+          "kind": "guest"
+        }
+      },
+      {
+        "id": "my-app-admin",
+        "environmentId": "my-app-qa",
+        "name": "Admin",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "MY_APP_ADMIN_EMAIL",
+          "passwordEnv": "MY_APP_ADMIN_PASSWORD"
+        }
+      },
+      {
+        "id": "my-app-guest",
+        "environmentId": "my-app-qa",
+        "name": "Guest",
+        "auth": {
+          "kind": "guest"
+        }
+      },
+      {
+        "id": "my-app-user",
+        "environmentId": "my-app-qa",
+        "name": "User",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "MY_APP_USER_EMAIL",
+          "passwordEnv": "MY_APP_USER_PASSWORD"
+        }
+      },
+      {
+        "id": "user",
+        "environmentId": "development",
+        "name": "user",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "QASPIDER_USER_EMAIL",
+          "passwordEnv": "QASPIDER_USER_PASSWORD"
+        }
+      }
+    ],
+    "settings": {
+      "retentionDays": 14,
+      "globalQuotaBytes": 10737418240,
+      "perRunQuotaBytes": 1073741824,
+      "captureFullTraces": true
+    }
+  },
+  "configuration": {
+    "applications": [
+      {
+        "id": "benchmark",
+        "name": "QASpider benchmark"
+      },
+      {
+        "id": "my-app",
+        "name": "My local application"
+      }
+    ],
+    "environments": [
+      {
+        "id": "development",
+        "applicationId": "benchmark",
+        "name": "Development",
+        "kind": "development",
+        "allowedOrigins": [
+          "http://127.0.0.1:4317"
+        ]
+      },
+      {
+        "id": "my-app-qa",
+        "applicationId": "my-app",
+        "name": "QA",
+        "kind": "qa",
+        "allowedOrigins": [
+          "http://127.0.0.1:3000"
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "id": "admin",
+        "environmentId": "development",
+        "name": "admin",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "QASPIDER_ADMIN_EMAIL",
+          "passwordEnv": "QASPIDER_ADMIN_PASSWORD"
+        }
+      },
+      {
+        "id": "guest",
+        "environmentId": "development",
+        "name": "guest",
+        "auth": {
+          "kind": "guest"
+        }
+      },
+      {
+        "id": "my-app-admin",
+        "environmentId": "my-app-qa",
+        "name": "Admin",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "MY_APP_ADMIN_EMAIL",
+          "passwordEnv": "MY_APP_ADMIN_PASSWORD"
+        }
+      },
+      {
+        "id": "my-app-guest",
+        "environmentId": "my-app-qa",
+        "name": "Guest",
+        "auth": {
+          "kind": "guest"
+        }
+      },
+      {
+        "id": "my-app-user",
+        "environmentId": "my-app-qa",
+        "name": "User",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "MY_APP_USER_EMAIL",
+          "passwordEnv": "MY_APP_USER_PASSWORD"
+        }
+      },
+      {
+        "id": "user",
+        "environmentId": "development",
+        "name": "user",
+        "auth": {
+          "kind": "form",
+          "usernameEnv": "QASPIDER_USER_EMAIL",
+          "passwordEnv": "QASPIDER_USER_PASSWORD"
+        }
+      }
+    ],
+    "settings": {
+      "retentionDays": 14,
+      "globalQuotaBytes": 10737418240,
+      "perRunQuotaBytes": 1073741824,
+      "captureFullTraces": true
+    }
+  }
+}

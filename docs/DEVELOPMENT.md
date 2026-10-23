@@ -53,3 +53,5 @@ node scripts/verify-approved-replay.mjs --workspace .qaspider/m1-reconciliation 
 ```
 
 It starts its own local benchmark, passes a fresh fixture token privately, executes all six in a new process, verifies unchanged requirements/plan hash and a provider-invocation canary, then stops the benchmark. Public clean checkouts do not contain that private historical database; use the Chromium suite for a reproducible synthetic-plan equivalent. `node scripts/verify-clean-install.mjs` copies only Git-listed project sources to /tmp, installs fresh dependencies with a separate cache, verifies build/tests/init/doctor/onboarding and removes the temporary copy. These verification scripts use no real model calls.
+
+M5.1 adds packages/studio with a separate global registry/auth/settings database; see STUDIO.md. Public view/studio commands use cookie login. Legacy bearer-only project HTTP servers remain private internal backends and regression harnesses; their tokens are never exposed by Studio.

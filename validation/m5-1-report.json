@@ -1,0 +1,205 @@
+{
+  "milestone": "M5.1",
+  "status": "complete",
+  "checkedAtUtc": "2026-10-23T20:21:51.212430+00:00",
+  "baseCommit": "f5899ff",
+  "branch": "feat/qaspider-m5-1-studio",
+  "initialWorkingTreeClean": true,
+  "commits": [
+    {
+      "hash": "655a6c8",
+      "message": "feat(studio): add local authentication and unified project registry",
+      "validation": "Strict typecheck/build; 48 unit/integration tests; initial Studio Chromium acceptance passed"
+    },
+    {
+      "hash": "8587d80",
+      "message": "feat(settings): add project-pinned MCP and AI provider configuration",
+      "validation": "Strict typecheck/build; 50 unit/integration tests; strengthened Studio Chromium flow and actual synthetic Codex verification passed"
+    },
+    {
+      "message": "test(studio): complete multi-project integration and security validation",
+      "hash": "Reported in final completion response after successful final commit; omitted here to avoid a self-referential hash"
+    }
+  ],
+  "schema": {
+    "projectMigrations001Through005Unchanged": true,
+    "projectMigrationsAdded": [],
+    "globalMigration": "packages/studio/migrations/001_studio.sql",
+    "globalTracking": "studio_migrations with checksums",
+    "globalTables": [
+      "studio_values",
+      "sessions",
+      "projects",
+      "provider_settings"
+    ],
+    "defaultHome": "~/.local/share/qaspider/studio",
+    "separateProjectDatabases": true,
+    "privateModes": {
+      "directories": "0700",
+      "databaseWalShm": "0600"
+    }
+  },
+  "features": {
+    "auth": [
+      "first-run administrator setup; no default password",
+      "Node/OpenSSL scrypt N32768 r8 p3, 32-byte salt, 64-byte hash",
+      "server-side hashed session identifiers; random 256-bit cookies",
+      "15-minute anonymous CSRF sessions; 8-hour authenticated sessions",
+      "login rotation; logout/recovery revocation; persistent login limiter",
+      "HttpOnly and SameSite=Strict; Secure on TLS socket",
+      "exact Host/Origin and synchronizer CSRF protection",
+      "local stdin recovery only with --confirm-local-recovery",
+      "plain URLs and no new browser credential/session-token storage"
+    ],
+    "projects": [
+      "normal CLI init automatically registers canonical workspace",
+      "stable UUID; independent workspace databases/artifacts",
+      "browser create/import constrained to explicit operator-approved project root",
+      "validated origins and optional secret-reference role onboarding",
+      "rename, archive/unregister without file deletion; restore same ID on re-registration",
+      "last-opened and last-selected persistence",
+      "project-ID-pinned API proxy; remounted client data on switch",
+      "background work stays attached to original project"
+    ],
+    "settings": [
+      "General project artifact settings",
+      "MCP actual build/auth-file diagnostics and actual stdio initialize/list-tools test",
+      "copyable absolute workspace-pinned JSON and Codex TOML",
+      "global AI default and independent project override/inheritance",
+      "operator-approved executable only; bounded model/timeout",
+      "CODEX_HOME reference only; explicit sanitized-context permission",
+      "actual synthetic CLI verification with private receipts and non-secret summary",
+      "Codex runtime isolation still mandatory before application context",
+      "Claude/Gemini detected but deferred/unverified"
+    ]
+  },
+  "commandsAndResults": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed across all workspaces and test sources"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed; production TypeScript, viewer and both sets of migration assets"
+    },
+    {
+      "command": "npm test",
+      "result": "53 tests passed in 23 files; includes actual MCP protocol integration"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=<installed absolute Codex path> PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "12 Chromium tests passed, including real Studio/M3/M4/M5 regressions and mobile overflow assertion"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=<installed absolute Codex path> npm run verify:provider",
+      "result": "passed before and after provider configuration changes; synthetic only; actual tool/config/process timeout/cancellation and sanitizer receipts retained"
+    },
+    {
+      "command": "node scripts/verify-clean-install.mjs",
+      "result": "passed fresh npm cache/dependency/source/workspace/Studio-registry installation, strict typecheck/build/53 tests and CLI init/doctor/onboard/configuration; temporary copy removed"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node scripts/verify-approved-replay.mjs --workspace .qaspider/m1-reconciliation --plan a85052bb-fef6-4ffa-8151-36df0b2b303a",
+      "result": "6 PASS, 0 NOT RUN and no AI invocation; exact approved hash/requirements retained"
+    },
+    {
+      "command": "npm audit --json",
+      "result": "zero vulnerabilities across all severities"
+    },
+    {
+      "command": "node scripts/check-release.mjs",
+      "result": "passed; migration hashes and private-path/token/private-key/documentation checks"
+    },
+    {
+      "command": "/tmp/qaspider-actionlint /home/avi/Opensource/.github/workflows/qaspider.yml",
+      "result": "passed; hosted GitHub run not executed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed; intended source/test/docs/manifests reviewed, private files excluded before commit"
+    }
+  ],
+  "acceptanceEvidence": {
+    "studio": "validation/m5-1-studio-evidence.json",
+    "existingM5Import": "validation/m5-1-existing-import.json",
+    "existingM5ImportCounts": {
+      "scopes": 3,
+      "stories": 4,
+      "plans": 1,
+      "runs": 10,
+      "artifacts": 313
+    },
+    "existingM5ImportBeforeAfterHashEqual": true,
+    "allSixApprovedReplay": "validation/m5-1-full-suite-replay.json",
+    "provider": "validation/m5-1-provider-validation.json",
+    "baselineProvider": "validation/m5-1-baseline-provider.json",
+    "cleanInstallation": "validation/m5-1-clean-install.json",
+    "navigationBenchmark": "validation/m5-1-navigation-benchmark.json",
+    "learningRegression": "validation/m5-1-learning-regression.json",
+    "dependencyAudit": "validation/m5-1-dependency-audit.json",
+    "privateBrowserEvidenceDirectory": ".qaspider/m5-1-acceptance/test-results",
+    "screenshots": [
+      "studio-projects.png",
+      "studio-settings.png",
+      "studio-mobile.png"
+    ],
+    "screenshotsContainNoBearerUrlsOrCredentials": true,
+    "noNewRealModelCalls": true
+  },
+  "authSecurityTests": [
+    "fresh setup/login, wrong password and duplicate setup rejection",
+    "server-side expiry, revocation and rate limiting",
+    "session persistence across reopening, stored token hashes and password hash",
+    "actual HTTP 401 without session and after logout",
+    "CSRF and foreign-origin rejection",
+    "old pre-login session revoked after authentication",
+    "CLI recovery requires explicit flag and stdin; revokes existing sessions",
+    "browser local/session storage and document.cookie empty; HttpOnly session retained by browser",
+    "project path traversal/outside-root/symlink rejection and initialization rollback",
+    "unknown/archived project rejection; no project file deletion",
+    "unsafe/unapproved provider path and unknown secret fields rejected",
+    "unsupported executable verification fails closed without verified status",
+    "real MCP stdin/stdout and scoped authorization regressions"
+  ],
+  "providerValidation": {
+    "version": "codex-cli 0.162.0-alpha.17.2",
+    "supported": "Codex planning only",
+    "claude": "deferred/unverified; executable unavailable in this environment",
+    "gemini": "deferred/unverified; executable unavailable in this environment",
+    "isolationWeakened": false,
+    "newGlobalProcessEnvMutation": false,
+    "contextPayloadSemanticsUnchanged": true,
+    "runtimeGatePreserved": true,
+    "contextSharingDefault": false,
+    "verificationDoesNotAuthorizeContextSharing": true
+  },
+  "resolvedFailures": [
+    "New tests failed first while modules were absent, then passed after implementation.",
+    "Settings acceptance initially attempted to use a Settings tab after project switching returned to the project screen; corrected sequence without weakening checks.",
+    "Added background-job request had a syntax error; fixed and reran strict typecheck and browser tests.",
+    "Full-suite run exposed duplicate live status regions during Settings mutations; unified the busy/notice status and reran all tests successfully.",
+    "Responsive screenshot review prompted mobile navigation/spacing corrections; final 390px overflow check passes."
+  ],
+  "knownLimitations": [
+    "Single local administrator; no multi-user/remote hosting/OAuth",
+    "Loopback HTTP supported; HTTPS/proxy deployment not provided; Secure cookie flag is conditional on a TLS socket",
+    "CLI filesystem/recovery and MCP grants are explicit local-owner channels, independent from browser login",
+    "Browser create/import requires startup-approved root; there is no filesystem scanning or arbitrary file browser",
+    "Legacy CLI workspace initialization retains benchmark/development internal IDs; environment field is a display name",
+    "Saved provider choices require the same operator environment/approved executable for CLI/MCP startup; browser cannot install/authenticate providers",
+    "MCP diagnostics initializes a new pinned process; it does not inspect an existing external client",
+    "Claude/Gemini remain disabled/deferred and unverified",
+    "Old running viewer processes require restart to load Studio auth; old URL fragments are not accepted by Studio",
+    "Legacy bearer project servers remain private internal backends and old regression harnesses, not a publicly exposed CLI mode",
+    "Abrupt process/job/artifact reconciliation remains manual; active jobs are preserved during switching, not guaranteed after crashes",
+    "Linux Chromium validated only; benchmark measurements are local samples, not SLAs",
+    "Hosted CI not executed because no push/publication was authorized"
+  ],
+  "publishing": {
+    "pushed": false,
+    "published": false,
+    "M6Started": false
+  },
+  "remainingCriticalBlockers": [],
+  "screenshotsVisuallyReviewed": true
+}

@@ -13,3 +13,8 @@ it('hashes passwords, rotates/revokes sessions, expires sessions, persists rate 
   const active=await auth.login(auth.open(),'a strong private password');await auth.recover('replacement strong password',true);expect(auth.resolve(active.token)).toBeNull();await expect(auth.login(auth.open(),'a strong private password')).rejects.toThrow();expect((await auth.login(auth.open(),'replacement strong password')).authenticated).toBe(true);
  }finally{store.close();rmSync(root,{recursive:true,force:true});}
 });
+it('keeps only token hashes and persists sessions and administrator settings across a restart',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-auth-reopen-'));let store=new StudioStore(root);let auth=new StudioAuth(store);try{
+  await auth.setup(auth.open(),'private persistence password');const session=await auth.login(auth.open(),'private persistence password');expect(store.get('password')).not.toContain('private persistence password');expect(JSON.stringify(store.db.prepare('SELECT hash FROM sessions').all())).not.toContain(session.token);store.close();store=new StudioStore(root);auth=new StudioAuth(store);expect(auth.configured()).toBe(true);expect(auth.resolve(session.token)?.authenticated).toBe(true);auth.revoke(session.token);expect(auth.resolve(session.token)).toBeNull();
+ }finally{store.close();rmSync(root,{recursive:true,force:true});}
+});

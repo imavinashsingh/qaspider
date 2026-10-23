@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-23T20:18:13.334Z",
+  "durationMs": 2979,
+  "restartedProcess": true,
+  "selectedAllScenarios": true,
+  "planRevisionId": "a85052bb-fef6-4ffa-8151-36df0b2b303a",
+  "planHash": "0b7650e3974b7da1c43ba1c3be730be0100cee55381d9a56f3ab140f78d65bd0",
+  "planUnchanged": true,
+  "requirementsUnchanged": true,
+  "providerCanaryInvoked": false,
+  "providerUsed": false,
+  "runId": "556b117f-7a30-407b-bd11-ef3becd4246b",
+  "summary": {
+    "PASS": 6,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "FLAKY": 0,
+    "NOT RUN": 0
+  },
+  "scenarios": [
+    {
+      "scenarioId": "registration-valid",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "registration-invalid-email",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "registration-duplicate-email",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "admin-users-guest",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "admin-users-standard-user",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "admin-users-admin",
+      "status": "PASS"
+    }
+  ],
+  "privateEvidenceDirectory": ".qaspider/m5-replay"
+}

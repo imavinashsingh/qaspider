@@ -9,7 +9,7 @@ const commands=[];
 try{
  for(const file of files){if(!existsSync(file))continue;const destination=join(root,file);mkdirSync(dirname(destination),{recursive:true});copyFileSync(file,destination);}
  assert(!existsSync(join(root,'node_modules')));assert(!existsSync(join(root,'dist')));assert(!existsSync(join(root,'.qaspider')));
- const run=(args)=>{const start=Date.now();const output=execFileSync(args[0],args.slice(1),{cwd:root,encoding:'utf8',timeout:180000,env:{...process.env,npm_config_cache:join(root,'.npm-cache')}});commands.push({command:args.join(' '),durationMs:Date.now()-start,exitCode:0});return output;};
+ const run=(args)=>{const start=Date.now();const output=execFileSync(args[0],args.slice(1),{cwd:root,encoding:'utf8',timeout:180000,env:{...process.env,QASPIDER_STUDIO_HOME:join(root,'studio-registry'),npm_config_cache:join(root,'.npm-cache')}});commands.push({command:args.join(' '),durationMs:Date.now()-start,exitCode:0});return output;};
  run(['npm','ci']);run(['npm','run','typecheck']);run(['npm','run','build']);run(['npm','test']);
  const workspace=join(root,'new-workspace');const cli=['node','dist/packages/cli/src/main.js'];
  const init=JSON.parse(run([...cli,'init','--workspace',workspace]));

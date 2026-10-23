@@ -1,6 +1,6 @@
 # QASpider — Story-driven QA
 
-Local-first QA following the approved QASpider V2 architecture. **M0–M5 are implemented for the revised local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
+Local-first QA following the approved QASpider V2 architecture. **M0–M5.1 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
 ## Install and verify
 
@@ -47,7 +47,7 @@ node_modules/.bin/qaspider map http://127.0.0.1:4317/ --role user --build demo-1
 node_modules/.bin/qaspider view
 ```
 
-Open the viewer URL printed by `view`. Its fragment carries a local access token that the browser moves into session storage and removes from the address bar. Treat the full bootstrap URL as private. Never distribute reusable access tokens in public links or shared screenshots. If a bootstrap URL was exposed, stop/restart the viewer to rotate its token and verify the old token is rejected. The browser removes the fragment after loading. For the local demo, the replacement URL is saved only in the ignored `0600` file `.qaspider/dashboard-access.json`. The server binds loopback, checks Host/Origin, requires the token for API requests, and provides no unrestricted filesystem or raw-trace access.
+Open the plain local URL printed by `view`. M5.1 replaces URL bearer tokens with Studio administrator setup/login and HttpOnly, SameSite=Strict cookies. No password or session token is printed or placed in browser storage. The server binds loopback and enforces Host/Origin and CSRF checks. Use the Projects page to select a workspace; it remains independent from applications/environments inside it. See [Studio setup and recovery](docs/STUDIO.md).
 
 Each mapping command gets a fresh browser context. Authentication requires explicit URL, exact permitted POST endpoint, field/submit locators, and an authenticated-ready assertion. Only that endpoint may receive a POST during bootstrap; discovery cannot submit forms. Imported `storage-state` roles resolve their file via an environment-variable reference, check stored origins, and require a ready assertion. No cookies, storage-state files, input values or credential values are stored in the graph. For a non-public tenant, an explicit `tenantReady` locator assertion is mandatory; it must identify the intended account/tenant. Tenant switching itself is not implemented.
 
@@ -153,7 +153,7 @@ Execution reuses approved M1 paths and checks live entry/transition/destination 
 
 Reports retain PASS, FAIL, BLOCKED, INCONCLUSIVE, FLAKY and NOT RUN. A missing prerequisite or policy denial is BLOCKED; an automation/evidence uncertainty is INCONCLUSIVE; contradictory explicit behavior is FAIL. An approved optional retry can identify FLAKY when completed attempts disagree. Unselected/cancelled scenarios remain NOT RUN. PASS requires every approved assertion, its exact expected value and retained evidence. Screenshots mask inputs/email; full local traces remain private and are referenced in reports, never exported by the viewer. Test artifacts use M0 quotas/retention, with child navigation artifacts charged to the parent test-run budget; a quota/evidence failure cannot become PASS.
 
-Start `qaspider view`, open its full token URL, and use **Test Studio** to enter a story, select scoped roles, review permissions, generate a plan, edit scenarios and approve requirements/the exact plan. **Test Runs** shows persisted progress, assertions, fixtures, screenshots and trace references. No metrics/results are simulated. The fixture token and authentication reference values must be set in the viewer's environment before starting execution. Progress polling and cancellation apply to jobs started by that viewer process.
+Start `qaspider view`, open its plain local URL, log in, select the project, and use **Test Studio** to enter a story, select scoped roles, review permissions, generate a plan, edit scenarios and approve requirements/the exact plan. **Test Runs** shows persisted progress, assertions, fixtures, screenshots and trace references. No metrics/results are simulated. The fixture token and authentication reference values must be set in the viewer's environment before starting execution. Progress polling and cancellation apply to jobs started by that viewer process.
 
 The earlier `--scenarios registration-valid` replay intentionally selected one scenario; the other five were correctly NOT RUN, not failures. A later fresh CLI process replayed **all six approved scenarios** without `--scenarios`: all six passed, with a configured provider canary proving no Codex invocation. See `validation/m2-full-suite-replay.json`.
 
@@ -222,8 +222,21 @@ The owner explicitly approved Codex as the required beta AI provider; Claude Cod
 
 See the [step-by-step local demo](docs/DEMO.md), [development/setup and reproducible benchmarks](docs/DEVELOPMENT.md), [contributing](CONTRIBUTING.md), [security reporting](SECURITY.md), [unpublished beta release notes and M6 criteria](docs/BETA_RELEASE_NOTES.md), and [M5 measured validation](validation/m5-report.json) and [benchmark methodology/results](docs/BENCHMARKS.md). The repository-root GitHub workflow validates deterministic workflows without AI credentials. Actual Codex isolation remains a separate local release gate. Nothing has been pushed or published.
 
-To start Studio, run `npm run cli -- view --workspace /path/to/your/workspace --port 4319`, open the full private URL printed in your terminal, and select **Test Studio**. Start the benchmark separately when testing it. Port conflicts currently produce a generic navigation error; select a free port.
+To start Studio, run `npm run cli -- view --workspace /path/to/your/workspace --port 4319`, open the plain local URL printed in your terminal, and select **Test Studio**. Start the benchmark separately when testing it. Port conflicts currently produce a generic navigation error; select a free port.
 
 ![Local beta Overview showing persisted benchmark records](docs/beta/overview.png)
 
 This screenshot comes from the actual Chromium onboarding/MCP acceptance test. Its plan is an explicitly synthetic fixture; its navigation, executions, counters and artifact bytes are real persisted data. It contains no bearer URL or account information.
+
+## M5.1 — Authenticated multi-project Studio
+
+```sh
+mkdir -p /path/to/approved-projects
+npm run cli -- studio --projects-root /path/to/approved-projects --port 4319
+```
+
+Create the first local administrator, then log in. Projects created by `qaspider init` register automatically in the same user registry. Studio can create/import only beneath the explicitly approved project root. Each project retains its own SQLite database and artifacts. Archive removes it from the active registry without deleting project files. A header switcher remounts project screens and keeps in-flight work attached to its original project.
+
+Settings includes project artifact configuration, actual MCP stdio diagnostics, project-pinned client configuration, global AI defaults and project overrides. Sanitized context sharing defaults off for registered projects; enable it explicitly before planning. The Codex executable must be approved through the operator's QASPIDER_CODEX_BIN/PATH before starting Studio. Restricted verification uses synthetic data only and does not replace the runtime gate. Claude/Gemini remain deferred and unverified.
+
+See [Studio operator/developer guide](docs/STUDIO.md) and [M5.1 validation report](validation/m5-1-report.json). Existing pre-M5.1 processes must be stopped/restarted to load the new login system. Old bootstrap fragments are not accepted by Studio.

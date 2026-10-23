@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "id": "d91aa6b9-13fb-402a-aec9-4ba0d68b38ca",
+      "name": "Project B"
+    },
+    {
+      "id": "ca72880a-e4f9-47a3-aeb5-2d30e7670afd",
+      "name": "Project A"
+    }
+  ],
+  "statesInA": 4,
+  "statesInB": 0,
+  "independentCliDoctor": true,
+  "restartPreservedSelection": true,
+  "browserSecretsAbsent": true,
+  "runInA": "39cb7bcd-5e5b-436f-84eb-24fd13d4ae7b",
+  "runsInB": 0,
+  "mcpStdioConnected": true,
+  "providerIsolationExecuted": true,
+  "projectOverrideIsolated": true,
+  "otherProjectJobCompleted": true,
+  "privateEvidenceDirectory": ".qaspider/m5-1-acceptance/test-results"
+}

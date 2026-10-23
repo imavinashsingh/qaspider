@@ -12,3 +12,5 @@ Use Node 24.x, npm and Chromium. Read README.md, AGENTS.md and docs/DEVELOPMENT.
 Describe the concrete problem, behavior, tests and limitations in your PR. Screenshots must have cleared token fragments and contain no credentials or account information. Keep dependency additions justified. The project uses Apache-2.0; contributions must be compatible with that license.
 
 GitHub CI runs without provider credentials. It tests provider-independent synthetic contracts and deterministic browser execution. A maintainer must separately run actual Codex synthetic isolation before approving a release or adapter change. No push or package publication is part of the local verification workflow.
+
+For Studio changes, include negative authentication/CSRF/project-path tests and tests for independent project reads/jobs. Use a temporary QASPIDER_STUDIO_HOME in tests so CLI registration never mutates a real user registry. Do not weaken the operator executable allowlist or replace explicit project IDs with a mutable global browser selection. See docs/STUDIO.md.
