@@ -1,0 +1,356 @@
+{
+  "milestone": "M5",
+  "status": "complete",
+  "checkedAtUtc": "2026-10-23T19:47:30.110503+00:00",
+  "baseline": {
+    "branch": "feat/qaspider-m3-m5",
+    "M3": "92eb99c",
+    "M4": "32c53be",
+    "initialWorkingTree": [
+      "untracked validation/m5-report.json"
+    ],
+    "existingWorkPreserved": true,
+    "migrations001Through005Unchanged": true,
+    "newMigrations": []
+  },
+  "approvedScopeAdjustment": {
+    "source": "Explicit owner request Resume and Complete M5",
+    "requiredProvider": "Codex",
+    "optionalDeferredProviders": [
+      "Claude Code",
+      "Gemini CLI"
+    ],
+    "missingOptionalExecutablesAreNotBlockers": true,
+    "noAdditionalProviderInstalledOrAuthenticated": true,
+    "isolationRequirementsUnchanged": true
+  },
+  "previousStop": {
+    "milestone": "M5",
+    "status": "blocked",
+    "checkedAtUtc": "2026-10-23T19:28:35.171144+00:00",
+    "branch": "feat/qaspider-m3-m5",
+    "completedMilestones": {
+      "M3": {
+        "commit": "92eb99c",
+        "report": "validation/m3-report.json",
+        "migration": 4
+      },
+      "M4": {
+        "commit": "32c53be",
+        "report": "validation/m4-report.json",
+        "migration": 5
+      }
+    },
+    "blockers": [
+      {
+        "kind": "missing-required-provider-executables",
+        "detail": "Claude Code and Gemini CLI are unavailable in PATH, common executable locations and project dependencies; no explicit executable overrides are configured. Actual provider capability/isolation verification cannot run.",
+        "providers": {
+          "claude": {
+            "executableFound": false,
+            "explicitExecutableConfigured": false,
+            "localPackageInstalled": false,
+            "versionProbeExecuted": false,
+            "isolationProbeExecuted": false,
+            "supported": false
+          },
+          "gemini": {
+            "executableFound": false,
+            "explicitExecutableConfigured": false,
+            "localPackageInstalled": false,
+            "versionProbeExecuted": false,
+            "isolationProbeExecuted": false,
+            "supported": false
+          }
+        },
+        "applicationContextShared": false,
+        "realModelCallsMade": false
+      }
+    ],
+    "stopRule": "Stop at a genuine blocker or inaccessible required dependency. Do not silently reduce milestone acceptance or commit an incomplete milestone as complete.",
+    "M5Complete": false,
+    "M5CommitCreated": false,
+    "remainingM5Work": [
+      "Implement and independently verify Claude Code and Gemini CLI adapters with real executable synthetic capability/tool/config/MCP/hook/context/timeout/cancellation evidence; report unsupported binaries explicitly",
+      "Fresh-install and setup verification",
+      "GitHub Actions typecheck/build/test/security CI",
+      "Beta README screenshots and complete reproducible demo",
+      "CONTRIBUTING.md, configuration examples, issue templates and security disclosure guidance",
+      "Reproducible performance/reliability and memory-reuse benchmarks",
+      "Dependency audit and security review",
+      "Prepare package metadata and release documentation without publishing",
+      "Run complete M0\u2013M5 quality gates"
+    ],
+    "latestCompletedValidation": {
+      "typecheck": "passed",
+      "productionBuild": "passed",
+      "unitIntegrationFiles": 17,
+      "unitIntegrationTests": 44,
+      "chromiumTests": 10,
+      "MCPServerSDK": "2.4.0",
+      "MCPClientSDK": "2.4.0",
+      "actualStdioProtocolTests": "passed",
+      "syntheticCodexIsolation": "passed",
+      "consentDiscoveryPromotionReplayRollback": "passed",
+      "duplicateDefectDetectable": true,
+      "dashboardOnboardingThroughReportAndMcpReplay": "passed"
+    },
+    "retainedEvidence": {
+      "privateBrowserWorkspacesAndArtifacts": ".qaspider/m3-m4-acceptance",
+      "providerIsolation": "validation/m4-provider-validation.json",
+      "M3Regression": "validation/m4-learning-regression-evidence.json",
+      "onboardingAndMcp": "validation/m4-onboarding-evidence.json"
+    },
+    "resumePrerequisites": [
+      "Make the required Claude Code and Gemini CLI executables available at explicit local paths or PATH, within the authorized repository environment",
+      "Run synthetic provider-specific isolation checks before sharing any application context",
+      "Retain failing/unsupported capability results and stop if required isolation cannot be established"
+    ],
+    "releaseStatus": "Not beta-ready; M5 is incomplete. No packages, repository, commits or releases pushed/published.",
+    "workingTreeNote": "M3 and M4 committed. This blocker report is intentionally left uncommitted; no M5 completion commit was created."
+  },
+  "changedFiles": {
+    "ci": [
+      "../.github/workflows/qaspider.yml"
+    ],
+    "issueTemplates": [
+      "../.github/ISSUE_TEMPLATE/bug_report.md",
+      "../.github/ISSUE_TEMPLATE/feature_request.md"
+    ],
+    "documentation": [
+      "README.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md",
+      "docs/DEVELOPMENT.md",
+      "docs/DEMO.md",
+      "docs/BENCHMARKS.md",
+      "docs/BETA_RELEASE_NOTES.md",
+      "docs/beta/overview.png"
+    ],
+    "verification": [
+      "scripts/check-release.mjs",
+      "scripts/verify-clean-install.mjs",
+      "scripts/verify-approved-replay.mjs",
+      "tests/integration/viewer-access.test.ts",
+      "tests/smoke/readiness.spec.ts",
+      "tests/smoke/learning.spec.ts"
+    ],
+    "examples": [
+      "examples/beta/artifact-settings.json"
+    ],
+    "reports": [
+      "validation/m5-report.json",
+      "validation/m5-clean-install.json",
+      "validation/m5-provider-validation.json",
+      "validation/m5-full-suite-replay.json",
+      "validation/m5-benchmarks.json",
+      "validation/m5-learning-benchmark.json",
+      "validation/m5-migration-baseline.json",
+      "validation/m5-dependency-audit.json"
+    ]
+  },
+  "commandsAndResults": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed; all workspaces and tests strict TypeScript"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed; production TypeScript, SQL copy, Vite assets"
+    },
+    {
+      "command": "npm test",
+      "result": "45 passed in 18 files; actual MCP stdio integration, scoped authorization, immutable learning/rollback, retention/quotas/traversal and viewer token rotation"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "11 passed; complete Chromium regression including M3/M4 and new real discovery/replay samples"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=/absolute/installed/codex npm run verify:provider",
+      "result": "passed; actual installed CLI synthetic-only verification; validation/m5-provider-validation.json"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node scripts/verify-approved-replay.mjs --workspace .qaspider/m1-reconciliation --plan a85052bb-fef6-4ffa-8151-36df0b2b303a",
+      "result": "passed; all six approved scenarios after restart; no AI; unchanged requirements and plan hash"
+    },
+    {
+      "command": "node scripts/verify-clean-install.mjs",
+      "result": "passed; source-only /tmp copy with fresh npm cache/dependencies, typecheck/build/45 tests, init/doctor/onboard/configuration; 8 commands; temporary copy removed"
+    },
+    {
+      "command": "npm audit --json",
+      "result": "passed; 0 vulnerabilities across all severities; includes dev dependencies"
+    },
+    {
+      "command": "/tmp/qaspider-actionlint /home/avi/Opensource/.github/workflows/qaspider.yml",
+      "result": "passed; actionlint 1.7.12"
+    },
+    {
+      "command": "node scripts/check-release.mjs",
+      "result": "passed; private-path, dashboard-token/private-key patterns, immutable migration hashes and documentation checks"
+    },
+    {
+      "command": "node --check scripts/check-release.mjs; node --check scripts/verify-clean-install.mjs; node --check scripts/verify-approved-replay.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed; staged file list and diff reviewed before commit; only the 26 intended M5 files"
+    }
+  ],
+  "ci": {
+    "workflow": "../.github/workflows/qaspider.yml",
+    "syntaxValidated": true,
+    "validator": "actionlint 1.7.12",
+    "node": "24",
+    "readOnlyRepositoryPermissions": true,
+    "pinnedOfficialActionsVerifiedWithGitLsRemote": true,
+    "noPersistedCheckoutCredentials": true,
+    "noRawEvidenceUploads": true,
+    "noProviderCredentials": true,
+    "checks": [
+      "npm ci",
+      "typecheck",
+      "build",
+      "unit/integration including MCP stdio",
+      "Chromium E2E",
+      "dependency audit high threshold",
+      "release file checks"
+    ],
+    "hostedGitHubRunExecuted": false,
+    "hostedRunLimitation": "No push/public repository/actions run authorized; local equivalents executed. Actual Codex isolation is a separate mandatory local release gate."
+  },
+  "providerSupportMatrix": [
+    {
+      "provider": "Codex CLI",
+      "status": "verified planning adapter",
+      "version": "codex-cli 0.162.0-alpha.17.2",
+      "binarySha256": "73b73b048546993298234a295de01ef2424e7a8b29def9d0ecb1ca7cb77500d4",
+      "isolationEvidence": "validation/m5-provider-validation.json",
+      "syntheticVerificationOnlyThisMilestone": true,
+      "newRealModelCalls": false,
+      "priorLivePlanningEvidence": "validation/m2-generated-plan.json",
+      "tools": 0,
+      "timeoutAndCancellationExited": true,
+      "sanitizedContextVerified": true,
+      "runtimeGateRemainsRequired": true
+    },
+    {
+      "provider": "FakeProvider",
+      "status": "synthetic contract/browser fixture only; not real AI"
+    },
+    {
+      "provider": "Claude Code",
+      "status": "deferred; disabled/unverified; no implemented enabled adapter",
+      "executableAvailable": false,
+      "explicitOverrideConfigured": false,
+      "isolationExecuted": false
+    },
+    {
+      "provider": "Gemini CLI",
+      "status": "deferred; disabled/unverified; no implemented enabled adapter",
+      "executableAvailable": false,
+      "explicitOverrideConfigured": false,
+      "isolationExecuted": false
+    }
+  ],
+  "benchmarks": {
+    "navigation": "validation/m5-benchmarks.json",
+    "summary": {
+      "sampleCount": 3,
+      "medianDiscoveryMs": 991.4958409999963,
+      "medianReplayMs": 672.4468419999976,
+      "discoveryActions": 18,
+      "replayActions": 2,
+      "actionReductionPercent": 88.88888888888889,
+      "discoveryRequests": 40,
+      "replayRequests": 5,
+      "requestReductionPercent": 87.5,
+      "allPassed": true
+    },
+    "learning": "validation/m5-learning-benchmark.json",
+    "learningSamples": 1,
+    "comparisonLimitations": "3 independent fresh workspaces; depth 1 guest discovery; approved path to Registration replayed in a new CLI process. Discovery shares harness browser; replay includes process/browser startup. No latency claim asserted.",
+    "sixScenarioReplay": "validation/m5-full-suite-replay.json",
+    "sixScenarioResults": {
+      "PASS": 6,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 0,
+      "providerUsed": false
+    }
+  },
+  "securityReview": {
+    "dependencyAudit": "validation/m5-dependency-audit.json",
+    "critical": 0,
+    "high": 0,
+    "otherAdvisories": 0,
+    "unresolvedCriticalFindings": [],
+    "reviewedControls": [
+      "exact origins and default-deny production writes",
+      "role/tenant/environment/build isolation",
+      "reference-only onboarding and sanitized provider context",
+      "reviewed immutable plan revisions",
+      "scoped MCP grants; no arbitrary file/raw trace exports",
+      "retention, active/inactive lifecycle, quotas, traversal/symlink rejection and private modes",
+      "new restart bearer rotation: old 401, new 200; foreign Origin/Host 403",
+      "no provider/process/context implementation changed",
+      "migration hashes match M4 baseline"
+    ],
+    "nonCriticalFindings": [
+      "prebuild-install 7.1.3 transitive dependency is deprecated/unmaintained; npm reports no advisory; monitor upstream better-sqlite3 installation path"
+    ],
+    "scopeLimit": "Dependency audit, code review and regression controls are not a penetration test or runtime/OS vulnerability certification. Use a patched supported Node/Chromium."
+  },
+  "evidence": {
+    "privateBrowserWorkspacesAndArtifacts": ".qaspider/m5-acceptance/test-results",
+    "privateProviderReceipts": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/fbb52a7d-02b0-46d6-adc4-f4042801060a",
+    "privateFullReplayReport": ".qaspider/m5-replay/private-report.json",
+    "sanitizedScreenshot": "docs/beta/overview.png",
+    "screenshotReviewed": true,
+    "noTokensCredentialsDatabasesTracesOrPrivateArtifactsToBeCommitted": true
+  },
+  "resolvedFailuresAndEnvironmentIssues": [
+    "Initial audit DNS access denied in sandbox; authorized network retry passed.",
+    "Initial browser server launch denied in sandbox; authorized process/loopback run passed.",
+    "New Host test initially used fetch, which did not transmit the overridden Host; corrected to node:http; server rejects actual foreign Host with 403. Initial clean-install copy captured that failing test; corrected source rerun passed.",
+    "Release check Git subprocess denied by sandbox; authorized retry passed.",
+    "Automatic approval review briefly hit workspace spend cap; action not executed; after owner continue instruction subsequent authorized check succeeded."
+  ],
+  "knownLimitations": [
+    "Linux Chromium validated only",
+    "Codex support is tied to verified CLI capabilities; version changes may fail closed",
+    "Claude/Gemini adapters deferred; no compatibility claim",
+    "Hosted GitHub workflow has not executed",
+    "Fresh install is a clean source/dependency/workspace copy on this host, not a new OS image",
+    "Fixed typed actions/assertions; no automatic MFA or tenant switching",
+    "Abrupt jobs, active artifacts, orphan files and fixture lifecycle need manual reconciliation",
+    "Raw traces can contain secrets; developer test-results are outside managed retention",
+    "Conservative term-based exploration and graph comparison; no automatic business-rule mutation",
+    "MCP stdio only; no remote HTTP/OAuth endpoint",
+    "Three navigation samples and one learning sample are not scalability or SLA claims",
+    "Private 0.0.0 source distribution only; maintainer disclosure channel/version/public release approval still needed"
+  ],
+  "recommendedM6AcceptanceCriteria": [
+    "Fault-injected crash recovery for jobs/artifacts/fixtures without deleting evidence",
+    "Larger multi-role repeated performance/reliability baselines",
+    "Supported OS installation matrix and patched runtime checks",
+    "Repeatable Codex compatibility/isolation setup per supported version",
+    "Evidence redaction regression coverage",
+    "Established private security disclosure and hosted CI pass on release candidate",
+    "Optional provider implementations only with separately verified fail-closed isolation"
+  ],
+  "git": {
+    "commitMessage": "chore(m5): complete open-source beta readiness",
+    "commitHash": "Returned in final completion response after successful commit; no self-referential hash stored here",
+    "pushed": false,
+    "published": false,
+    "publicRepositoryCreated": false
+  },
+  "M6Started": false,
+  "M5Complete": true,
+  "blockers": []
+}

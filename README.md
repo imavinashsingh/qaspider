@@ -1,6 +1,6 @@
 # QASpider — Story-driven QA
 
-Local-first QA following the approved QASpider V2 architecture. **M0–M4 are implemented.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
+Local-first QA following the approved QASpider V2 architecture. **M0–M5 are implemented for the revised local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
 ## Install and verify
 
@@ -208,3 +208,22 @@ The server uses the official split TypeScript SDK **v2.4.0** (`@modelcontextprot
 Tools: `get_app_context`, `find_path`, `plan_tests`, `run_tests`, `explore_feature`, `get_report`, `propose_memory_update`, `get_job`, `cancel_job`. Planning still runs the synthetic Codex isolation gate before context sharing. Execution requires an exact approved plan and its policy. Exploration uses configured origins, controls, identity and budgets; results remain unapproved. MCP cannot onboard applications, approve plans/requirements/memory, read arbitrary paths, retrieve raw traces or change accepted expectations. Reports expose evidence references; raw browser evidence stays private. Use the local owner CLI/dashboard for explicit review and approval.
 
 CLI, dashboard and MCP use the same application, QA, learning, navigation, storage and policy services. Discovery jobs and their results persist in migration 005; graceful cancellation is supported. Abruptly terminated jobs still need operator reconciliation and are not automatically resumed. Build before `npm test`: the MCP integration test exercises the compiled CLI through the actual SDK client, not a mocked protocol.
+
+## M5 — Local beta readiness
+
+The owner explicitly approved Codex as the required beta AI provider; Claude Code and Gemini CLI are optional and deferred. Neither executable is available here, neither integration is verified, and no additional provider was installed or authenticated. Provider-independent interfaces and synthetic contract tests remain intact.
+
+| Provider | Beta status | Evidence |
+| --- | --- | --- |
+| Codex CLI | Verified planning adapter; runtime isolation required | Actual CLI synthetic tool/config/timeout/cancellation/sanitization receipts; original M2 live planning |
+| FakeProvider | Synthetic fixtures only | Contract and browser tests; no real AI |
+| Claude Code | Deferred, disabled, unverified | Executable unavailable; no adapter verification |
+| Gemini CLI | Deferred, disabled, unverified | Executable unavailable; no adapter verification |
+
+See the [step-by-step local demo](docs/DEMO.md), [development/setup and reproducible benchmarks](docs/DEVELOPMENT.md), [contributing](CONTRIBUTING.md), [security reporting](SECURITY.md), [unpublished beta release notes and M6 criteria](docs/BETA_RELEASE_NOTES.md), and [M5 measured validation](validation/m5-report.json) and [benchmark methodology/results](docs/BENCHMARKS.md). The repository-root GitHub workflow validates deterministic workflows without AI credentials. Actual Codex isolation remains a separate local release gate. Nothing has been pushed or published.
+
+To start Studio, run `npm run cli -- view --workspace /path/to/your/workspace --port 4319`, open the full private URL printed in your terminal, and select **Test Studio**. Start the benchmark separately when testing it. Port conflicts currently produce a generic navigation error; select a free port.
+
+![Local beta Overview showing persisted benchmark records](docs/beta/overview.png)
+
+This screenshot comes from the actual Chromium onboarding/MCP acceptance test. Its plan is an explicitly synthetic fixture; its navigation, executions, counters and artifact bytes are real persisted data. It contains no bearer URL or account information.

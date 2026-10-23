@@ -1,0 +1,7 @@
+{
+  "packages/storage/migrations/001_foundation.sql": "463667121ecff9266f0f78e070eb5e3cd147b8b2c753fe08cb7afa42ac6b6864",
+  "packages/storage/migrations/002_navigation.sql": "d99431b96c3c531ae38cacfd1df0e3aa9f078d638b6c25cc73454d0f74317b96",
+  "packages/storage/migrations/003_story_testing.sql": "7a97f66fae6689d60cd9708885fccfb2bf7db40e5ebb55cfef1073eec9a4521f",
+  "packages/storage/migrations/004_governed_learning.sql": "57129f3dec10a9db8614041eac3d84170ea2b8359493f278fb8e4216030bcfd0",
+  "packages/storage/migrations/005_operation_jobs.sql": "d90598b07bc4f2c097215343c2726c86dda0cba26e81f8534ed87c0eb634e530"
+}

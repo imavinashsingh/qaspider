@@ -1,0 +1,39 @@
+name: QASpider beta
+on:
+  push:
+    paths: ['qaspider/**', '.github/workflows/qaspider.yml']
+  pull_request:
+    paths: ['qaspider/**', '.github/workflows/qaspider.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qaspider-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: qaspider
+        shell: bash
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: qaspider/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:smoke
+      - run: npm audit --audit-level=high
+      - run: node scripts/check-release.mjs
+      # No raw browser evidence upload: traces may contain local secrets.
+      # Actual Codex isolation is a separate local release gate, not a fabricated hosted-CI pass.

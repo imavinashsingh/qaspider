@@ -1,0 +1,6 @@
+{
+  "retentionDays": 14,
+  "globalQuotaBytes": 10737418240,
+  "perRunQuotaBytes": 1073741824,
+  "captureFullTraces": true
+}

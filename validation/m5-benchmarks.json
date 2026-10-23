@@ -1,0 +1,64 @@
+{
+  "method": "3 independent fresh workspaces; depth 1 guest discovery; approved path to Registration replayed in a new CLI process. Discovery shares harness browser; replay includes process/browser startup. No latency claim asserted.",
+  "samples": [
+    {
+      "sample": 0,
+      "discoveryMs": 970.072232999999,
+      "replayMs": 672.4468419999976,
+      "discoveryActions": 18,
+      "replayActions": 2,
+      "discoveryRequests": 40,
+      "replayRequests": 5,
+      "states": 4,
+      "transitions": 4,
+      "from": "19c35be83e040bec67bd280c48ac2cf8a6ebd9033bd18fab2aad30b38ce99108",
+      "to": "79fd93ded843cd0660ac624f34f09635442c94e5eeebb5b320b703c80584d4cd",
+      "replayRunId": "1fb05cb6-f657-495d-87a9-f23d32470399",
+      "providerUsed": false
+    },
+    {
+      "sample": 1,
+      "discoveryMs": 1000.808855000003,
+      "replayMs": 690.7966949999973,
+      "discoveryActions": 18,
+      "replayActions": 2,
+      "discoveryRequests": 40,
+      "replayRequests": 5,
+      "states": 4,
+      "transitions": 4,
+      "from": "19c35be83e040bec67bd280c48ac2cf8a6ebd9033bd18fab2aad30b38ce99108",
+      "to": "79fd93ded843cd0660ac624f34f09635442c94e5eeebb5b320b703c80584d4cd",
+      "replayRunId": "9140d9ae-1663-4557-b316-36e02e9be4be",
+      "providerUsed": false
+    },
+    {
+      "sample": 2,
+      "discoveryMs": 991.4958409999963,
+      "replayMs": 670.9292120000027,
+      "discoveryActions": 18,
+      "replayActions": 2,
+      "discoveryRequests": 40,
+      "replayRequests": 5,
+      "states": 4,
+      "transitions": 4,
+      "from": "19c35be83e040bec67bd280c48ac2cf8a6ebd9033bd18fab2aad30b38ce99108",
+      "to": "79fd93ded843cd0660ac624f34f09635442c94e5eeebb5b320b703c80584d4cd",
+      "replayRunId": "92de6bf2-e40f-4784-b344-757587d4ab0f",
+      "providerUsed": false
+    }
+  ],
+  "recordedAt": "2026-10-23T19:44:58.318156+00:00",
+  "privateEvidenceDirectory": ".qaspider/m5-acceptance/test-results",
+  "summary": {
+    "sampleCount": 3,
+    "medianDiscoveryMs": 991.4958409999963,
+    "medianReplayMs": 672.4468419999976,
+    "discoveryActions": 18,
+    "replayActions": 2,
+    "actionReductionPercent": 88.88888888888889,
+    "discoveryRequests": 40,
+    "replayRequests": 5,
+    "requestReductionPercent": 87.5,
+    "allPassed": true
+  }
+}

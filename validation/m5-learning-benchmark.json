@@ -1,0 +1,21 @@
+{
+  "timings": {
+    "baselineDiscoveryMs": 1251.397128,
+    "targetedExplorationMs": 1762.290986,
+    "freshProcessReplayMs": 708.122445,
+    "rollbackUiMs": 60.491947999999866
+  },
+  "approvalId": "f978ee38-eca4-40d1-9f02-3fd5e94de58d",
+  "defectRun": "fabe4c3e-ed3c-43ab-b577-638a466219eb",
+  "duplicateDefectDetected": true,
+  "originalRequirementsUnchanged": true,
+  "providerUsed": false,
+  "explorationRunId": "f0421cb6-8d5a-4580-94cd-6ff0ae585653",
+  "explorationStatus": "complete",
+  "actions": 31,
+  "requests": 66,
+  "restartedReplayRunId": "949d563d-4743-4fe3-a300-dfaca92c55b1",
+  "restartedReplayStatus": "complete",
+  "rollbackVerifiedByPassingE2E": true,
+  "privateEvidenceDirectory": ".qaspider/m5-acceptance/test-results"
+}
