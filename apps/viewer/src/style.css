@@ -9,3 +9,4 @@
 .memory .transition { padding: 18px 0; }
 .memory .transition label { max-width: 600px; }
 .memory .approval { padding: 16px 0 0; }
+.login{max-width:520px;margin:8vh auto;padding:32px}.login form,.project-card form{display:grid;gap:16px}.project-card{padding:24px;margin:20px 0}.studio-switch{display:inline-flex;align-items:center;gap:10px;margin-right:20px}.studio-switch select{max-width:240px}button:focus-visible,a:focus-visible{outline:3px solid #0d9c8a;outline-offset:3px}@media(max-width:760px){.sidebar{width:150px}.shell{margin-left:150px}main{padding:16px}.studio-switch{display:flex}.login{margin:20px;padding:20px}}

@@ -23,6 +23,7 @@ export function createGraphServer(store: SqliteStore, artifacts: ArtifactStore, 
   const server = createServer((request, response) => { void handle(request, response).catch(() => { if (!response.headersSent) json(response, 400, { error: 'Request rejected; check scope, approval eligibility and evidence availability' }); else response.end(); }); });
   function json(response: ServerResponse, status: number, value: unknown) { response.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(value)); }
   async function handle(request: IncomingMessage, response: ServerResponse) {
+    response.setHeader('X-QASpider-Service','project');
     response.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     response.setHeader('X-Content-Type-Options', 'nosniff'); response.setHeader('Referrer-Policy', 'no-referrer');
     const host = request.headers.host; const port = request.socket.localPort;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { NavigationScope, StoryRevision, PlanRevision, TestRun, TestReport, QaJob, Requirement } from '../../../packages/core/src/index.js';
-import { api } from './api.js';
+import { api, apiResponse } from './api.js';
 type ScopeView = Omit<NavigationScope, 'config'>;
 type Artifact = {
     id: string;
@@ -95,7 +95,7 @@ export function Testing({ view }: {
     async function showEvidence(artifact: Artifact) {
         setEvidence('');
         setImage('');
-        const response = await fetch(`/api/qa/evidence?run=${runId}&id=${artifact.id}`, { headers: { 'x-qaspider-token': sessionStorage.getItem('qaspider-token') ?? '' } });
+        const response = await apiResponse(`/api/qa/evidence?run=${runId}&id=${artifact.id}`);
         if (!response.ok)
             throw new Error('Evidence unavailable or restricted');
         if (artifact.kind === 'screenshot')

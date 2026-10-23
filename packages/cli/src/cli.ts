@@ -1,8 +1,11 @@
+import {initializeWorkspace} from '../../application/src/workspace.js';
+import {StudioStore} from '../../studio/src/store.js';
+import {ProjectRegistry,studioHome} from '../../studio/src/projects.js';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { defaultSettings, originSchema } from '../../core/src/index.js';
-import { ArtifactStore, SqliteStore } from '../../storage/src/index.js';
+import { SqliteStore } from '../../storage/src/index.js';
 export function runCli(args: string[], output: (line: string) => void = console.log, env: NodeJS.ProcessEnv = process.env): number {
   let store: SqliteStore | undefined;
   try {
@@ -11,20 +14,15 @@ export function runCli(args: string[], output: (line: string) => void = console.
     if (!['init', 'doctor'].includes(command ?? '') || extra.length) throw new Error('Usage: qaspider <init|doctor|map|graph|path|approve|replay|view> [--workspace path] [--name name] [--origin origin]');
     const workspace = resolve(parsed.values.workspace ?? '.'); const directory = join(workspace, '.qaspider'); const database = join(directory, 'memory.db');
     if (command === 'doctor' && !existsSync(database)) throw new Error('Workspace is not initialized; run qaspider init');
-    store = new SqliteStore(database);
     if (command === 'init') {
-      const origin = originSchema.parse(parsed.values.origin ?? 'http://127.0.0.1:4317');
-      const existing = store.getEnvironment('development');
-      if (existing && (existing.allowedOrigins[0] !== origin || (parsed.values.name && store.getApplication('benchmark')?.name !== parsed.values.name))) throw new Error('Workspace already initialized with different configuration');
-      const db = store;
-      db.transaction(() => {
-        if (!db.getApplication('benchmark')) db.createApplication({ id: 'benchmark', name: parsed.values.name ?? 'QASpider benchmark' });
-        if (!existing) db.createEnvironment({ id: 'development', applicationId: 'benchmark', name: 'Development', kind: 'development', allowedOrigins: [origin] });
-        for (const role of ['guest', 'admin', 'user'] as const) if (!db.getRole(role)) db.createRole({ id: role, environmentId: 'development', name: role, auth: role === 'guest' ? { kind: 'guest' } : { kind: 'form', usernameEnv: `QASPIDER_${role.toUpperCase()}_EMAIL`, passwordEnv: `QASPIDER_${role.toUpperCase()}_PASSWORD` } });
-      });
-      new ArtifactStore(db, join(directory, 'artifacts'));
-      output(JSON.stringify({ status: 'initialized', workspace, database, provider: 'not-configured', settings: db.getSettings() })); return 0;
+      const existingStore=existsSync(database)?new SqliteStore(database):null;
+      const name=parsed.values.name??existingStore?.getApplication('benchmark')?.name??'QASpider benchmark';existingStore?.close();
+      const result=initializeWorkspace(workspace,name,originSchema.parse(parsed.values.origin??'http://127.0.0.1:4317'));
+      // Embedders can supply an empty environment to disable global user state; normal CLI always registers.
+      if(env.HOME||env.QASPIDER_STUDIO_HOME){const global=new StudioStore(studioHome(env));try{new ProjectRegistry(global).register(workspace,name);}finally{global.close();}}
+      output(JSON.stringify({status:'initialized',...result,provider:'not-configured'}));return 0;
     }
+    store = new SqliteStore(database);
     const warnings: string[] = []; const missing: string[] = [];
     for (const id of ['admin', 'user']) { const role = store.getRole(id); if (role?.auth.kind === 'form') for (const key of [role.auth.usernameEnv, role.auth.passwordEnv]) if (!env[key]) missing.push(key); }
     if (missing.length) warnings.push(`Missing credential references: ${missing.join(', ')}`);

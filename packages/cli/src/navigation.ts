@@ -4,8 +4,9 @@ import { parseArgs } from 'node:util';
 import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
 import { navigationConfigSchema, scopeSchema, findPath } from '../../core/src/index.js';
 import { NavigationEngine } from '../../navigation/src/engine.js';
-import { createGraphServer } from '../../navigation/src/viewer.js';
+import {runStudioCli} from './studio.js';
 export async function runNavigationCli(args: string[], output: (line: string) => void = console.log, env: NodeJS.ProcessEnv = process.env): Promise<number> {
+  if(args[0]==='view')return runStudioCli(args,output);
   let store: SqliteStore | undefined; const controller = new AbortController(); const cancel = () => controller.abort();
   process.on('SIGINT', cancel); process.on('SIGTERM', cancel);
   try {
@@ -18,13 +19,6 @@ export async function runNavigationCli(args: string[], output: (line: string) =>
     if (!command || !['map', 'graph', 'path', 'approve', 'replay', 'view'].includes(command) || extra.length || (command !== 'map' && seed)) throw new Error('Invalid command');
     const directory = join(resolve(values.workspace ?? '.'), '.qaspider'); const path = join(directory, 'memory.db'); if (!existsSync(path)) throw new Error('Workspace not initialized');
     store = new SqliteStore(path); const artifacts = new ArtifactStore(store, join(directory, 'artifacts')); const db = store;
-    if (command === 'view') {
-      const port = Number(values.port ?? 4318); if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid viewer port');
-      const viewer = createGraphServer(db, artifacts);
-      await new Promise<void>((resolve, reject) => { viewer.server.once('error', reject); viewer.server.listen(port, '127.0.0.1', resolve); });
-      output(JSON.stringify({ status: 'viewer-ready', url: `http://127.0.0.1:${port}/#token=${viewer.token}` }));
-      await new Promise<void>(resolve => { const stop = () => { viewer.server.close(() => resolve()); viewer.server.closeAllConnections(); }; controller.signal.addEventListener('abort', stop, { once: true }); if (controller.signal.aborted) stop(); }); await viewer.shutdown(); return 0;
-    }
     if (command === 'graph' && !values.role) { output(JSON.stringify({ scopes: db.navigation.listScopes().map(({ id, scope, seedUrl }) => ({ id, scope, seedUrl })) })); return 0; }
     const environment = db.getEnvironment(values.environment ?? 'development'); if (!environment) throw new Error('Unknown environment');
     const scope = scopeSchema.parse({ applicationId: environment.applicationId, environmentId: environment.id, roleId: values.role, build: values.build ?? 'development', tenant: values.tenant ?? 'public', featureFlags: JSON.parse(values.flags ?? '{}') });

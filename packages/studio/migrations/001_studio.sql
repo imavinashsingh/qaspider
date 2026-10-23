@@ -1,0 +1,4 @@
+CREATE TABLE studio_values(key TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
+CREATE TABLE sessions(hash TEXT PRIMARY KEY, csrf TEXT NOT NULL, authenticated INTEGER NOT NULL CHECK(authenticated IN(0,1)), expires_at INTEGER NOT NULL) STRICT;
+CREATE TABLE projects(id TEXT PRIMARY KEY, name TEXT NOT NULL, path TEXT UNIQUE NOT NULL, created_at INTEGER NOT NULL, last_opened_at INTEGER, archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN(0,1))) STRICT;
+CREATE TABLE provider_settings(project_id TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
