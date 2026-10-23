@@ -1,4 +1,4 @@
-# M5.1 Studio operator and developer guide
+# Studio operator and developer guide (M5.1–M5.2)
 
 ## Start and first-run setup
 
@@ -27,7 +27,7 @@ npm run cli -- view --workspace /tmp/my-qa-projects/project-a --projects-root /t
 
 Normal CLI init registers the canonical workspace in the user registry. Embedded runCli callers may pass an empty environment to suppress global user state. Studio refreshes Projects to see new CLI registrations. Browser create/import operations accept paths only below the startup-approved project root, reject traversal and symlinks, and never scan the filesystem. To import elsewhere, explicitly register the path from the local owner CLI or restart Studio with the appropriate approved root.
 
-Create Project collects name, workspace directory, exact application origin, environment display name and optional role secret-reference names. The initial application/environment IDs remain benchmark/development for CLI compatibility; application display name and origin identify your target. Default guest/admin/user roles use the standard QASPIDER_* environment references. Optional references must be uppercase variable names, never credential values. New workspace creation requires a nonexistent directory; failed initialization removes only the new directory it created. Existing imports validate migrations and retain records/evidence. Backup before updates.
+Create Project collects name, target application URL and environment display name. Its exact origin is saved. A private workspace directory is generated automatically under the approved root; directory overrides and role secret-reference names live under Advanced Settings. See [Studio workflows](STUDIO-UX.md). The initial application/environment IDs remain benchmark/development for CLI compatibility; application display name and origin identify your target. Default guest/admin/user roles use the standard QASPIDER_* environment references. Optional references must be uppercase variable names, never credential values. New workspace creation requires a nonexistent directory; failed initialization removes only the new directory it created. Existing imports validate migrations and retain records/evidence. Backup before updates.
 
 A stable project UUID identifies a canonical workspace. Rename changes registry display metadata, not historical application records. Archive/unregister hides it without deleting any workspace files; explicit registration restores its original UUID. Last-opened and last-selected project persist. Each project request includes its explicit ID, so switching/remounting clears client data without redirecting existing operations or canceling work in other projects. Archived/unknown IDs cannot open project APIs. Local owner CLI and explicitly authorized MCP remain separate access channels, not browser session APIs.
 

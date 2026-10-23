@@ -79,6 +79,7 @@ test('approved registration cases detect duplicate defect, keep expectations, re
             await page.getByRole('button', { name: 'Generate plan with Codex' }).click();
             await expect(page.getByLabel('Scenario proposal')).toContainText('Synthetic test fixture plan');
             await expect(page.getByText('· SYNTHETIC FIXTURE', { exact: false })).toBeVisible();
+            await page.getByText('Advanced Settings · edit exact scenario proposal',{exact:true}).click();
             const edited = { ...JSON.parse(await page.getByLabel('Scenario proposal').inputValue()) as PlanProposal, title: 'Reviewed synthetic fixture plan' };
             await page.getByLabel('Scenario proposal').fill(JSON.stringify(edited, null, 2));
             await page.getByRole('button', { name: 'Save edited revision' }).click();

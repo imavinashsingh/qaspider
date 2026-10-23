@@ -1,6 +1,6 @@
 # QASpider — Story-driven QA
 
-Local-first QA following the approved QASpider V2 architecture. **M0–M5.1 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
+Local-first QA following the approved QASpider V2 architecture. **M0–M5.2 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
 ## Start locally
 
@@ -10,6 +10,8 @@ npm run start
 ```
 
 `start` builds the project and opens **Studio at http://127.0.0.1:4319/**. Complete administrator setup/login, then use Projects → Create Project. The default approved workspace directory is `.qaspider/projects`. Previously enabled Studio-managed MCP processes restart with Studio. Ctrl-C stops Studio and its managed processes.
+
+Studio now opens selected projects on an action-oriented **Overview**. The header provides **New Test**; **Run Existing Test** replays an approved plan without AI. Create projects without technical IDs, then use Applications → discovery and Navigation Graph → explicit review. **CLI & MCP** provides searchable, copyable commands and a separate MCP integration tab. Settings groups General, AI Providers and Security. See [Studio workflows](docs/STUDIO-UX.md) for the complete guided journey and current limitations.
 
 The development benchmark is optional:
 
