@@ -1,3 +1,4 @@
+import type {PermissionRequirement} from '../../core/src/permissions.js';
 import {trackRuntime} from './runtime.js';
 import {derivePermissions,permissionRequirementSchema,permissionDecisionInputSchema,type PermissionDecisionInput,type PermissionDecision,type ExecutionAuthorization} from '../../core/src/permissions.js';
 import type Database from 'better-sqlite3';
@@ -6,6 +7,7 @@ import { z } from 'zod';
 import { parseStory, providerMetadataSchema, storyContextSchema, proposalSchema, policySchema, scenarioScope, classifyAttempts, hash, type TestingRepository, type StoryContext, type StoryRevision, type Requirement, type PlanProposal, type PlanRevision, type TestPolicy, type TestRun, type AttemptResult, type TestReport, type FixtureReservation, type QaJob, type Environment, type RoleProfile, type Outcome } from '../../core/src/index.js';
 type Row = Record<string, unknown>;
 export class SqliteTestingRepository implements TestingRepository {
+    permissionMemory?: (plan:PlanRevision,request:PermissionRequirement,scope:StoryContext)=>'allow'|'deny'|null;
     constructor(private readonly db: Database.Database, private readonly environment: (id: string) => Environment | undefined, private readonly role: (id: string) => RoleProfile | undefined) { }
     private atomic<T>(work: () => T) { return this.db.transaction(work).immediate(); }
     private context(input: StoryContext) {
@@ -152,7 +154,7 @@ export class SqliteTestingRepository implements TestingRepository {
         const plan=this.getPlan(id);if(!plan)throw new Error('Unknown plan revision');
         const decisions=(this.db.prepare('SELECT * FROM permission_decisions WHERE plan_revision_id=? ORDER BY rowid').all(id) as Row[]).map(row=>({id:String(row.id),planRevisionId:id,planHash:String(row.plan_hash),scope:storyContextSchema.parse(JSON.parse(String(row.scope_json))),permissionId:String(row.permission_id),request:permissionRequirementSchema.parse(JSON.parse(String(row.request_json))),decision:row.decision as 'allow'|'deny',reviewer:String(row.reviewer),decidedAt:Number(row.decided_at)})) as PermissionDecision[];
         const scope=this.getStory(plan.storyRevisionId)!.context;
-        const requirements=derivePermissions(plan).map(r=>{const last=decisions.filter(d=>d.permissionId===r.id&&d.planHash===plan.hash&&hash(d.scope)===hash(scope)&&hash({...d.request,status:'pending'})===hash({...r,status:'pending'})).at(-1);return {...r,status:last?.decision??r.status};});
+        const requirements=derivePermissions(plan).map(r=>{const last=decisions.filter(d=>d.permissionId===r.id&&d.planHash===plan.hash&&hash(d.scope)===hash(scope)&&hash({...d.request,status:'pending'})===hash({...r,status:'pending'})).at(-1);return {...r,status:last?.decision??this.permissionMemory?.(plan,r,scope)??r.status};});
         return {planRevisionId:id,planHash:plan.hash,managed:this.managed(id),requirements,decisions};
     }
     decidePermissions(id:string,expectedHash:string,input:PermissionDecisionInput[],reviewer:string):ExecutionAuthorization {

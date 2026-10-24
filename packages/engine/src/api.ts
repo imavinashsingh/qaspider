@@ -2,7 +2,7 @@ import type {IncomingMessage,ServerResponse} from 'node:http';
 import {z} from 'zod';
 import type {EngineContext} from '../../studio/src/server.js';
 import {scopeSchema,storyContextSchema} from '../../core/src/index.js';
-import {authorize,engineAuth} from './auth.js';
+import {authorize,engineAuth,type Principal} from './auth.js';
 export async function jsonBody(request:IncomingMessage):Promise<unknown>{
  if(!request.headers['content-type']?.startsWith('application/json'))throw new Error('JSON required');
  const chunks:Buffer[]=[];let size=0;
@@ -10,14 +10,16 @@ export async function jsonBody(request:IncomingMessage):Promise<unknown>{
  return JSON.parse(Buffer.concat(chunks).toString()) as unknown;
 }
 export function send(response:ServerResponse,value:unknown,status=200){response.writeHead(status,{'content-type':'application/json','cache-control':'no-store','x-qaspider-api-version':'1'});response.end(JSON.stringify(value));}
-export function createEngineApi(authFile:string){
+export function createEngineApi(authFile:string,extension?:(request:IncomingMessage,response:ServerResponse,context:EngineContext,principal:Principal)=>Promise<boolean>){
  const authenticate=engineAuth(authFile);
  return async(request:IncomingMessage,response:ServerResponse,context:EngineContext)=>{
   const url=new URL(request.url??'/','http://engine');if(!url.pathname.startsWith('/api/v'))return false;
   try{
-   const principal=authenticate(request.headers.authorization);
+   const human=request.headers.authorization?null:context.human(request);
+   const principal:Principal=human?{id:human,kind:'human',tokenHash:'',projects:context.registry.list().map(p=>p.id),actions:['read','plan','execute','explore','manage','review']}:authenticate(request.headers.authorization);
    if(!url.pathname.startsWith('/api/v1/')){send(response,{error:'Unsupported API version',supportedVersions:[1]},426);return true;}
    if(request.headers['x-qaspider-api-version']&&request.headers['x-qaspider-api-version']!=='1'){send(response,{error:'Unsupported API version',supportedVersions:[1]},426);return true;}
+   if(extension&&await extension(request,response,context,principal))return true;
    if(request.method==='GET'&&url.pathname==='/api/v1/health'){send(response,{status:'ok',apiVersion:1});return true;}
    if(request.method==='GET'&&url.pathname==='/api/v1/projects'){send(response,context.registry.list().filter(p=>principal.projects.includes(p.id)).map(p=>({id:p.id,name:p.name})));return true;}
    const match=/^\/api\/v1\/projects\/([a-f0-9-]{36})\/([a-z-]+)$/.exec(url.pathname);

@@ -11,11 +11,12 @@ import{QaService}from'../../qa/src/service.js';
 import{StudioStore}from'./store.js';import{StudioAuth,type Session}from'./auth.js';import{ProjectRegistry}from'./projects.js';import{SqliteStore,ArtifactStore}from'../../storage/src/index.js';import{createGraphServer}from'../../navigation/src/viewer.js';
 export class HttpError extends Error{constructor(readonly status:number,message:string){super(message);}}
 export interface EngineContext {
- registry:ProjectRegistry; providers:ProviderSettings;
+ registry:ProjectRegistry; providers:ProviderSettings; human:(request:IncomingMessage)=>string|null;
  project:(id:string)=>Promise<{viewer:ReturnType<typeof createGraphServer>;database:SqliteStore;origin:string}>;
 }
 export interface StudioDependencies {
  planningProvider?:(projectId:string)=>ProviderAdapter;
+ configureProject?:(qa:QaService,projectId:string)=>void;
  api?:(request:IncomingMessage,response:ServerResponse,context:EngineContext)=>Promise<boolean>;
  allowedHosts?:string[]; serveAssets?:boolean;
 }
@@ -29,13 +30,14 @@ export function createStudioServer(home:string,roots:string[]=[],dependencies:St
  function session(request:IncomingMessage){const cookie=request.headers.cookie?.split(';').map(v=>v.trim()).find(v=>v.startsWith(cookieName(request)+'='))?.split('=')[1];return cookie?auth.resolve(cookie):null;}
  function setCookie(request:IncomingMessage,response:ServerResponse,value:Session){const secure='encrypted'in request.socket&&request.socket.encrypted===true;response.setHeader('set-cookie',`${cookieName(request)}=${value.token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${Math.max(0,Math.floor((value.expiresAt-Date.now())/1000))}${secure?'; Secure':''}`);}
  async function body(request:IncomingMessage){let length=0;const chunks:Buffer[]=[];for await(const chunk of request){length+=chunk.length;if(length>262144)throw new HttpError(413,'Request too large');chunks.push(Buffer.from(chunk));}return JSON.parse(Buffer.concat(chunks).toString()) as unknown;}
- async function project(id:string){const record=registry.get(id);let cached=projects.get(id);if(!cached){cached=(async()=>{const database=new SqliteStore(join(record.path,'.qaspider/memory.db'));const artifacts=new ArtifactStore(database,join(record.path,'.qaspider/artifacts'));const qa=new QaService(database,artifacts,()=>dependencies.planningProvider?.(id)??providers.adapter(id));const viewer=createGraphServer(database,artifacts,qa);try{await new Promise<void>((resolve,reject)=>{viewer.server.once('error',reject);viewer.server.listen(0,'127.0.0.1',resolve);});const address=viewer.server.address();if(!address||typeof address==='string')throw new Error('Project service unavailable');return{database,viewer,origin:`http://127.0.0.1:${address.port}`};}catch(error){database.close();throw error;}})();projects.set(id,cached);cached.catch(()=>projects.delete(id));}return cached;}
+ function human(request:IncomingMessage){const value=session(request);if(!value?.authenticated)return null;if(request.method!=='GET'&&(!request.headers.origin||!auth.csrf(value,String(request.headers['x-csrf-token']??''))))throw new HttpError(403,'Human operation requires CSRF protection');return 'local-administrator';}
+ async function project(id:string){const record=registry.get(id);let cached=projects.get(id);if(!cached){cached=(async()=>{const database=new SqliteStore(join(record.path,'.qaspider/memory.db'));const artifacts=new ArtifactStore(database,join(record.path,'.qaspider/artifacts'));const qa=new QaService(database,artifacts,()=>dependencies.planningProvider?.(id)??providers.adapter(id));dependencies.configureProject?.(qa,id);const viewer=createGraphServer(database,artifacts,qa);try{await new Promise<void>((resolve,reject)=>{viewer.server.once('error',reject);viewer.server.listen(0,'127.0.0.1',resolve);});const address=viewer.server.address();if(!address||typeof address==='string')throw new Error('Project service unavailable');return{database,viewer,origin:`http://127.0.0.1:${address.port}`};}catch(error){database.close();throw error;}})();projects.set(id,cached);cached.catch(()=>projects.delete(id));}return cached;}
  async function handle(request:IncomingMessage,response:ServerResponse){
   response.setHeader('content-security-policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");response.setHeader('x-content-type-options','nosniff');response.setHeader('referrer-policy','no-referrer');response.setHeader('cache-control','no-store');
   const host=request.headers.host,port=request.socket.localPort;if(!host||![`127.0.0.1:${port}`,`localhost:${port}`,...(dependencies.allowedHosts??[])].includes(host))throw new HttpError(403,'Invalid host');const origin=`http://${host}`;
   if(request.headers.origin&&request.headers.origin!==origin)throw new HttpError(403,'Invalid origin');
   const url=new URL(request.url??'/',origin);if(url.origin!==origin||/%2f|%5c|%00/i.test(url.pathname))throw new HttpError(400,'Invalid path');
-  if(dependencies.api&&await dependencies.api(request,response,{registry,providers,project}))return;
+  if(dependencies.api&&await dependencies.api(request,response,{registry,providers,project,human}))return;
   let current=session(request);
   if(url.pathname==='/api/studio/auth'&&request.method==='GET'){if(!current){current=auth.open();setCookie(request,response,current);}json(response,{configured:auth.configured(),authenticated:current.authenticated,csrf:current.csrf});return;}
   if(url.pathname.startsWith('/api/')){
@@ -71,5 +73,5 @@ export function createStudioServer(home:string,roots:string[]=[],dependencies:St
   if(!path.startsWith(resolve(assets)+sep)||!existsSync(path)||!statSync(path).isFile())throw new HttpError(404,'Studio asset missing; run npm run build');
   const types:Record<string,string>={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'};response.writeHead(200,{'content-type':types[extname(path)]??'application/octet-stream'});response.end(readFileSync(path));
  }
- return{server,store,auth,registry,async shutdown(){await restoredMcp;await managedMcp.shutdown();for(const pending of projects.values()){const p=await pending.catch(()=>null);if(!p)continue;await p.viewer.shutdown();p.viewer.server.closeAllConnections();await new Promise<void>(resolve=>p.viewer.server.close(()=>resolve()));p.database.close();}server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));store.close();}};
+ return{server,store,auth,registry,context:{registry,providers,project,human} satisfies EngineContext,async shutdown(){await restoredMcp;await managedMcp.shutdown();for(const pending of projects.values()){const p=await pending.catch(()=>null);if(!p)continue;await p.viewer.shutdown();p.viewer.server.closeAllConnections();await new Promise<void>(resolve=>p.viewer.server.close(()=>resolve()));p.database.close();}server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));store.close();}};
 }
