@@ -1,3 +1,4 @@
+import {trackRuntime} from './runtime.js';
 import type Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import { approvalSchema, scopeSchema, scopeId, hash, navigationConfigSchema, navigationActionSchema, normalizeObservation, normalizeUrl, httpUrlSchema, isSafeNavigation, type Scope, type NavigationRepository, type NavigationScope, type NavigationConfig, type NormalizedObservation, type UIState, type Transition, type NavigationAction, type NavigationGraph, type NavigationRun, type NavigationApproval, type Environment, type RoleProfile } from '../../core/src/index.js';
@@ -58,9 +59,10 @@ export class SqliteNavigationRepository implements NavigationRepository {
     });
   }
   private run(row: Row): NavigationRun { return { id: String(row.id), scopeId: String(row.scope_id), kind: row.kind as NavigationRun['kind'], status: row.status as NavigationRun['status'], startedAt: Number(row.started_at), finishedAt: row.finished_at === null ? null : Number(row.finished_at), actions: Number(row.actions), requests: Number(row.requests), states: Number(row.states), message: String(row.message), evidenceIds: JSON.parse(String(row.evidence_ids)) as string[] }; }
-  startRun(scope: Scope, kind: 'map' | 'replay'): NavigationRun {
+  startRun(scope: Scope, kind: 'map' | 'replay'): NavigationRun {return this.atomic(()=>{
     const record = this.scoped(scope); const id = randomUUID(); this.db.prepare("INSERT INTO navigation_runs(id,scope_id,kind,status,started_at) VALUES (?,?,?,'running',?)").run(id, record.id, kind, Date.now());
-    return this.run(this.db.prepare('SELECT * FROM navigation_runs WHERE id = ?').get(id) as Row);
+    trackRuntime(this.db,'navigation',id);
+    return this.run(this.db.prepare('SELECT * FROM navigation_runs WHERE id = ?').get(id) as Row);});
   }
   finishRun(id: string, result: Pick<NavigationRun, 'status' | 'actions' | 'requests' | 'states' | 'message' | 'evidenceIds'>): NavigationRun {
     this.db.prepare('UPDATE navigation_runs SET status=?,finished_at=?,actions=?,requests=?,states=?,message=?,evidence_ids=? WHERE id=?').run(result.status, Date.now(), result.actions, result.requests, result.states, result.message, JSON.stringify(result.evidenceIds), id);

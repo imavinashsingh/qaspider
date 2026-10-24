@@ -134,6 +134,8 @@ export interface TestingRepository {
     configureAccess(id:string,policy:TestPolicy):PlanRevision;
     assertAuthorized(id:string,scenarioId:string):void;
     executionPolicy(id:string,scenarioId:string):TestPolicy;
+    assertReconciled(planId:string,scenarioId:string):void;
+    reviewInterruption(id:string,reviewer:string,notes:string):TestReport;
     importStory(markdown: string, sourceRef: string, context: StoryContext, storyId?: string): StoryRevision;
     getStory(id: string): StoryRevision | undefined;
     listStories(): StoryRevision[];
@@ -152,6 +154,7 @@ export interface TestingRepository {
     updateFixture(id: string, status: FixtureReservation['status'], message?: string): void;
     createJob(kind: QaJob['kind'], referenceId: string): QaJob;
     updateJob(id: string, status: QaJob['status'], message: string, resultId?: string): void;
+    listJobs():QaJob[];
     getJob(id: string): QaJob | undefined;
 }
 export function parseStory(markdown: string, sourceRef: string) {

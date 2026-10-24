@@ -11,6 +11,7 @@ class Blocked extends NavigationError {
 export class TestExecutor {
     constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStore, private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) { }
     async execute(planId: string, selected?: string[], signal?: AbortSignal, onProgress?: (run: TestRun, message: string) => void): Promise<TestReport> {
+        this.store.reconcileInterrupted();
         const plan = this.store.testing.getPlan(planId);
         if (plan?.status !== 'approved')
             throw new Error('Execution requires an approved exact plan revision');
@@ -68,6 +69,7 @@ export class TestExecutor {
         let executionPolicy=plan.policy;
         try {
             this.authorize(plan,scenario);
+            try{this.store.testing.assertReconciled(plan.id,scenario.id);}catch(error){throw new Blocked((error as Error).message);}
             executionPolicy=this.store.testing.executionPolicy(plan.id,scenario.id);
             if (!environment || environment.kind === 'production')
                 throw new Blocked('Execution is limited to development and QA');

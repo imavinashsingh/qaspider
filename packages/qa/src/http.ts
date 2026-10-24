@@ -25,7 +25,8 @@ export function createQaApi(service: QaService) {
                 const path = url.pathname.slice(8);
                 const id = url.searchParams.get('id') ?? '';
                 if (request.method === 'GET') {
-                    if(path==='permissions')json(response,store.testing.permissions(id));
+                    if(path==='jobs')json(response,store.testing.listJobs());
+                    else if(path==='permissions')json(response,store.testing.permissions(id));
                     else if (path === 'stories')
                         json(response, store.testing.listStories());
                     else if (path === 'plans')
@@ -80,6 +81,7 @@ export function createQaApi(service: QaService) {
                     else if(path==='access-config'){
                         const v=z.object({planRevisionId:z.string(),policy:policySchema}).strict().parse(data);json(response,store.testing.configureAccess(v.planRevisionId,v.policy));
                     }
+                    else if(path==='reconcile'){const v=z.object({runId:z.string(),reviewer:z.string().trim().min(1).max(200),notes:z.string().trim().min(10).max(1000),confirm:z.literal(true)}).strict().parse(data);json(response,await service.reconcileRun(v.runId,v.reviewer,v.notes));}
                     else if(path==='revise'){
                         const v=z.object({planRevisionId:z.string(),feedback:z.string().trim().min(1).max(2000)}).strict().parse(data);json(response,service.startRevision(v.planRevisionId,v.feedback),202);
                     }

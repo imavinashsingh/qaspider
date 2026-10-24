@@ -1,3 +1,4 @@
+import {reconcileRuntime} from './runtime.js';
 import Database from 'better-sqlite3';
 import { chmodSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -49,6 +50,7 @@ export class SqliteStore implements WorkspaceRepository, ArtifactRepository {
       }
     });
   }
+  reconcileInterrupted():string[]{return reconcileRuntime(this.db);}
   migrationVersions(): number[] { return (this.db.prepare('SELECT version FROM schema_migrations ORDER BY version').all() as Row[]).map(row => Number(row.version)); }
   transaction<T>(operation: () => T): T {
     return this.db.transaction(() => { const result = operation(); if (result && typeof (result as { then?: unknown }).then === 'function') throw new Error('Transactions must be synchronous'); return result; }).immediate();

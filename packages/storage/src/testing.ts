@@ -1,3 +1,4 @@
+import {trackRuntime} from './runtime.js';
 import {derivePermissions,permissionRequirementSchema,permissionDecisionInputSchema,type PermissionDecisionInput,type PermissionDecision,type ExecutionAuthorization} from '../../core/src/permissions.js';
 import type Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
@@ -182,6 +183,30 @@ export class SqliteTestingRepository implements TestingRepository {
         const missing=this.permissions(id).requirements.find(r=>r.scenarioIds.includes(scenarioId)&&r.status!=='allow');
         if(missing)throw new Error(`Required permission ${missing.status}: ${missing.name}`);
     }
+    assertReconciled(planId:string,scenarioId:string):void {
+        const plan=this.getPlan(planId);const scenario=plan?.proposal.scenarios.find(s=>s.id===scenarioId);
+        if(!plan||!scenario)throw new Error('Unknown scenario');
+        if(!scenario.steps.some(s=>s.kind==='click'&&s.submitUrl)&&!scenario.data.some(d=>['unique-email','duplicate-email'].includes(d.source.kind)))return;
+        // Revision edits cannot clear uncertainty from an earlier write in the same scope.
+        // Conservatively require review of every interrupted write for the same role/build/tenant.
+        const story=this.getStory(plan.storyRevisionId)!;
+        const previous=this.db.prepare("SELECT id,plan_revision_id,selected_json FROM test_runs WHERE status='interrupted'").all() as Row[];
+        for(const run of previous){
+            const oldPlan=this.getPlan(String(run.plan_revision_id));if(!oldPlan)throw new Error('Interrupted plan history is missing');
+            const oldStory=this.getStory(oldPlan.storyRevisionId)!;
+            if(JSON.stringify({...story.context,roleIds:[],featureFlags:Object.entries(story.context.featureFlags).sort()})!==JSON.stringify({...oldStory.context,roleIds:[],featureFlags:Object.entries(oldStory.context.featureFlags).sort()}))continue;
+            const selected=JSON.parse(String(run.selected_json)) as string[];
+            const uncertain=oldPlan.proposal.scenarios.some(s=>s.roleId===scenario.roleId&&selected.includes(s.id)&&(s.steps.some(v=>v.kind==='click'&&v.submitUrl)||s.data.some(d=>['unique-email','duplicate-email'].includes(d.source.kind))));
+            if(uncertain&&(!this.db.prepare('SELECT 1 FROM interruption_reviews WHERE run_id=? AND plan_hash=?').get(run.id,oldPlan.hash)||this.db.prepare("SELECT 1 FROM fixture_reservations WHERE run_id=? AND status IN ('orphan','created','reserved')").get(run.id)))throw new Error('Prior interrupted side effects require explicit reconciliation before another write');
+        }
+    }
+    reviewInterruption(id:string,reviewer:string,notes:string):TestReport {
+        return this.atomic(()=>{z.string().trim().min(1).max(200).parse(reviewer);z.string().trim().min(10).max(1000).parse(notes);
+            const report=this.report(id);if(!report||report.run.status!=='interrupted')throw new Error('Only interrupted runs can be reconciled');
+            if(report.fixtures.some(f=>f.status==='orphan'||f.status==='created'||f.status==='reserved'))throw new Error('Owned fixtures remain unresolved');
+            this.db.prepare('INSERT OR IGNORE INTO interruption_reviews VALUES(?,?,?,?,?,?)').run(id,report.plan.hash,JSON.stringify(report.story.context),reviewer,notes,Date.now());return report;
+        });
+    }
     executionPolicy(id:string,scenarioId:string):TestPolicy {
         this.assertAuthorized(id,scenarioId);
         const plan=this.getPlan(id)!;
@@ -207,6 +232,7 @@ export class SqliteTestingRepository implements TestingRepository {
             this.db.prepare("INSERT INTO test_runs VALUES (?,?, 'running',?,NULL,?)").run(id, planRevisionId, Date.now(), JSON.stringify(ids));
             for (const scenario of plan.proposal.scenarios)
                 this.db.prepare("INSERT INTO test_scenario_results VALUES (?,?,?,'NOT RUN')").run(id, scenario.id, scenario.roleId);
+            trackRuntime(this.db,'test',id);
             return this.run(this.db.prepare('SELECT * FROM test_runs WHERE id=?').get(id) as Row);
         });
     }
@@ -256,7 +282,8 @@ export class SqliteTestingRepository implements TestingRepository {
     reserveFixture(runId: string, scenarioId: string, attempt: number, kind: FixtureReservation['kind']): FixtureReservation { const id = randomUUID(); this.db.prepare("INSERT INTO fixture_reservations VALUES (?,?,?,?,?,'reserved','')").run(id, runId, scenarioId, attempt, kind); return this.fixture(this.db.prepare('SELECT * FROM fixture_reservations WHERE id=?').get(id) as Row); }
     updateFixture(id: string, status: FixtureReservation['status'], message = '') { this.db.prepare('UPDATE fixture_reservations SET status=?,message=? WHERE id=?').run(status, message, id); }
     private job(row: Row): QaJob { return { id: String(row.id), kind: row.kind as QaJob['kind'], status: row.status as QaJob['status'], referenceId: String(row.reference_id), resultId: row.result_id === null ? null : String(row.result_id), message: String(row.message) }; }
-    createJob(kind: QaJob['kind'], referenceId: string): QaJob { const id = randomUUID(); this.db.prepare("INSERT INTO qa_jobs VALUES (?,?,'running',?,NULL,'Starting',?,?)").run(id, kind, referenceId, Date.now(), Date.now()); return this.getJob(id)!; }
+    createJob(kind: QaJob['kind'], referenceId: string): QaJob { return this.atomic(()=>{const id = randomUUID(); this.db.prepare("INSERT INTO qa_jobs VALUES (?,?,'running',?,NULL,'Starting',?,?)").run(id, kind, referenceId, Date.now(), Date.now()); trackRuntime(this.db,'qa',id);return this.getJob(id)!;}); }
     updateJob(id: string, status: QaJob['status'], message: string, resultId?: string) { this.db.prepare('UPDATE qa_jobs SET status=?,message=?,result_id=coalesce(?,result_id),updated_at=? WHERE id=?').run(status, message, resultId ?? null, Date.now(), id); }
+    listJobs():QaJob[]{return (this.db.prepare('SELECT * FROM qa_jobs ORDER BY created_at DESC,rowid DESC').all() as Row[]).map(row=>this.job(row));}
     getJob(id: string): QaJob | undefined { const row = this.db.prepare('SELECT * FROM qa_jobs WHERE id=?').get(id) as Row | undefined; return row ? this.job(row) : undefined; }
 }

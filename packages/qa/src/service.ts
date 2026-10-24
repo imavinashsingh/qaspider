@@ -1,3 +1,4 @@
+import {z} from 'zod';
 import type { Browser } from 'playwright';
 import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
 import { CodexPlanningAdapter } from '../../providers/src/codex.js';
@@ -8,7 +9,7 @@ export class QaService {
         controller: AbortController;
         promise: Promise<void>;
     }>();
-    constructor(readonly store: SqliteStore, readonly artifacts: ArtifactStore, private readonly provider: ProviderAdapter | (()=>ProviderAdapter) = new CodexPlanningAdapter(), private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) { }
+    constructor(readonly store: SqliteStore, readonly artifacts: ArtifactStore, private readonly provider: ProviderAdapter | (()=>ProviderAdapter) = new CodexPlanningAdapter(), private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) {store.reconcileInterrupted();}
     async plan(storyId: string, policyInput?: TestPolicy, signal?: AbortSignal, revision?:{baseId:string;feedback:string}): Promise<PlanRevision> {
         const provider=typeof this.provider==='function'?this.provider():this.provider;
         const story = this.store.testing.getStory(storyId);
@@ -68,6 +69,21 @@ export class QaService {
         for (const inference of proposal.inferredRequirements)
             this.store.testing.addInference(story.id, inference.text, capabilities.id);
         return plan;
+    }
+    async reconcileRun(runId:string,reviewer:string,notes:string){
+        z.string().trim().min(1).max(200).parse(reviewer);z.string().trim().min(10).max(1000).parse(notes);
+        const report=this.store.testing.report(runId);if(!report||report.run.status!=='interrupted')throw new Error('Only interrupted runs can be reconciled');
+        const environment=this.store.getEnvironment(report.story.context.environmentId),policy=report.plan.policy.fixtures;
+        const signal=AbortSignal.timeout(30000);
+        for(const fixture of report.fixtures.filter(f=>['orphan','created','reserved'].includes(f.status))){
+            signal.throwIfAborted();const access=this.store.testing.permissions(report.plan.id);
+            if(report.plan.status!=='approved'||!policy||!environment||environment.kind==='production'||!environment.allowedOrigins.includes(new URL(policy.cleanupUrl).origin)||access.managed&&!access.requirements.some(r=>r.kind==='fixture-cleanup'&&r.scenarioIds.includes(fixture.scenarioId)&&r.status==='allow'))throw new Error('Owned cleanup needs its original approved scoped permission');
+            const token=this.env[policy.tokenEnv];if(!token)throw new Error('Fixture credential reference missing');
+            const email=`qa-${fixture.id.replaceAll('-','')}@${policy.emailDomain}`;
+            const response=await fetch(policy.cleanupUrl,{method:'POST',redirect:'error',headers:{'content-type':'application/json','x-fixture-token':token},body:JSON.stringify({email}),signal:AbortSignal.any([signal,AbortSignal.timeout(5000)])});
+            if(!response.ok)throw new Error('Owned cleanup failed; interruption remains unresolved');await response.body?.cancel();this.store.testing.updateFixture(fixture.id,'cleaned','Explicit interruption reconciliation');
+        }
+        return this.store.testing.reviewInterruption(runId,reviewer,notes);
     }
     startPlanning(storyId: string, policy?: TestPolicy): QaJob { return this.job('plan', storyId, async (signal, progress) => { progress('Validating provider isolation and retrieving scoped navigation'); return (await this.plan(storyId, policy, signal)).id; }); }
     startRevision(planId:string,feedback:string):QaJob {const plan=this.store.testing.getPlan(planId);if(!plan)throw new Error('Unknown plan');return this.job('plan',planId,async signal=>(await this.plan(plan.storyRevisionId,undefined,signal,{baseId:planId,feedback})).id);}
