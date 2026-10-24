@@ -8,3 +8,5 @@ playwright-report/
 *.db-wal
 .env
 playwright/.auth/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
