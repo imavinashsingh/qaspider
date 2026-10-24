@@ -28,6 +28,26 @@ export class TaskApi {
    else if(operation==='thread-search'){
     const terms=z.string().min(2).max(200).parse(url.searchParams.get('q')).match(/[\p{L}\p{N}]+/gu)??[];const query=terms.map(t=>'"'+t+'"').join(' OR ');send(response,query?this.store.db.prepare('SELECT message_id,thread_id,text FROM engine_message_search WHERE engine_message_search MATCH ? AND project_id=? UNION SELECT m.id,m.thread_id,m.text FROM engine_messages m JOIN engine_threads t ON t.id=m.thread_id LEFT JOIN engine_tasks k ON k.id=m.task_id WHERE t.project_id=? AND (t.title LIKE ? OR k.id LIKE ? OR k.title LIKE ? OR k.source_ref LIKE ?) LIMIT 50').all(query,projectId,projectId,...Array(4).fill('%'+url.searchParams.get('q')+'%')):[]);
    }else if(operation==='data-memory')send(response,this.store.db.prepare('SELECT id,reuse_key,guidance,references_json,actor,created_at FROM engine_data_memory WHERE project_id=?').all(projectId));
+   else if(operation==='knowledge'){
+    const backend=await context.project(projectId);
+    const rows=this.store.db.prepare('SELECT id,kind,status,text,source_ref,evidence_json,verified_at,expires_at FROM engine_knowledge WHERE project_id=? ORDER BY verified_at DESC LIMIT 100').all(projectId) as {id:string;kind:string;status:string;text:string;source_ref:string;evidence_json:string;verified_at:number;expires_at:number}[];
+    const items=rows.map(r=>({id:r.id,kind:r.kind,status:r.status,text:r.text,sourceRef:r.source_ref,evidenceIds:JSON.parse(r.evidence_json||'[]') as string[],verifiedAt:r.verified_at,expiresAt:r.expires_at,stale:r.expires_at<Date.now()}));
+    const scopes=backend.database.navigation.listScopes();
+    const routes=scopes.map(s=>{
+     const snapshot=backend.database.navigation.snapshot(s.scope);
+     return {
+      scope: s.scope,
+      statesCount: snapshot.states.length,
+      transitionsCount: snapshot.transitions.length,
+      approvedTransitionsCount: snapshot.transitions.filter(t=>t.status==='approved').length,
+      verifiedTransitionsCount: snapshot.transitions.filter(t=>t.status==='verified').length,
+      lastObserved: snapshot.states.reduce((max,st)=>Math.max(max,st.observedAt),0)
+     };
+    });
+    const schedules=this.store.db.prepare('SELECT * FROM engine_revalidation_schedules WHERE project_id=?').all(projectId);
+    send(response,{items,routes,schedules});
+   }else if(operation==='changes')send(response,this.store.db.prepare('SELECT * FROM engine_observed_changes WHERE task_id IN (SELECT id FROM engine_tasks WHERE project_id=?) ORDER BY created_at DESC LIMIT 50').all(projectId));
+   else if(operation==='investigations')send(response,this.store.db.prepare('SELECT * FROM engine_investigations WHERE project_id=? ORDER BY created_at DESC LIMIT 50').all(projectId));
    else send(response,{error:'Unknown task resource'},404);return true;
   }
   if(request.method!=='POST'){send(response,{error:'Method not allowed'},405);return true;}
