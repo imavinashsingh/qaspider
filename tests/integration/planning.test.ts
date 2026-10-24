@@ -30,7 +30,7 @@ it('retrieves only scoped relevant memory, redacts secrets, labels synthetic pla
         const qa = new QaService(store, artifacts, new Planner(), undefined, { FIXTURE_TOKEN: 'private-value' });
         await expect(qa.plan(story.id, { ...policy, actionGrants: [{ roleId: 'guest', url: 'https://evil.test/write', method: 'POST' }] })).rejects.toThrow('scope');
         expect(calls).toBe(0);
-        const plan = await qa.plan(story.id, policy);
+        const plan = await qa.plan(story.id);
         expect(calls).toBe(1);
         expect(plan.provider.synthetic).toBe(true);
         expect(plan.status).toBe('draft');

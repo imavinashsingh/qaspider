@@ -53,6 +53,7 @@ export class TestExecutor {
             throw new Blocked(setup ? 'Owned fixture setup failed' : 'Owned fixture cleanup failed');
         await response.body?.cancel();
     }
+    private authorize(plan:PlanRevision,scenario:Scenario){try{this.store.testing.assertAuthorized(plan.id,scenario.id);}catch(error){throw new Blocked((error as Error).message);}}
     private async attempt(runId: string, plan: PlanRevision, scenario: Scenario, attempt: number, artifacts: ArtifactStorage, signal?: AbortSignal): Promise<AttemptResult> {
         const story = this.store.testing.getStory(plan.storyRevisionId)!;
         const scope = scenarioScope(story.context, scenario);
@@ -64,10 +65,14 @@ export class TestExecutor {
         }> = [];
         const values = new Map<string, string>();
         const secrets: string[] = [];
+        let executionPolicy=plan.policy;
         try {
+            this.authorize(plan,scenario);
+            executionPolicy=this.store.testing.executionPolicy(plan.id,scenario.id);
             if (!environment || environment.kind === 'production')
                 throw new Blocked('Execution is limited to development and QA');
-            if (scenario.allowedActions.some(g => g.roleId !== scope.roleId || !environment.allowedOrigins.includes(new URL(g.url).origin) || !plan.policy.actionGrants.some(p => JSON.stringify(p) === JSON.stringify(g))))
+            const managed=this.store.testing.permissions(plan.id).managed;
+            if (!managed && scenario.allowedActions.some(g => g.roleId !== scope.roleId || !environment.allowedOrigins.includes(new URL(g.url).origin) || !plan.policy.actionGrants.some(p => JSON.stringify(p) === JSON.stringify(g))))
                 throw new Blocked('Write grants outside approved scope');
             const graph = this.store.navigation.snapshot(scope);
             if (!graph.scope || !graph.states.some(s => s.id === scenario.targetStateId))
@@ -80,7 +85,7 @@ export class TestExecutor {
                 else if (input.source.kind === 'generated-password')
                     value = randomBytes(24).toString('base64url');
                 else {
-                    const policy = plan.policy.fixtures;
+                    const policy = executionPolicy.fixtures;
                     if (!policy || !this.env[policy.tokenEnv])
                         throw new Blocked('Approved fixture lifecycle configuration is required');
                     if (![policy.setupUrl, policy.cleanupUrl].every(url => environment.allowedOrigins.includes(new URL(url).origin)))
@@ -89,6 +94,7 @@ export class TestExecutor {
                     value = `qa-${reservation.id.replaceAll('-', '')}@${policy.emailDomain}`;
                     owned.push({ reservation, email: value });
                     if (input.source.kind === 'duplicate-email') {
+                        this.authorize(plan,scenario);
                         await this.fixtureRequest(policy.setupUrl, value, policy, true, signal);
                         this.store.testing.updateFixture(reservation.id, 'created');
                     }
@@ -97,9 +103,10 @@ export class TestExecutor {
                 if (input.source.kind !== 'literal')
                     secrets.push(value);
             }
-            const navigation = await new NavigationEngine(this.store, artifacts, this.browser).runApprovedWorkflow(scope, scenario.targetStateId, scenario.allowedActions.map(g => g.url), async (session) => {
+            const navigation = await new NavigationEngine(this.store, artifacts, this.browser).runApprovedWorkflow(scope, scenario.targetStateId, executionPolicy.actionGrants.filter(g=>g.roleId===scenario.roleId).map(g=>g.url), async (session) => {
                 session.secrets.push(...secrets);
                 for (const step of scenario.steps) {
+                    this.authorize(plan,scenario);
                     session.budget.check();
                     await session.budget.action();
                     const target = resolveLocator(session.page, step.locator);
@@ -110,14 +117,15 @@ export class TestExecutor {
                         const type = await target.getAttribute('type');
                         if (type === 'password' && input.source.kind !== 'generated-password')
                             throw new Blocked('Password fields require generated data');
+                        this.authorize(plan,scenario);
                         await target.fill(values.get(step.valueKey)!);
                     }
                     else if (step.submitUrl) {
                         const url = step.submitUrl;
-                        if (!scenario.allowedActions.some(g => g.url === url))
+                        if (!executionPolicy.actionGrants.some(g => g.roleId===scenario.roleId&&g.url === url))
                             throw new Blocked('Submission lacks an approved write grant');
                         // Exactly one bounded POST endpoint is open only while this approved interaction is in flight.
-                        await session.permitWrite(url, async () => { const pending = session.page.waitForResponse(r => r.url() === url && r.request().method() === 'POST'); await target.click(); const response = await pending; await response.finished(); });
+                        await session.permitWrite(url, async () => { const pending = session.page.waitForResponse(r => r.url() === url && r.request().method() === 'POST'); await target.click(); const response = await pending; await response.finished(); },()=>this.authorize(plan,scenario));
                     }
                     else {
                         const safe = await target.evaluate(el => ({ tag: el.tagName, type: el.getAttribute('type'), form: !!el.closest('form') }));
@@ -127,12 +135,14 @@ export class TestExecutor {
                     }
                 }
                 for (const assertion of scenario.assertions) {
+                    this.authorize(plan,scenario);
                     session.budget.check();
                     let actual: unknown;
                     let passed = false;
                     if (assertion.kind === 'http-status') {
-                        if (!plan.policy.readGrants.some(g => g.roleId === scope.roleId && g.url === assertion.url) || !isSafeNavigation({ kind: 'link', locator: { kind: 'role', role: 'link', name: 'Read assertion' }, targetUrl: assertion.url }, environment.allowedOrigins, graph.scope!.config))
+                        if (!executionPolicy.readGrants.some(g => g.roleId === scope.roleId && g.url === assertion.url) || !isSafeNavigation({ kind: 'link', locator: { kind: 'role', role: 'link', name: 'Read assertion' }, targetUrl: assertion.url }, environment.allowedOrigins, graph.scope!.config))
                             throw new Blocked('Read assertion lacks an approved scoped endpoint');
+                        this.authorize(plan,scenario);
                         session.budget.request();
                         const response = await session.context.request.get(assertion.url, { maxRedirects: 0, timeout: 5000 });
                         actual = response.status();
@@ -187,7 +197,9 @@ export class TestExecutor {
         finally {
             for (const item of owned) {
                 try {
-                    await this.fixtureRequest(plan.policy.fixtures!.cleanupUrl, item.email, plan.policy.fixtures!, false);
+                    const access=this.store.testing.permissions(plan.id);
+                    if(access.managed&&!access.requirements.some(r=>r.kind==='fixture-cleanup'&&r.scenarioIds.includes(scenario.id)&&r.status==='allow'))throw new Blocked('Cleanup permission denied; reconciliation required');
+                    await this.fixtureRequest(executionPolicy.fixtures!.cleanupUrl, item.email, executionPolicy.fixtures!, false);
                     this.store.testing.updateFixture(item.reservation.id, 'cleaned');
                 }
                 catch {

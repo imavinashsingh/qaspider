@@ -1,3 +1,4 @@
+import {derivePermissions,permissionRequirementSchema,permissionDecisionInputSchema,type PermissionDecisionInput,type PermissionDecision,type ExecutionAuthorization} from '../../core/src/permissions.js';
 import type Database from 'better-sqlite3';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
@@ -50,7 +51,7 @@ export class SqliteTestingRepository implements TestingRepository {
         this.db.prepare('INSERT INTO requirements VALUES (?,?,?,?,?,?)').run(id, storyRevisionId, `AI-${id.slice(0, 8)}`, text, `provider:${provider}`, 'ai-inferred');
         return this.requirement(this.db.prepare('SELECT * FROM requirements WHERE id=?').get(id) as Row);
     }
-    private validate(story: StoryRevision, proposal: PlanProposal, policy: TestPolicy) {
+    private validate(story: StoryRevision, proposal: PlanProposal, policy: TestPolicy, proposed=false) {
         const context = this.context(story.context);
         const env = this.environment(context.environmentId)!;
         for (const grant of [...policy.actionGrants, ...policy.readGrants])
@@ -64,24 +65,24 @@ export class SqliteTestingRepository implements TestingRepository {
                 if (!story.requirements.some(req => req.id === id))
                     throw new Error('Unknown requirement source');
             for (const grant of scenario.allowedActions)
-                if (grant.roleId !== scenario.roleId || !policy.actionGrants.some(item => hash(item) === hash(grant)))
+                if (grant.roleId !== scenario.roleId || !env.allowedOrigins.includes(new URL(grant.url).origin) || (!proposed && !policy.actionGrants.some(item => hash(item) === hash(grant))))
                     throw new Error('Scenario action lacks policy permission');
             for (const step of scenario.steps)
-                if (step.kind === 'click' && step.submitUrl && !scenario.allowedActions.some(grant => grant.url === step.submitUrl && grant.method === 'POST'))
-                    throw new Error('Submission requires an explicit allowed action');
+                if (step.kind === 'click' && step.submitUrl && (!env.allowedOrigins.includes(new URL(step.submitUrl).origin) || (!proposed && !scenario.allowedActions.some(grant => grant.url === step.submitUrl && grant.method === 'POST'))))
+                    throw new Error('Submission outside scope or missing explicit allowed action');
             for (const assertion of scenario.assertions)
-                if (assertion.kind === 'http-status' && !policy.readGrants.some(grant => grant.roleId === scenario.roleId && grant.url === assertion.url))
+                if (assertion.kind === 'http-status' && (!env.allowedOrigins.includes(new URL(assertion.url).origin) || (!proposed && !policy.readGrants.some(grant => grant.roleId === scenario.roleId && grant.url === assertion.url))))
                     throw new Error('HTTP assertion requires a declared read grant');
         }
     }
-    savePlan(storyRevisionId: string, input: PlanProposal, policyInput: TestPolicy, provider: PlanRevision['provider'], existingPlanId?: string): PlanRevision {
+    savePlan(storyRevisionId: string, input: PlanProposal, policyInput: TestPolicy, provider: PlanRevision['provider'], existingPlanId?: string, proposed=false): PlanRevision {
         return this.atomic(() => {
             const story = this.getStory(storyRevisionId);
             if (!story)
                 throw new Error('Unknown story revision');
             const proposal = proposalSchema.parse(input);
             const policy = policySchema.parse(policyInput);
-            this.validate(story, proposal, policy);
+            this.validate(story, proposal, policy, proposed);
             const planId = existingPlanId ?? randomUUID();
             if (!existingPlanId)
                 this.db.prepare('INSERT INTO plans VALUES (?,?)').run(planId, story.storyId);
@@ -93,14 +94,16 @@ export class SqliteTestingRepository implements TestingRepository {
             const revision = Number((this.db.prepare('SELECT coalesce(max(revision),0)+1 AS n FROM plan_revisions WHERE plan_id=?').get(planId) as Row).n);
             const id = randomUUID();
             this.db.prepare('INSERT INTO plan_revisions VALUES (?,?,?,?,?,?,?,?,?)').run(id, planId, revision, storyRevisionId, JSON.stringify(proposal), JSON.stringify(policy), hash({ storyRevisionId, proposal, policy }), JSON.stringify(providerMetadataSchema.parse(provider)), Date.now());
+            if(proposed)this.db.prepare('INSERT INTO permission_workflows VALUES (?,?)').run(id,Date.now());
             return this.getPlan(id)!;
         });
     }
+    saveProposedPlan(storyId:string,proposal:PlanProposal,policy:TestPolicy,provider:PlanRevision['provider'],planId?:string){return this.savePlan(storyId,proposal,policy,provider,planId,true);}
     revisePlan(baseId: string, proposal: PlanProposal) {
         const previous = this.getPlan(baseId);
         if (!previous)
             throw new Error('Unknown plan');
-        return this.savePlan(previous.storyRevisionId, proposal, previous.policy, previous.provider, previous.planId);
+        return this.savePlan(previous.storyRevisionId, proposal, previous.policy, previous.provider, previous.planId,true);
     }
     getPlan(id: string): PlanRevision | undefined {
         const row = this.db.prepare('SELECT * FROM plan_revisions WHERE id=?').get(id) as Row | undefined;
@@ -127,7 +130,7 @@ export class SqliteTestingRepository implements TestingRepository {
             if (Number(latest.n) !== plan.revision)
                 throw new Error('Only the latest plan revision may be approved');
             const story = this.getStory(plan.storyRevisionId)!;
-            this.validate(story, plan.proposal, plan.policy);
+            this.validate(story, plan.proposal, plan.policy,this.managed(id));
             for (const reqId of requirementIds) {
                 if (!story.requirements.some(req => req.id === reqId))
                     throw new Error('Cross-story requirement approval');
@@ -141,6 +144,54 @@ export class SqliteTestingRepository implements TestingRepository {
                         throw new Error('Every cited requirement needs explicit approval');
             this.db.prepare('INSERT OR IGNORE INTO plan_approvals VALUES (?,?,?,?,?)').run(randomUUID(), id, plan.hash, reviewer, Date.now());
             return this.getPlan(id)!;
+        });
+    }
+    private managed(id:string){return !!this.db.prepare('SELECT 1 FROM permission_workflows WHERE plan_revision_id=?').get(id);}
+    permissions(id:string):ExecutionAuthorization {
+        const plan=this.getPlan(id);if(!plan)throw new Error('Unknown plan revision');
+        const decisions=(this.db.prepare('SELECT * FROM permission_decisions WHERE plan_revision_id=? ORDER BY rowid').all(id) as Row[]).map(row=>({id:String(row.id),planRevisionId:id,planHash:String(row.plan_hash),scope:storyContextSchema.parse(JSON.parse(String(row.scope_json))),permissionId:String(row.permission_id),request:permissionRequirementSchema.parse(JSON.parse(String(row.request_json))),decision:row.decision as 'allow'|'deny',reviewer:String(row.reviewer),decidedAt:Number(row.decided_at)})) as PermissionDecision[];
+        const scope=this.getStory(plan.storyRevisionId)!.context;
+        const requirements=derivePermissions(plan).map(r=>{const last=decisions.filter(d=>d.permissionId===r.id&&d.planHash===plan.hash&&hash(d.scope)===hash(scope)&&hash({...d.request,status:'pending'})===hash({...r,status:'pending'})).at(-1);return {...r,status:last?.decision??r.status};});
+        return {planRevisionId:id,planHash:plan.hash,managed:this.managed(id),requirements,decisions};
+    }
+    decidePermissions(id:string,expectedHash:string,input:PermissionDecisionInput[],reviewer:string):ExecutionAuthorization {
+        return this.atomic(()=>{
+            z.string().trim().min(1).max(200).parse(reviewer);const plan=this.getPlan(id);
+            if(!plan||plan.hash!==expectedHash||!this.managed(id))throw new Error('Unknown or changed plan revision');
+            const latest=this.db.prepare('SELECT max(revision) AS n FROM plan_revisions WHERE plan_id=?').get(plan.planId) as Row;
+            if(Number(latest.n)!==plan.revision)throw new Error('Decide permissions on the latest revision');
+            const values=z.array(permissionDecisionInputSchema).max(200).parse(input);if(new Set(values.map(v=>v.permissionId)).size!==values.length)throw new Error('Duplicate permission decision');
+            const story=this.getStory(plan.storyRevisionId)!;const environment=this.environment(story.context.environmentId)!;
+            for(const value of values){const request=derivePermissions(plan).find(r=>r.id===value.permissionId);if(!request)throw new Error('Unknown permission request');
+                if(value.decision==='allow'&&(!request.url||!environment.allowedOrigins.includes(new URL(request.url).origin)||environment.kind==='production'&&request.changesData))throw new Error('Unsupported permission or forbidden scope');
+                this.db.prepare('INSERT INTO permission_decisions VALUES (?,?,?,?,?,?,?,?,?)').run(randomUUID(),id,plan.hash,JSON.stringify(story.context),request.id,JSON.stringify(request),value.decision,reviewer,Date.now());
+            }return this.permissions(id);
+        });
+    }
+    configureAccess(id:string,input:TestPolicy):PlanRevision {
+        const plan=this.getPlan(id);if(!plan||!this.managed(id))throw new Error('Unknown proposed plan');
+        const policy=policySchema.parse(input);if(policy.discovery)throw new Error('Planning and authorization cannot discover');
+        return this.saveProposedPlan(plan.storyRevisionId,plan.proposal,policy,plan.provider,plan.planId);
+    }
+    assertAuthorized(id:string,scenarioId:string):void {
+        const plan=this.getPlan(id);if(plan?.status!=='approved')throw new Error('Exact plan revision is not approved');
+        const story=this.getStory(plan.storyRevisionId)!;this.validate(story,plan.proposal,plan.policy,this.managed(id));
+        if(!plan.proposal.scenarios.some(s=>s.id===scenarioId))throw new Error('Unknown scoped scenario');
+        if(this.managed(id)){const latest=this.db.prepare('SELECT max(revision) AS n FROM plan_revisions WHERE plan_id=?').get(plan.planId) as Row;if(Number(latest.n)!==plan.revision)throw new Error('Plan revision superseded; review current permissions');}
+        if(!this.managed(id))return; // Legacy plans retain their explicitly supplied, immutable policy contract.
+        const missing=this.permissions(id).requirements.find(r=>r.scenarioIds.includes(scenarioId)&&r.status!=='allow');
+        if(missing)throw new Error(`Required permission ${missing.status}: ${missing.name}`);
+    }
+    executionPolicy(id:string,scenarioId:string):TestPolicy {
+        this.assertAuthorized(id,scenarioId);
+        const plan=this.getPlan(id)!;
+        if(!this.managed(id))return plan.policy;
+        const requests=this.permissions(id).requirements.filter(r=>r.scenarioIds.includes(scenarioId)&&r.status==='allow');
+        return policySchema.parse({
+            actionGrants:requests.filter(r=>r.kind==='submit').map(r=>({roleId:r.roleId,url:r.url!,method:'POST'})),
+            readGrants:requests.filter(r=>r.kind==='read').map(r=>({roleId:r.roleId,url:r.url!})),
+            fixtures:requests.some(r=>r.kind==='fixture-cleanup')?plan.policy.fixtures:null,
+            discovery:false
         });
     }
     private run(row: Row): TestRun { return { id: String(row.id), planRevisionId: String(row.plan_revision_id), status: row.status as TestRun['status'], startedAt: Number(row.started_at), finishedAt: row.finished_at === null ? null : Number(row.finished_at), selectedScenarioIds: JSON.parse(String(row.selected_json)) as string[] }; }

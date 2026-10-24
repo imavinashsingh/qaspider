@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
-import { policySchema, proposalSchema, storyContextSchema } from '../../core/src/index.js';
+import { policySchema, proposalSchema, storyContextSchema,permissionDecisionInputSchema } from '../../core/src/index.js';
 import { QaService } from '../../qa/src/service.js';
 import { TestExecutor } from '../../qa/src/execution.js';
 import { CodexPlanningAdapter } from '../../providers/src/codex.js';
@@ -14,7 +14,7 @@ export async function runTestingCli(args: string[], output: (line: string) => vo
     process.on('SIGINT', cancel);
     process.on('SIGTERM', cancel);
     try {
-        const { values, positionals } = parseArgs({ args, allowPositionals: true, strict: true, options: { workspace: { type: 'string' }, file: { type: 'string' }, context: { type: 'string' }, source: { type: 'string' }, story: { type: 'string' }, policy: { type: 'string' }, plan: { type: 'string' }, reviewer: { type: 'string' }, requirements: { type: 'string' }, scenarios: { type: 'string' }, run: { type: 'string' }, 'no-ai': { type: 'boolean' } } });
+        const { values, positionals } = parseArgs({ args, allowPositionals: true, strict: true, options: { workspace: { type: 'string' }, file: { type: 'string' }, context: { type: 'string' }, source: { type: 'string' }, story: { type: 'string' }, policy: { type: 'string' }, plan: { type: 'string' }, reviewer: { type: 'string' }, requirements: { type: 'string' }, scenarios: { type: 'string' }, run: { type: 'string' }, 'no-ai': { type: 'boolean' }, hash:{type:'string'} } });
         const [command, operation, ...extra] = positionals;
         if (extra.length)
             throw new Error('Invalid command');
@@ -47,10 +47,18 @@ export async function runTestingCli(args: string[], output: (line: string) => vo
             return 0;
         }
         if (command === 'plan' && operation === 'generate') {
-            if (!values.story || !values.policy)
-                throw new Error('Story revision and policy file required');
-            output(JSON.stringify(await service.plan(values.story, policySchema.parse(JSON.parse(readFileSync(resolve(values.policy), 'utf8'))), controller.signal)));
+            if (!values.story)
+                throw new Error('Story revision required');
+            output(JSON.stringify(await service.plan(values.story, values.policy?policySchema.parse(JSON.parse(readFileSync(resolve(values.policy), 'utf8'))):undefined, controller.signal)));
             return 0;
+        }
+        if(command==='plan'&&operation==='permissions'){output(JSON.stringify(store.testing.permissions(values.plan??'')));return 0;}
+        if(command==='plan'&&operation==='authorize'){
+            if(!values.plan||!values.hash||!values.reviewer)throw new Error('Exact plan, hash, reviewer and decision file required');
+            output(JSON.stringify(store.testing.decidePermissions(values.plan,values.hash,permissionDecisionInputSchema.array().parse(JSON.parse(file())),values.reviewer)));return 0;
+        }
+        if(command==='plan'&&operation==='configure-access'){
+            output(JSON.stringify(store.testing.configureAccess(values.plan??'',policySchema.parse(JSON.parse(file())))));return 0;
         }
         if (command === 'plan' && operation === 'list') {
             output(JSON.stringify(store.testing.listPlans()));

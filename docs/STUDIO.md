@@ -1,4 +1,4 @@
-# Studio operator and developer guide (M5.1–M5.2)
+# Studio operator and developer guide (M5.1–M5.3)
 
 ## Start and first-run setup
 
@@ -68,3 +68,5 @@ Single administrator only; no remote hosting/OAuth, multi-user access control, a
 The MCP panel shows a project-pinned process status (stopped/starting/running/failed), PID and last successful protocol health check. Enable requires a valid authorization file. Saved enable state lives in the existing global studio_values table, so no migration is added. The panel polls every five seconds and checks protocol responsiveness. A disconnected or unresponsive process is marked failed; Restart is explicit rather than an unlimited automatic retry loop. Archiving disables that project's managed service. Studio shutdown closes managed clients/processes but retains desired enable state for restart.
 
 An external stdio client starts its own server process, with its own fixed authorization snapshot. It does not connect to Studio's managed process, does not require the Studio toggle and is not monitored by that panel. Use the generated client configuration or the optional npm run --silent start:mcp shortcut after building. No HTTP MCP endpoint or new authentication bypass is introduced. Restart a process after editing its authorization file.
+
+For story planning, reviewed access decisions and execution, follow the [M5.3 story-first guide](STORY-FIRST.md). Generate the plan first; endpoint and fixture configuration belongs after planning.

@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { z } from 'zod';
-import { storyContextSchema, policySchema, proposalSchema } from '../../core/src/index.js';
+import { storyContextSchema, policySchema, proposalSchema,permissionDecisionInputSchema } from '../../core/src/index.js';
 import { QaService } from './service.js';
 export function createQaApi(service: QaService) {
     const { store, artifacts } = service;
@@ -25,7 +25,8 @@ export function createQaApi(service: QaService) {
                 const path = url.pathname.slice(8);
                 const id = url.searchParams.get('id') ?? '';
                 if (request.method === 'GET') {
-                    if (path === 'stories')
+                    if(path==='permissions')json(response,store.testing.permissions(id));
+                    else if (path === 'stories')
                         json(response, store.testing.listStories());
                     else if (path === 'plans')
                         json(response, store.testing.listPlans());
@@ -68,8 +69,19 @@ export function createQaApi(service: QaService) {
                         json(response, store.testing.importStory(v.markdown, v.sourceRef, v.context, v.storyId), 201);
                     }
                     else if (path === 'plan') {
-                        const v = z.object({ storyRevisionId: z.string(), policy: policySchema }).strict().parse(data);
-                        json(response, service.startPlanning(v.storyRevisionId, v.policy), 202);
+                        const v = z.object({ storyRevisionId: z.string(), policy: policySchema.optional() }).strict().parse(data);
+                        // HTTP planning is always proposal-only; caller-supplied grants cannot create authority.
+                        json(response, service.startPlanning(v.storyRevisionId), 202);
+                    }
+                    else if(path==='permissions'){
+                        const v=z.object({planRevisionId:z.string(),planHash:z.string(),decisions:z.array(permissionDecisionInputSchema),reviewer:z.string()}).strict().parse(data);
+                        json(response,store.testing.decidePermissions(v.planRevisionId,v.planHash,v.decisions,v.reviewer));
+                    }
+                    else if(path==='access-config'){
+                        const v=z.object({planRevisionId:z.string(),policy:policySchema}).strict().parse(data);json(response,store.testing.configureAccess(v.planRevisionId,v.policy));
+                    }
+                    else if(path==='revise'){
+                        const v=z.object({planRevisionId:z.string(),feedback:z.string().trim().min(1).max(2000)}).strict().parse(data);json(response,service.startRevision(v.planRevisionId,v.feedback),202);
                     }
                     else if (path === 'edit') {
                         const v = z.object({ planRevisionId: z.string(), proposal: proposalSchema }).strict().parse(data);

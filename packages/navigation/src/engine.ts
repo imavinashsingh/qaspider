@@ -41,7 +41,7 @@ async function observe(page: Page, config: NavigationConfig, secrets: string[], 
   }, config) as Observation;
   return normalizeObservation(snapshot, config, secrets);
 }
-export interface WorkflowSession { context: BrowserContext; page: Page; budget: Budget; secrets: string[]; origins: string[]; permitWrite<T>(url: string, work: () => Promise<T>): Promise<T>; }
+export interface WorkflowSession { context: BrowserContext; page: Page; budget: Budget; secrets: string[]; origins: string[]; permitWrite<T>(url: string, work: () => Promise<T>, authorize?:()=>void): Promise<T>; }
 type Session = WorkflowSession;
 export class NavigationEngine {
   constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStorage, private readonly browser?: Browser) {}
@@ -65,14 +65,14 @@ export class NavigationEngine {
     const context = await browser.newContext({ serviceWorkers: 'block', acceptDownloads: false, ...(storageState ? { storageState } : {}) });
     const close = () => { void context.close().catch(() => {}); }; budget.signal.addEventListener('abort', close, { once: true });
     context.on('close', () => budget.signal.removeEventListener('abort', close));
-    let authWriteOpen = false; let approvedWrite: string | null = null;
+    let authWriteOpen = false; let approvedWrite: string | null = null;let authorizeWrite:(()=>void)|undefined;
     if (grants.some(url => !httpUrlSchema.safeParse(url).success || !origins.includes(new URL(url).origin))) { await context.close(); throw new NavigationError('Write grant outside scope', 'blocked'); }
     await context.route('**/*', async route => {
       try {
         budget.request(); const request = route.request(); const url = new URL(request.url());
         if (!origins.includes(url.origin) || url.username || url.password) { await route.abort(); return; }
         if (!['GET', 'HEAD'].includes(request.method()) && !((authWriteOpen && request.method() === 'POST' && config.auth && url.toString() === config.auth.submitUrl) || (request.method() === 'POST' && approvedWrite === url.toString()))) { await route.abort(); return; }
-        if (request.method() === 'POST' && approvedWrite === url.toString()) approvedWrite = null;
+        if (request.method() === 'POST' && approvedWrite === url.toString()) {authorizeWrite?.();approvedWrite = null;}
         if (['GET', 'HEAD'].includes(request.method()) && !isSafeNavigation({ kind: 'link', locator: { kind: 'role', role: 'link', name: 'Resource' }, targetUrl: url.toString() }, origins, config)) { await route.abort(); return; }
         await route.continue();
       } catch (error) { if (error instanceof NavigationError) this.requestFailure = error; await route.abort().catch(() => {}); }
@@ -81,7 +81,7 @@ export class NavigationEngine {
     const page = await context.newPage(); context.on('page', other => { if (other !== page) void other.close().catch(() => {}); });
     page.on('dialog', dialog => { void dialog.dismiss(); }); page.on('download', download => { void download.cancel(); });
     page.setDefaultTimeout(budget.limits.actionTimeoutMs); page.setDefaultNavigationTimeout(budget.limits.actionTimeoutMs);
-    const session: Session = { context, page, budget, secrets, origins, async permitWrite(url, work) { if (!grants.includes(url) || approvedWrite) throw new NavigationError('Unapproved write', 'blocked'); approvedWrite = url; try { return await work(); } finally { approvedWrite = null; } } };
+    const session: Session = { context, page, budget, secrets, origins, async permitWrite(url, work,authorize) { if (!grants.includes(url) || approvedWrite) throw new NavigationError('Unapproved write', 'blocked'); authorize?.();approvedWrite = url;authorizeWrite=authorize; try { return await work(); } finally { approvedWrite = null;authorizeWrite=undefined; } } };
     try {
       if (role.auth.kind === 'guest') { if (config.auth) throw new NavigationError('Guest scope cannot use authenticated bootstrap', 'blocked'); }
       else {

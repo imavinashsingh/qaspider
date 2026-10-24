@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "recordedAt": "2026-10-24T05:07:42.197Z",
+  "realCodexPlanningCalls": 1,
+  "provider": {
+    "id": "codex",
+    "synthetic": false,
+    "validationId": "3d122a5f-44a8-419e-85e3-c3f3c30721c8"
+  },
+  "isolation": {
+    "id": "3d122a5f-44a8-419e-85e3-c3f3c30721c8",
+    "version": "codex-cli 0.162.0-alpha.17.2",
+    "binarySha256": "73b73b048546993298234a295de01ef2424e7a8b29def9d0ecb1ca7cb77500d4",
+    "toolNames": [],
+    "timeoutValidated": true,
+    "cancellationValidated": true
+  },
+  "planningRegistrations": 0,
+  "withoutPreconfiguredPermissions": true,
+  "permissionCount": 3,
+  "approvedPlanId": "52bc09a9-850e-4fcc-9303-197f64430556",
+  "planHash": "fe8874fbdaeb92b175e30486631cb33701ebd6a545506d90a142d4a2a83f499f",
+  "runId": "bb496a21-07dd-41e4-bb84-29e02c8e4485",
+  "replayRunId": "d50c9237-bba9-47dd-8bbc-59b0cc27c8af",
+  "reopenedSqlite": true,
+  "aiFreeReplay": true,
+  "requirementsPreserved": true,
+  "summary": {
+    "PASS": 2,
+    "FAIL": 1,
+    "BLOCKED": 0,
+    "INCONCLUSIVE": 0,
+    "FLAKY": 0,
+    "NOT RUN": 0
+  },
+  "results": [
+    {
+      "scenarioId": "registration-valid",
+      "status": "PASS",
+      "evidenceIds": [
+        "fb540363-6c7f-4417-bbd1-ca45cbfbbc95",
+        "f3f67a90-9611-43c3-bcc8-6d6af24726b4",
+        "32360000-c9b6-46ae-a80c-641ba809df09",
+        "06d43e32-0cd6-4293-8156-74a03e8d0111"
+      ]
+    },
+    {
+      "scenarioId": "registration-invalid-email",
+      "status": "PASS",
+      "evidenceIds": [
+        "b66275e2-eaa3-405d-ae9c-c49a6e814ccf",
+        "fd6f505a-6f5d-4b32-a92c-a466aa8cc548",
+        "a9e5bc96-1e4b-4439-90d0-7af0978b566a",
+        "76b7dd27-d839-4f17-bcdf-ff4cd8900e97"
+      ]
+    },
+    {
+      "scenarioId": "registration-duplicate-email",
+      "status": "FAIL",
+      "evidenceIds": [
+        "7219603a-759b-4aaa-a369-fc7a2a3798ad",
+        "0409b8b8-e901-4833-ac05-b36f06eaade7",
+        "eb779cb3-f393-4b26-9284-6c9210abca49",
+        "04d9325d-83cb-42b2-a5ea-3783f86344a0"
+      ]
+    }
+  ],
+  "fixtureStatuses": [
+    "cleaned",
+    "cleaned"
+  ],
+  "workspace": "/home/avi/Opensource/qaspider/.qaspider/m5-3/real-benchmark/2026-10-24T05-07-09.636Z",
+  "evidenceSha256": "dcd17ad446ac6cdfe7d1d5f77b9c5425efcf1cb580d9fdd78e59a8902908ee69",
+  "finalBuildReplay": {
+    "recordedAt": "2026-10-24T05:16:14.860Z",
+    "finalBuild": true,
+    "providerCalls": 0,
+    "benchmarkRestarted": true,
+    "databaseReopened": true,
+    "runId": "8b110b94-3c30-467f-8ad0-abce35cfdc16",
+    "planHash": "fe8874fbdaeb92b175e30486631cb33701ebd6a545506d90a142d4a2a83f499f",
+    "summary": {
+      "PASS": 2,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 0
+    },
+    "scenarioResults": [
+      {
+        "scenarioId": "registration-valid",
+        "status": "PASS",
+        "evidenceIds": [
+          "00045304-527c-442e-bfd1-3da94563f70c",
+          "784591d2-ff1a-4b66-9a91-de2502cc52d3",
+          "4d50d7cc-3e8d-4c73-85dc-7bb8def75f36",
+          "7c815886-2124-4312-8658-d187a1e4ec2a"
+        ]
+      },
+      {
+        "scenarioId": "registration-invalid-email",
+        "status": "PASS",
+        "evidenceIds": [
+          "98ec1353-dbf6-49c3-aee2-f160b91d31e2",
+          "8319c11a-58ea-4869-ad38-1661f0da1f69",
+          "bf17d449-86b2-4c5c-85c1-bf53e4a84617",
+          "b1b95ba3-bac2-44e2-b54d-a1943c509914"
+        ]
+      },
+      {
+        "scenarioId": "registration-duplicate-email",
+        "status": "FAIL",
+        "evidenceIds": [
+          "276a774f-5d0f-4562-9e5b-e7eb38d52876",
+          "246e4589-4fb4-488b-9553-1646a06ae4c8",
+          "7f016b8f-8983-4b88-82ca-f8414bfc2993",
+          "3bcad268-b90d-44eb-ac03-61a5aa40db25"
+        ]
+      }
+    ],
+    "fixtureCleanup": [
+      "cleaned",
+      "cleaned"
+    ],
+    "privateEvidence": "/home/avi/Opensource/qaspider/.qaspider/m5-3/real-benchmark/2026-10-24T05-07-09.636Z/final-build-replay.json",
+    "sha256": "1a70ab46dbcb95ebef7fb39fda8888d2dc82770bd6a39ba3da22da652bcd73eb"
+  }
+}

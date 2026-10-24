@@ -24,7 +24,8 @@
     "start:studio": "tsx packages/cli/src/main.ts studio",
     "start:benchmark": "tsx apps/benchmark/src/main.ts",
     "start:mcp": "node dist/packages/cli/src/main.js serve --mcp",
-    "start:demo": "npm run build && node scripts/start.mjs --benchmark"
+    "start:demo": "npm run build && node scripts/start.mjs --benchmark",
+    "verify:story-first": "npm run build && node scripts/verify-story-first.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",

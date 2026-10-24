@@ -128,6 +128,12 @@ export interface QaJob {
     message: string;
 }
 export interface TestingRepository {
+    saveProposedPlan(storyId:string,proposal:PlanProposal,policy:TestPolicy,provider:PlanRevision['provider'],planId?:string):PlanRevision;
+    permissions(id:string):import('./permissions.js').ExecutionAuthorization;
+    decidePermissions(id:string,hash:string,decisions:import('./permissions.js').PermissionDecisionInput[],reviewer:string):import('./permissions.js').ExecutionAuthorization;
+    configureAccess(id:string,policy:TestPolicy):PlanRevision;
+    assertAuthorized(id:string,scenarioId:string):void;
+    executionPolicy(id:string,scenarioId:string):TestPolicy;
     importStory(markdown: string, sourceRef: string, context: StoryContext, storyId?: string): StoryRevision;
     getStory(id: string): StoryRevision | undefined;
     listStories(): StoryRevision[];

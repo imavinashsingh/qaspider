@@ -73,20 +73,26 @@ test('approved registration cases detect duplicate defect, keep expectations, re
             await page.goto(`${origin}/#token=${viewer.token}`);
             await page.getByRole('button', { name: 'Test Studio', exact: true }).click();
             await expect(page.getByRole('heading', { name: 'Test Studio', exact: true })).toBeVisible();
-            await page.getByRole('button', { name: 'Save story revision', exact: true }).click();
-            await expect(page.getByRole('status')).toContainText('Saved story revision');
-            await page.getByRole('button', { name: 'Use local benchmark permissions' }).click();
-            await page.getByRole('button', { name: 'Generate plan with Codex' }).click();
-            await expect(page.getByLabel('Scenario proposal')).toContainText('Synthetic test fixture plan');
+            await page.getByRole('button', { name: 'Generate Test Plan' }).click();
+            await expect(page.getByLabel('Scenario title case-0')).toBeVisible();
             await expect(page.getByText('· SYNTHETIC FIXTURE', { exact: false })).toBeVisible();
             await page.getByText('Advanced Settings · edit exact scenario proposal',{exact:true}).click();
             const edited = { ...JSON.parse(await page.getByLabel('Scenario proposal').inputValue()) as PlanProposal, title: 'Reviewed synthetic fixture plan' };
             await page.getByLabel('Scenario proposal').fill(JSON.stringify(edited, null, 2));
             await page.getByRole('button', { name: 'Save edited revision' }).click();
-            await expect(page.getByLabel('Scenario proposal')).toContainText('Reviewed synthetic fixture plan');
+            await expect(page.getByRole('heading',{name:'Reviewed synthetic fixture plan',exact:true})).toBeVisible();
             for (const checkbox of await page.locator('.criterion input').all())
                 await checkbox.check();
             await page.getByRole('button', { name: 'Approve displayed plan and selected requirements' }).click();
+            await page.getByText('Advanced Settings · endpoint grants and fixtures',{exact:true}).click();
+            await page.getByRole('button',{name:'Use local benchmark permissions'}).click();
+            await page.getByRole('button',{name:'Save access configuration'}).click();
+            await expect(page.getByLabel('Scenario title case-0')).toBeVisible();
+            for(const checkbox of await page.locator('.criterion input').all())await checkbox.check();
+            await page.getByRole('button',{name:'Approve displayed plan and selected requirements'}).click();
+            await expect(page.getByTestId('permission-card')).toHaveCount(3);
+            for(const select of await page.locator('[data-testid="permission-card"] select').all())await select.selectOption('allow');
+            await page.getByRole('button',{name:'Save permission decisions'}).click();
             await expect(page.getByRole('button', { name: 'Execute approved plan without AI' })).toBeEnabled();
             await page.getByRole('button', { name: 'Execute approved plan without AI' }).click();
             await expect(page.getByTestId('test-report')).toContainText('FAIL: 1', { timeout: 20000 });
@@ -197,7 +203,9 @@ test('discovers only an unknown story-relevant safe feature and requires separat
                 return { title: 'Synthetic help plan', feature: 'Help', inferredRequirements: [], scenarios: [{ id: 'help', title: 'Help is visible', roleId: 'guest', requirementIds: [story.requirements[0]!.id], targetStateId: target!.id, data: [], steps: [], assertions: [{ id: 'visible', requirementId: story.requirements[0]!.id, kind: 'visible', locator: { kind: 'role', role: 'dialog', name: 'Help' }, expected: true }], allowedActions: [], cleanup: 'owned-fixtures', severity: 'low', retries: 0 }] };
             }
         }
-        const plan = await new QaService(store, artifacts, new Planner(), browser).plan(story.id, { actionGrants: [], readGrants: [], fixtures: null, discovery: true });
+        const beforePlanning=await new NavigationEngine(store,artifacts,browser).map(scope,`${baseURL}/`,config,{depth:2,maxStates:12,maxActions:60,maxRequests:200,maxMs:30000,intervalMs:0},undefined,process.env,['help']);
+        expect(beforePlanning.status).toBe('complete');
+        const plan = await new QaService(store, artifacts, new Planner(), browser).plan(story.id);
         const graph = store.navigation.snapshot(scope);
         expect(graph.states.length).toBe(2);
         expect(graph.states.every(s => new URL(s.observation.url).pathname === '/')).toBe(true);
