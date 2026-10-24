@@ -1,0 +1,2 @@
+import {it,expect} from 'vitest';import {isLoopbackTarget} from '../../packages/core/src/contracts.js';
+it('never offers local benchmark fixture shortcuts to a remote application sharing the legacy benchmark ID',()=>{for(const url of ['https://qa4-app.dvapply.com','http://localhost.evil.test','http://127.0.0.1.evil.test','file:///localhost/test','http://user:password@localhost'])expect(isLoopbackTarget(url),url).toBe(false);for(const url of ['http://127.0.0.1:4337','http://localhost:4337','http://[::1]:4337'])expect(isLoopbackTarget(url)).toBe(true);});

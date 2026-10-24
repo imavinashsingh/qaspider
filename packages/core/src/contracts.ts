@@ -46,3 +46,5 @@ export interface ArtifactRecord {
 }
 export interface ArtifactRepository { getArtifact(id: string): ArtifactRecord | undefined; listArtifacts(): ArtifactRecord[]; }
 export interface ArtifactStorage { put(runId: string, data: Uint8Array, kind: ArtifactKind): ArtifactRecord; read(id: string): Buffer; finishRun(runId: string): void; delete(id: string): void; prune(): number; }
+/** UI fixture shortcuts are restricted to explicitly loopback targets, never application IDs. */
+export function isLoopbackTarget(value:string):boolean {try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password&&['127.0.0.1','localhost','[::1]'].includes(url.hostname);}catch{return false;}}

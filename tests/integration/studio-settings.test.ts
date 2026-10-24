@@ -13,3 +13,7 @@ it('fails closed on unsupported executables and does not save a verified receipt
 it('persists provider overrides across independent registry connections',()=>{
  const root=mkdtempSync(join(tmpdir(),'qaspider-settings-reopen-'));let store=new StudioStore(root);try{const settings=new ProviderSettings(store,process.execPath);settings.save('',{...settings.get(),timeoutMs:60000});settings.save('project-a',{...settings.get(),timeoutMs:30000});store.close();store=new StudioStore(root);const reopened=new ProviderSettings(store,process.execPath);expect(reopened.get('project-a').timeoutMs).toBe(30000);expect(reopened.get('project-b').timeoutMs).toBe(60000);}finally{store.close();rmSync(root,{recursive:true,force:true});}
 });
+it('retains saved settings when startup approval is unavailable and never reuses that executable implicitly',()=>{
+ const root=mkdtempSync(join(tmpdir(),'qaspider-settings-unavailable-'));let store=new StudioStore(root);
+ try{const available=new ProviderSettings(store,process.execPath);const saved={...available.get(),model:'persisted-model',timeoutMs:45000,allowContextSharing:true};available.save('project-a',saved);store.close();store=new StudioStore(root);const unavailable=new ProviderSettings(store,null);expect(unavailable.status('project-a')).toMatchObject({settings:saved,status:'unavailable',override:true,approvedExecutable:null});expect(()=>unavailable.adapter('project-a')).toThrow('unavailable');expect(unavailable.get('project-b').allowContextSharing).toBe(false);}finally{store.close();rmSync(root,{recursive:true,force:true});}
+});
