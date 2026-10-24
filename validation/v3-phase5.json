@@ -1,0 +1,39 @@
+{
+  "scope": "Phase 5 Orchestrator-First Studio UI and Persistent Conversation Threads",
+  "status": "passed",
+  "implementationCommits": {
+    "phase5.1": "0f57d1c",
+    "phase5.2": "0f7eb8c",
+    "phase5.3": "b77c780",
+    "phase5.4": "b60a4b3",
+    "phase5.5": "The commit containing this record"
+  },
+  "deliverables": {
+    "orchestratorChatLanding": "implemented (apps/viewer/src/orchestrator.tsx)",
+    "appShellFourItemNav": "implemented (apps/viewer/src/shell.tsx - Orchestrator, QA Tickets, Knowledge, Settings)",
+    "projectSwitcherInHeader": "implemented",
+    "inlineTicketIntakeAndCards": "implemented (apps/viewer/src/cards.tsx - PlanCard, FindingCard, ActionRequestCard, StatusCard)",
+    "qaTicketsQueuePage": "implemented (apps/viewer/src/tickets.tsx - live status, pause/resume/cancel/retest, scenario and activity inspector)",
+    "knowledgePage": "implemented (apps/viewer/src/knowledge.tsx - routes, expectations, staleness, schedules)",
+    "threadManagement": "implemented (New Chat, switch, rename, archive, FTS search)",
+    "engineParity": "implemented (/api/v1/projects/:id/messages, /thread, /threads, /knowledge, /report-review)"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "build": "passed",
+    "unitIntegration": {
+      "status": "passed",
+      "tests": 76,
+      "files": 35
+    },
+    "smokeTests": {
+      "studioV3": "tests/smoke/studio-v3.spec.ts"
+    }
+  },
+  "boundaries": [
+    "Single-administrator authentication preserved without changes",
+    "SQLite migration integrity preserved (no migrations modified)",
+    "Test files from previous phases preserved without edits",
+    "Phase 6 acceptance challenge requires separate authorization"
+  ]
+}

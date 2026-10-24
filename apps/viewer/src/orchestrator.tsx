@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
-import { PlanCard } from './cards.js';
+import { PlanCard, FindingCard } from './cards.js';
 
 interface Thread { id: string; title: string; archived: number; created_at: number; }
 interface Message { id: string; role: 'user' | 'assistant'; text: string; task_id: string | null; created_at: number; }
@@ -26,6 +26,7 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
   const base = `/api/v1/projects/${projectId}`;
 
   const [taskMap, setTaskMap] = useState<Record<string, { id: string; title: string; status: string; planId: string | null }>>({});
+  const [findings, setFindings] = useState<{ id: string; title: string; severity: 'low' | 'medium' | 'high' | 'critical'; details: string; taskId: string }[]>([]);
 
   async function loadTask(id: string) {
     try {
@@ -33,6 +34,23 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
       setTaskMap(prev => ({ ...prev, [id]: data }));
     } catch { /* silent */ }
   }
+
+  async function loadFindings() {
+    try {
+      const invs = await api<{ id: string; task_id: string; classification: string; rationale: string }[]>(`${base}/investigations`);
+      setFindings(invs.map(i => ({
+        id: i.id,
+        title: `Finding: ${i.classification}`,
+        severity: i.classification === 'defect' ? 'high' : 'medium',
+        details: i.rationale,
+        taskId: i.task_id
+      })));
+    } catch { /* silent */ }
+  }
+
+  useEffect(() => {
+    void loadFindings();
+  }, [projectId]);
 
   useEffect(() => {
     for (const m of messages) {
@@ -85,6 +103,36 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
     }
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{ message_id: string; thread_id: string; text: string }[] | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+
+  async function searchThreads(q: string) {
+    setSearchQuery(q);
+    if (q.trim().length < 2) {
+      setSearchResults(null);
+      return;
+    }
+    try {
+      const res = await api<{ message_id: string; thread_id: string; text: string }[]>(`${base}/thread-search?q=${encodeURIComponent(q.trim())}`);
+      setSearchResults(res);
+    } catch {
+      setSearchResults(null);
+    }
+  }
+
+  async function renameThread(threadId: string, newTitle: string) {
+    if (!newTitle.trim()) return;
+    try {
+      await api(`${base}/thread`, { id: threadId, title: newTitle.trim() });
+      setEditingId(null);
+      await loadThreads();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function archiveThread(threadId: string) {
     try {
       await api(base + '/thread', { id: threadId, archived: true });
@@ -113,20 +161,57 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
             + New
           </button>
         </div>
+        <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>
+          <input
+            style={{ width: '100%', fontSize: '12px', padding: '5px 8px', borderRadius: '6px', border: '1px solid var(--line)' }}
+            placeholder="Search conversations…"
+            value={searchQuery}
+            onChange={e => void searchThreads(e.target.value)}
+            aria-label="Search conversations"
+          />
+        </div>
         <div className="orc-thread-list">
           {threads.length === 0 && (
             <p style={{ padding: '16px', fontSize: 13, color: 'var(--muted)', margin: 0 }}>
               No conversations yet. Start a new chat.
             </p>
           )}
-          {threads.map(t => (
-            <button
+          {threads.filter(t => {
+            if (!searchResults) return true;
+            return searchResults.some(r => r.thread_id === t.id) || t.title.toLowerCase().includes(searchQuery.toLowerCase());
+          }).map(t => (
+            <div
               key={t.id}
               className={`orc-thread-item${activeId === t.id ? ' active' : ''}`}
               onClick={() => setActiveId(t.id)}
             >
               <span className="orc-thread-info">
-                <span className="orc-thread-title">{t.title || 'Untitled'}</span>
+                {editingId === t.id ? (
+                  <input
+                    style={{ fontSize: '12px', padding: '2px 4px', width: '100%' }}
+                    value={editTitle}
+                    autoFocus
+                    onClick={e => e.stopPropagation()}
+                    onChange={e => setEditTitle(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') void renameThread(t.id, editTitle);
+                      else if (e.key === 'Escape') setEditingId(null);
+                    }}
+                    onBlur={() => void renameThread(t.id, editTitle)}
+                  />
+                ) : (
+                  <span
+                    className="orc-thread-title"
+                    onDoubleClick={e => {
+                      e.stopPropagation();
+                      setEditingId(t.id);
+                      setEditTitle(t.title || '');
+                    }}
+                    title="Double-click to rename"
+                  >
+                    {t.title || 'Untitled'}
+                  </span>
+                )}
                 <span className="orc-thread-time">{timeAgo(t.created_at)}</span>
               </span>
               <button
@@ -137,7 +222,7 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
               >
                 ✕
               </button>
-            </button>
+            </div>
           ))}
         </div>
       </aside>
@@ -171,6 +256,21 @@ export function OrchestratorPage({ projectId }: { projectId: string }) {
                           planId={task.planId}
                           onUpdated={() => void loadTask(task.id)}
                         />
+                      </div>
+                    )}
+                    {m.role === 'assistant' && (m.text.toLowerCase().includes('finding') || (task && findings.some(f => f.taskId === task.id))) && (
+                      <div style={{ marginTop: '10px' }}>
+                        {findings.filter(f => !task || f.taskId === task.id).map(f => (
+                          <FindingCard
+                            key={f.id}
+                            projectId={projectId}
+                            taskId={f.taskId}
+                            findingId={f.id}
+                            title={f.title}
+                            severity={f.severity}
+                            details={f.details}
+                          />
+                        ))}
                       </div>
                     )}
                   </div>

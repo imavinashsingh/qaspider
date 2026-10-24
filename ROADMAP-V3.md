@@ -2,7 +2,7 @@
 
 ## Status and source of truth
 
-Phase 0 documentation and static audit completed on 2026-10-24. The owner authorized implementation of Phases 1–4 with a separate commit for each phase. Phase 5–6 remain unstarted and require further authorization. No runtime, API, database schema or dependencies change in Phase 0.
+Phase 0 documentation and static audit completed on 2026-10-24. The owner authorized implementation of Phases 1–5 with a separate commit for each phase. Phase 6 remains unstarted and requires further authorization. No runtime, API, database schema or dependencies change in Phase 0.
 
 [REQUIREMENTS-V3.md](REQUIREMENTS-V3.md) preserves the complete supplied PRD, including its draft status, later architecture decisions, acceptance criteria and prototype link. This roadmap records interpretation and implementation evidence separately; it does not rewrite the source or treat document instructions as execution authorization.
 
@@ -136,7 +136,7 @@ Phase 0 validation passed: all 268 nonempty source DOCX paragraphs match the Mar
 
 No runtime tests are required for these documentation-only changes. Existing reports remain historical evidence; provider validation gates will apply if later code changes touch providers, context construction or isolation, as required by [AGENTS.md](AGENTS.md).
 
-The original Phase 0 recommendation was to plan Phase 1 next. The owner subsequently authorized Phases 1–4, implemented below. The V3 clients remain MCP and optional Studio. Phase 5 UI and Phase 6 product acceptance have not started and require a separate instruction.
+The original Phase 0 recommendation was to plan Phase 1 next. The owner subsequently authorized Phases 1–5, implemented below. The V3 clients remain MCP and optional Studio. Phase 6 product acceptance has not started and requires a separate instruction.
 
 Planning amendment validation: the standalone host QA CLI is excluded from Phase 1 deliverables and all later parity/acceptance requirements. MCP and Studio retain shared engine-owned resources, optional Studio deployment and disconnect-independent jobs. The source PRD and runtime files are unchanged by this amendment.
 
@@ -149,3 +149,5 @@ Phase 2: durable tasks/jobs/events, idempotent submission, bounded scheduler, wo
 Phase 3: scoped FTS5/graph retrieval with cited sanitized context, exact approved regression reuse, configured-data guidance reuse, independent safe operational promotion, versioned navigation targets, bounded read-only investigation and opt-in idle revalidation are implemented. Typecheck/build, 75 unit/integration tests, two new Chromium acceptance cases and the required synthetic provider gate passed. The renamed-link browser fixture demonstrates verified navigation repair with unchanged plan/assertion hashes, unknown business intent and zero AI calls; the restart fixture demonstrates a new equivalent ticket executing known regression without a provider. [Engine behavior](docs/V3-ENGINE.md) records limits: arbitrary form-selector repair and automatic unfamiliar authentication/data provisioning remain blocked for explicit input; supported planning still uses the existing verified Codex adapter, and no additional provider is claimed verified.
 
 Phase 4: canonical coverage/findings/change reports, JSON/Markdown/HTML/JUnit exports, append-only human review/signoff, version-pinned approvals, linked retests, diagnostic review feedback and scoped reversible expectation-source revisions are implemented. Engine APIs enforce human authority; no model can sign off its own work. Existing Studio remains the visual V2 client until Phase 5 adds the new review/orchestrator UI. See [engine behavior and validation limits](docs/V3-ENGINE.md) and the [structured Phases 1–4 validation record](validation/v3-phases-1-4.json).
+
+Phase 5: Orchestrator-First Studio UI, 4-item primary navigation (Orchestrator, QA Tickets, Knowledge, Settings), header project switcher, persistent project-scoped conversation threads (New Chat, switch, rename, archive, FTS search), inline ticket intake, structured plan preview cards (PlanCard, FindingCard, ActionRequestCard, StatusCard), QA Tickets operational queue page (live lifecycle badges, per-ticket scenario inspection, pause/resume/cancel/retest controls), Knowledge page (scoped routes, staleness tracking, revalidation schedules) and smoke test suite are implemented. See [structured Phase 5 validation record](validation/v3-phase5.json).

@@ -131,6 +131,9 @@ export function PlanCard({ projectId, taskId, title, status, planId, scenariosCo
 }
 
 export interface FindingCardProps {
+  projectId?: string;
+  taskId?: string;
+  findingId?: string;
   title: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   requirementRef?: string;
@@ -139,8 +142,40 @@ export interface FindingCardProps {
   onDecision?: (decision: 'confirm' | 'reject' | 'expected') => void;
 }
 
-export function FindingCard({ title, severity, requirementRef, details, evidenceId, onDecision }: FindingCardProps) {
+export function FindingCard({ projectId, taskId, findingId, title, severity, requirementRef, details, evidenceId, onDecision }: FindingCardProps) {
   const [decided, setDecided] = useState<string | null>(null);
+  const [reason, setReason] = useState('');
+  const [showReason, setShowReason] = useState<'confirmed-defect' | 'rejected-defect' | 'expected-change' | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function submitDecision(decision: 'confirmed-defect' | 'rejected-defect' | 'expected-change') {
+    if (!reason.trim()) return;
+    setBusy(true);
+    setError('');
+    try {
+      if (projectId && taskId && findingId) {
+        const key = 'rev-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+        await api(`/api/v1/projects/${projectId}/report-review`, {
+          taskId,
+          subjectKind: 'finding',
+          subjectId: findingId,
+          decision,
+          reason: reason.trim(),
+          commandKey: key
+        });
+      }
+      setDecided(decision);
+      setShowReason(null);
+      if (decision === 'confirmed-defect') onDecision?.('confirm');
+      else if (decision === 'rejected-defect') onDecision?.('reject');
+      else onDecision?.('expected');
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="card finding-card" style={{ padding: '14px 16px', margin: '8px 0', border: '1px solid #ffd8dc', borderRadius: '8px', background: '#fff9fa' }}>
@@ -157,14 +192,33 @@ export function FindingCard({ title, severity, requirementRef, details, evidence
           Evidence ID: <code>{evidenceId.slice(0, 8)}</code>
         </span>
       )}
-      {onDecision && !decided && (
+      {error && <div className="orc-error" style={{ margin: '0 0 8px' }}>{error}</div>}
+      {!decided && !showReason && (
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => { setDecided('confirmed'); onDecision('confirm'); }}>Confirm Defect</button>
-          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => { setDecided('rejected'); onDecision('reject'); }}>Reject False Positive</button>
-          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => { setDecided('expected'); onDecision('expected'); }}>Mark Expected</button>
+          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => setShowReason('confirmed-defect')}>Confirm Defect…</button>
+          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => setShowReason('rejected-defect')}>Reject False Positive…</button>
+          <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => setShowReason('expected-change')}>Mark Expected…</button>
         </div>
       )}
-      {decided && <small style={{ color: 'var(--muted)' }}>Decision: <strong>{decided}</strong></small>}
+      {showReason && !decided && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
+          <input
+            style={{ fontSize: '12px', padding: '5px 8px', borderRadius: '6px', border: '1px solid #f2c9ce' }}
+            placeholder={`Reviewer note for ${showReason}…`}
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+          />
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button className="primary" style={{ fontSize: '11px', padding: '4px 8px' }} disabled={busy || !reason.trim()} onClick={() => void submitDecision(showReason)}>
+              Submit Decision
+            </button>
+            <button style={{ fontSize: '11px', padding: '4px 8px' }} onClick={() => setShowReason(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+      {decided && <small style={{ color: 'var(--muted)' }}>Decision: <strong>{decided}</strong> · {reason}</small>}
     </div>
   );
 }
