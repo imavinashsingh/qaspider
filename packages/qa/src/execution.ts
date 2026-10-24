@@ -4,12 +4,12 @@ import { setTimeout as delay } from 'node:timers/promises';
 import type { Browser } from 'playwright';
 import { SqliteStore, ArtifactStore } from '../../storage/src/index.js';
 import { NavigationEngine, NavigationError } from '../../navigation/src/engine.js';
-import { resolveLocator, scenarioScope, redact, isSafeNavigation, type ArtifactStorage, type Scenario, type PlanRevision, type AttemptResult, type AssertionResult, type FixtureReservation, type TestReport, type TestRun } from '../../core/src/index.js';
+import { resolveLocator, scenarioScope, redact, isSafeNavigation, type ArtifactStorage, type Scenario, type PlanRevision, type AttemptResult, type AssertionResult, type FixtureReservation, type TestReport, type TestRun, type Scope } from '../../core/src/index.js';
 class Blocked extends NavigationError {
     constructor(message: string) { super(message, 'blocked'); }
 }
 export class TestExecutor {
-    constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStore, private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env) { }
+    constructor(private readonly store: SqliteStore, private readonly artifacts: ArtifactStore, private readonly browser?: Browser, private readonly env: NodeJS.ProcessEnv = process.env,private readonly operational?:{riskOrder?:boolean;target:(scope:Scope,originalId:string)=>{stateId:string;revisionId:string|null;evidenceIds:string[]}|null}) { }
     async execute(planId: string, selected?: string[], signal?: AbortSignal, onProgress?: (run: TestRun, message: string) => void): Promise<TestReport> {
         this.store.reconcileInterrupted();
         const plan = this.store.testing.getPlan(planId);
@@ -19,7 +19,9 @@ export class TestExecutor {
         const evidenceStore = new RunArtifactBudget(this.artifacts, () => this.store.getSettings().perRunQuotaBytes);
         onProgress?.(run, 'Starting approved scenarios');
         try {
-            for (const scenario of plan.proposal.scenarios) {
+            const priority={critical:0,high:1,medium:2,low:3};
+            const scenarios=this.operational?.riskOrder?[...plan.proposal.scenarios].sort((a,b)=>priority[a.severity]-priority[b.severity]):plan.proposal.scenarios;
+            for (const scenario of scenarios) {
                 if (signal?.aborted)
                     break;
                 if (!run.selectedScenarioIds.includes(scenario.id))
@@ -105,7 +107,10 @@ export class TestExecutor {
                 if (input.source.kind !== 'literal')
                     secrets.push(value);
             }
-            const navigation = await new NavigationEngine(this.store, artifacts, this.browser).runApprovedWorkflow(scope, scenario.targetStateId, executionPolicy.actionGrants.filter(g=>g.roleId===scenario.roleId).map(g=>g.url), async (session) => {
+            const repair=this.operational?.target(scope,scenario.targetStateId);
+            if(repair&&(!graph.states.some(s=>s.id===repair.stateId)||repair.evidenceIds.some(id=>this.store.getArtifact(id)?.status!=='available')))throw new Blocked('Operational revision evidence is unavailable');
+            if(repair){const proof=artifacts.put(runId,Buffer.from(JSON.stringify({kind:'operational-navigation-revision',originalTarget:scenario.targetStateId,currentTarget:repair.stateId,revisionId:repair.revisionId,evidenceIds:repair.evidenceIds,expectationsChanged:false})), 'event-log');result.evidenceIds.push(proof.id);}
+            const navigation = await new NavigationEngine(this.store, artifacts, this.browser).runApprovedWorkflow(scope, repair?.stateId??scenario.targetStateId, executionPolicy.actionGrants.filter(g=>g.roleId===scenario.roleId).map(g=>g.url), async (session) => {
                 session.secrets.push(...secrets);
                 for (const step of scenario.steps) {
                     this.authorize(plan,scenario);

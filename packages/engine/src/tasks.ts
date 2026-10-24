@@ -7,15 +7,15 @@ import {authorize,type Principal} from './auth.js';
 import {jsonBody,send} from './api.js';
 import {EngineStore,contentHash,safeText} from './store.js';
 import {Coordinator} from './coordinator.js';
-const taskInput=z.object({markdown:z.string().min(1).max(32000),sourceRef:z.string().min(1).max(1000),context:storyContextSchema,strategy:z.enum(['intelligent','deep']).default('intelligent'),dependsOn:z.array(z.string().uuid()).max(20).default([])}).strict();
+const taskInput=z.object({markdown:z.string().min(1).max(32000),sourceRef:z.string().min(1).max(1000),context:storyContextSchema.extend({build:z.string().min(1).default('development')}),strategy:z.enum(['intelligent','deep']).default('intelligent'),explore:z.boolean().default(false),dependsOn:z.array(z.string().uuid()).max(20).default([])}).strict();
 const keySchema=z.string().min(8).max(200);
 const textSchema=z.string().trim().min(1).max(4000).refine(v=>safeText(v)===v,'Use credential references, not secret values');
 export class TaskApi {
  constructor(readonly store:EngineStore,readonly coordinator:Coordinator){}
  async handle(request:IncomingMessage,response:ServerResponse,context:EngineContext,principal:Principal){
-  const url=new URL(request.url??'/','http://engine');const match=/^\/api\/v1\/projects\/([a-f0-9-]{36})\/(tasks|task|task-jobs|task-job|task-events|task-control|task-execute|task-clarify|task-requests|task-approve|task-access|task-reconcile|threads|thread|messages|thread-search|data-memory|permission-memory|permission-revoke)$/.exec(url.pathname);if(!match)return false;
+  const url=new URL(request.url??'/','http://engine');const match=/^\/api\/v1\/projects\/([a-f0-9-]{36})\/(tasks|task|task-jobs|task-job|task-events|task-control|task-execute|task-clarify|task-requests|task-approve|task-access|task-reconcile|threads|thread|messages|thread-search|data-memory|permission-memory|permission-revoke|revalidate|revalidation-config|knowledge|changes|investigations)$/.exec(url.pathname);if(!match)return false;
   const projectId=z.string().uuid().parse(match[1]),operation=match[2]!,id=url.searchParams.get('id')??'';
-  const action=request.method==='GET'?'read':['task-approve','task-access','permission-memory','permission-revoke','task-reconcile'].includes(operation)?'review':operation==='task-execute'||operation==='task-control'?'execute':'plan';authorize(principal,projectId,action);
+  const action=request.method==='GET'?'read':['task-approve','task-access','permission-memory','permission-revoke','task-reconcile','revalidation-config'].includes(operation)?'review':operation==='revalidate'?'explore':operation==='task-execute'||operation==='task-control'?'execute':'plan';authorize(principal,projectId,action);
   if(request.method==='GET'){
    if(operation==='tasks')send(response,this.store.tasks(projectId).map(task=>({...task,jobs:this.store.jobs(projectId).filter(j=>j.taskId===task.id)})));
    else if(operation==='task')send(response,{...this.store.task(id,projectId),jobs:this.store.jobs(projectId).filter(j=>j.taskId===id),requests:this.store.requests(id,projectId)});
@@ -36,7 +36,7 @@ export class TaskApi {
    const v=z.object({commandKey:keySchema,tickets:z.array(taskInput).min(1).max(50)}).strict().parse(data);
    const backend=await context.project(projectId);
    // Validate all source contexts before the atomic intake; no work starts during validation.
-   for(const ticket of v.tickets){for(const prerequisite of ticket.dependsOn)this.store.task(prerequisite,projectId);const env=backend.database.getEnvironment(ticket.context.environmentId);if(!env||env.applicationId!==ticket.context.applicationId||env.kind==='production'||ticket.context.roleIds.some(role=>backend.database.getRole(role)?.environmentId!==env.id))throw new Error('Invalid ticket context');}
+   for(const ticket of v.tickets){if(ticket.explore)authorize(principal,projectId,'explore');for(const prerequisite of ticket.dependsOn)this.store.task(prerequisite,projectId);const env=backend.database.getEnvironment(ticket.context.environmentId);if(!env||env.applicationId!==ticket.context.applicationId||env.kind==='production'||ticket.context.roleIds.some(role=>backend.database.getRole(role)?.environmentId!==env.id))throw new Error('Invalid ticket context');}
    const prepared=v.tickets.map(input=>{let ready=false;try{parseStory(safeText(input.markdown),input.sourceRef);ready=true;}catch{}return {input,ready};});
    const result=this.store.command(projectId,v.commandKey,v,()=>prepared.map(({input,ready})=>{
     const markdown=safeText(input.markdown);const storyId=null;
@@ -44,7 +44,7 @@ export class TaskApi {
     const title=markdown.split('\n').find(l=>l.startsWith('# '))?.slice(2,202)??'QA ticket';
     const task=this.store.createTask({projectId,title,context:input.context,markdown,sourceRef:input.sourceRef,storyId,status:ready?'Queued':'Needs Clarification',strategy:input.strategy});
     for(const prerequisite of input.dependsOn)this.store.db.prepare('INSERT INTO engine_dependencies VALUES(?,?)').run(task.id,prerequisite);
-    if(ready)this.store.enqueue(task,'plan',{});else this.store.request(task.id,'requirements','Provide source-backed acceptance criteria using an Acceptance Criteria section with AC identifiers.');return task;
+    if(ready)this.store.enqueue(task,'plan',{allowExplore:input.explore});else this.store.request(task.id,'requirements','Provide source-backed acceptance criteria using an Acceptance Criteria section with AC identifiers.');return task;
    }));send(response,result,201);this.coordinator.tick();
   }else if(['task-control','task-execute','task-clarify','task-approve','task-access'].includes(operation)){
    if(operation==='task-control'){
@@ -56,8 +56,8 @@ export class TaskApi {
      }this.coordinator.control(task,v.action);return {status:v.action==='pause'?'Paused':'Cancelled'};});send(response,result);this.coordinator.tick();
    }else if(operation==='task-execute'){
     const v=z.object({taskId:z.string().uuid(),planRevisionId:z.string(),commandKey:keySchema}).strict().parse(data);const task=this.store.task(v.taskId,projectId),backend=await context.project(projectId),plan=backend.database.testing.getPlan(v.planRevisionId);
-    if(!plan||plan.storyRevisionId!==task.storyId||plan.status!=='approved')throw new Error('Approved task plan required');
-    const result=this.store.command(projectId,v.commandKey,v,()=>{if(this.store.jobs(projectId).some(j=>j.taskId===task.id&&['running','queued'].includes(j.status)))throw new Error('Task already has active work');this.store.updateTask(task.id,{planId:plan.id,status:'Queued'});return this.store.enqueue({...task,planId:plan.id},'execute',{planId:plan.id});});send(response,result,202);this.coordinator.tick();
+    if(!plan||(plan.storyRevisionId!==task.storyId&&!this.coordinator.knowledge.canReuse(task,plan.id,backend.viewer.application.qa))||plan.status!=='approved')throw new Error('Approved task plan required');
+    const result=this.store.command(projectId,v.commandKey,v,()=>{if(this.store.jobs(projectId).some(j=>j.taskId===task.id&&['running','queued'].includes(j.status)))throw new Error('Task already has active work');this.store.updateTask(task.id,{planId:plan.id,status:'Queued'});return this.store.enqueue({...task,planId:plan.id},'execute',{planId:plan.id,allowExplore:this.store.jobs(projectId).some(j=>j.taskId===task.id&&j.payload.allowExplore===true)});});send(response,result,202);this.coordinator.tick();
    }else if(operation==='task-clarify'){
     const v=z.object({taskId:z.string().uuid(),requestId:z.string().uuid(),answer:textSchema,reuseKey:z.string().trim().min(1).max(100).optional(),credentialReferences:z.record(z.string(),z.string().regex(/^[A-Z_][A-Z0-9_]*$/)).default({}),commandKey:keySchema}).strict().parse(data);
     const task=this.store.task(v.taskId,projectId);
@@ -76,6 +76,10 @@ export class TaskApi {
    }else{
     const v=z.object({taskId:z.string().uuid(),planRevisionId:z.string(),policy:policySchema}).strict().parse(data);const task=this.store.task(v.taskId,projectId),backend=await context.project(projectId),plan=backend.database.testing.getPlan(v.planRevisionId);if(!plan||plan.storyRevisionId!==task.storyId)throw new Error('Cross-task plan');const revised=backend.database.testing.configureAccess(plan.id,v.policy);this.store.updateTask(task.id,{planId:revised.id,status:'Needs Permission'});send(response,revised);
    }
+  }else if(operation==='revalidate'){
+   const v=z.object({taskId:z.string().uuid(),commandKey:keySchema}).strict().parse(data),task=this.store.task(v.taskId,projectId);send(response,this.store.command(projectId,v.commandKey,v,()=>this.store.enqueue(task,'plan',{revalidateOnly:true,previousStatus:task.status,allowExplore:true})),202);this.coordinator.tick();
+  }else if(operation==='revalidation-config'){
+   const v=z.object({taskId:z.string().uuid(),enabled:z.boolean(),intervalMs:z.number().int().min(3600000).max(604800000).default(86400000)}).strict().parse(data);this.store.task(v.taskId,projectId);this.store.db.prepare('INSERT INTO engine_revalidation_schedules VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(project_id,task_id) DO UPDATE SET enabled=excluded.enabled,interval_ms=excluded.interval_ms,next_at=excluded.next_at,actor=excluded.actor,updated_at=excluded.updated_at').run(randomUUID(),projectId,v.taskId,principal.id,Number(v.enabled),v.intervalMs,Date.now()+v.intervalMs,Date.now());send(response,{taskId:v.taskId,enabled:v.enabled});
   }else if(operation==='task-reconcile'){
    const v=z.object({taskId:z.string().uuid(),jobId:z.string().uuid(),notes:textSchema,confirm:z.literal(true),commandKey:keySchema}).strict().parse(data);const task=this.store.task(v.taskId,projectId),job=this.store.job(v.jobId,projectId);if(job.taskId!==task.id||!['blocked','paused'].includes(job.status))throw new Error('Only stopped scoped work can be reconciled');
    const journal=this.store.db.prepare('SELECT * FROM engine_operations WHERE job_id=? ORDER BY created_at DESC LIMIT 1').get(job.id) as {reference_id:string|null;state:string}|undefined;
