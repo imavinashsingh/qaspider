@@ -1,12 +1,17 @@
-import{StudioSettings}from'./settings.js';import{CliPage}from'./cli.js';import{StudioShell,EmptyState,type StudioView,type ProjectView}from'./ui.js';
+import{StudioSettings}from'./settings.js';import{CliPage}from'./cli.js';import{StudioShell,EmptyState,type StudioView,type ProjectView,type V3View}from'./ui.js';
 import{useEffect,useState,type ComponentType,type ReactNode}from'react';import{api,configureStudio}from'./api.js';
+import{AppShell}from'./shell.js';
+import{OrchestratorPage}from'./orchestrator.js';
+import{TicketsPage}from'./tickets.js';
+import{KnowledgePage}from'./knowledge.js';
 interface Project{id:string;name:string;path:string;lastOpenedAt:number|null;status?:string;}
 interface Projects{projects:Project[];selected:string|null;roots:string[];}
 interface Auth{configured:boolean;authenticated:boolean;csrf:string;}
 type AppProps={studioBar?:ReactNode;onGlobal?:(v:'projects'|'settings'|'logout')=>void;embedded?:boolean;initialView?:ProjectView;initialPlanId?:string;initialRunId?:string;testMode?:'new'|'existing';freshStory?:boolean;onNavigate?:(v:ProjectView,id?:string)=>void};
 export function Studio({ProjectApp}:{ProjectApp:ComponentType<AppProps>}){
- const[auth,setAuth]=useState<Auth|null>(null),[legacy,setLegacy]=useState(false),[error,setError]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[data,setData]=useState<Projects>({projects:[],selected:null,roots:[]}),[view,setView]=useState<StudioView>('projects'),[name,setName]=useState(''),[directory,setDirectory]=useState(''),[origin,setOrigin]=useState('http://127.0.0.1:4317'),[environmentName,setEnvironmentName]=useState('QA'),[importName,setImportName]=useState(''),[importPath,setImportPath]=useState(''),[notice,setNotice]=useState(''),[references,setReferences]=useState(''),[completed,setCompleted]=useState(false),[intent,setIntent]=useState({key:0,mode:'new' as 'new'|'existing',plan:'',run:''});
+ const[auth,setAuth]=useState<Auth|null>(null),[legacy,setLegacy]=useState(false),[error,setError]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[data,setData]=useState<Projects>({projects:[],selected:null,roots:[]}),[view,setView]=useState<StudioView>('projects'),[v3View,setV3View]=useState<V3View>('orchestrator'),[engineMode,setEngineMode]=useState<boolean>(false),[hash,setHash]=useState<string>(()=>typeof window!=='undefined'?window.location.hash:''),[name,setName]=useState(''),[directory,setDirectory]=useState(''),[origin,setOrigin]=useState('http://127.0.0.1:4317'),[environmentName,setEnvironmentName]=useState('QA'),[importName,setImportName]=useState(''),[importPath,setImportPath]=useState(''),[notice,setNotice]=useState(''),[references,setReferences]=useState(''),[completed,setCompleted]=useState(false),[intent,setIntent]=useState({key:0,mode:'new' as 'new'|'existing',plan:'',run:''});
  async function refresh(){const value=await api<Projects>('/api/studio/projects');setData(value);configureStudio(auth?.csrf??'',value.selected??'');return value;}
+ useEffect(()=>{const onHash=()=>setHash(window.location.hash);window.addEventListener('hashchange',onHash);void fetch('/api/v1/health').then(r=>{if(r.ok)setEngineMode(true);}).catch(()=>{});return()=>window.removeEventListener('hashchange',onHash);},[]);
  useEffect(()=>{void fetch('/api/studio/auth').then(async response=>{if(response.headers.get('x-qaspider-service')==='project'){const token=new URLSearchParams(location.hash.slice(1)).get('token');if(token){sessionStorage.setItem('qaspider-token',token);history.replaceState(null,'',location.pathname);}setLegacy(true);return;}if(!response.ok)throw new Error('Studio unavailable');const value=await response.json()as Auth;sessionStorage.removeItem('qaspider-token');configureStudio(value.csrf);history.replaceState(null,'',location.pathname);setAuth(value);}).catch(e=>setError(e.message));},[]);
  useEffect(()=>{if(auth?.authenticated)void refresh().then(value=>setView(value.selected?'overview':'projects')).catch(e=>setError(e.message));},[auth?.authenticated]);
  useEffect(()=>{const expired=()=>{setAuth(null);setData({projects:[],selected:null,roots:[]});void fetch('/api/studio/auth').then(r=>r.json()).then((value:Auth)=>{configureStudio(value.csrf);setAuth(value);}).catch(()=>setError('Studio connection unavailable'));};window.addEventListener('studio-session-expired',expired);return()=>window.removeEventListener('studio-session-expired',expired);},[]);
@@ -19,6 +24,67 @@ export function Studio({ProjectApp}:{ProjectApp:ComponentType<AppProps>}){
  if(legacy)return<ProjectApp/>;
  if(!auth)return<div role="status" className="empty card">{error||'Loading Studio…'}</div>;
  if(!auth.authenticated)return<div className="auth-page"><div className="login card"><div className="brand"><span className="brand-mark">Q</span><strong>QASpider Studio</strong></div><div className="eyebrow">LOCAL QA · PERSISTENT MEMORY</div><h1>{auth.configured?'Login':'First-run administrator setup'}</h1><p>{auth.configured?'Welcome back. Open your projects and pick up where your tests left off.':'Set up your private QA workspace. Create the local administrator to get started.'}</p>{error&&<p role="alert" className="alert error">{error}</p>}<form onSubmit={e=>{e.preventDefault();void action(async()=>{const next=await api<Auth>(auth.configured?'/api/studio/login':'/api/studio/setup',{password});setPassword('');configureStudio(next.csrf);setAuth(next);});}}><label>Studio password<input type="password" autoComplete={auth.configured?'current-password':'new-password'} minLength={12} maxLength={128} required value={password} onChange={e=>setPassword(e.target.value)}/><small>12–128 characters. Separate from target application credentials.</small></label><button className="primary" disabled={busy}>{auth.configured?'Login':'Create administrator'}</button></form><p className="security-note">Local-only access. No default password. Session credentials stay out of URLs and browser storage.</p></div></div>;
+ const isV3 = hash === '#v2' ? false : (hash === '#v3' || engineMode);
+ if (isV3) {
+  return (
+   <AppShell
+    view={v3View}
+    projects={data.projects}
+    selectedProjectId={data.selected}
+    onSelectProject={id => void action(async () => {
+     await operation({ operation: 'select', id });
+     setV3View('orchestrator');
+    })}
+    onNavigate={setV3View}
+    onLogout={() => void logout()}
+   >
+    {error && <p role="alert" className="alert error">{error}</p>}
+    {notice && <p role="status" className="alert">{notice}</p>}
+    {!selected ? (
+     <div style={{ padding: '28px 32px' }}>
+      <div className="orc-empty">
+       <span className="brand-mark" style={{ fontSize: 32 }}>Q</span>
+       <h2>Welcome to QASpider Studio</h2>
+       <p>Select or create a project above to get started.</p>
+      </div>
+      {data.roots.length > 0 && (
+       <div className="onboarding-grid" style={{ maxWidth: 640, margin: '24px auto' }}>
+        <section className="card project-card">
+         <div className="eyebrow">NEW WORKSPACE</div>
+         <h2>Create Project</h2>
+         <form onSubmit={e => {
+          e.preventDefault();
+          void action(async () => {
+           const target = new URL(origin);
+           if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password) throw new Error('Use a valid HTTP(S) application URL without embedded credentials.');
+           await operation({ operation: 'create', input: { name, ...(directory.trim() ? { directory: directory.trim() } : {}), origin: target.origin, environmentName, ...(references.trim() ? { references: JSON.parse(references) } : {}) } });
+           setNotice('Project created.');
+           setName('');
+           setDirectory('');
+           setV3View('orchestrator');
+          });
+         }}>
+          <label>Project name<input required value={name} onChange={e => setName(e.target.value)} placeholder="Customer portal QA" /></label>
+          <label>Application URL<input aria-label="Application URL" type="url" required value={origin} onChange={e => setOrigin(e.target.value)} placeholder="https://qa.example.test" /></label>
+          <label>Environment name<select value={environmentName} onChange={e => setEnvironmentName(e.target.value)}><option>QA</option><option>Development</option></select></label>
+          <button className="primary" disabled={busy || !data.roots.length}>Create project</button>
+         </form>
+        </section>
+       </div>
+      )}
+     </div>
+    ) : v3View === 'orchestrator' ? (
+     <OrchestratorPage projectId={selected.id} />
+    ) : v3View === 'tickets' ? (
+     <TicketsPage projectId={selected.id} />
+    ) : v3View === 'knowledge' ? (
+     <KnowledgePage projectId={selected.id} />
+    ) : v3View === 'settings' ? (
+     <StudioSettings key={selected.id} projectId={selected.id} />
+    ) : null}
+   </AppShell>
+  );
+ }
  return<StudioShell view={view} projectSelector={bar} projectName={selected?.name??''} hasProject={!!selected} onNavigate={v=>{navigate(v);if(v==='projects')void action(async()=>{await refresh();});}} onNewTest={()=>navigate('studio')} onLogout={()=>void logout()}>
  {error&&<p role="alert" className="alert error">{error}</p>}{notice&&<p role="status" className="alert">{notice}</p>}
  {view==='settings'?<StudioSettings key={data.selected??'global'} projectId={data.selected}/>:view==='cli'?<CliPage key={data.selected??'global'} projectId={data.selected}/>:view!=='projects'&&data.selected?<ProjectApp key={data.selected+':'+view+':'+intent.key} embedded initialView={view as ProjectView} initialPlanId={intent.plan} initialRunId={intent.run} testMode={intent.mode} onNavigate={(v,id)=>navigate(v,id)}/>:<>
