@@ -102,7 +102,40 @@ export class TaskApi {
   }else if(operation==='messages'){
    const v=z.object({threadId:z.string().uuid().optional(),text:textSchema,taskId:z.string().uuid().optional(),commandKey:keySchema}).strict().parse(data);
    if(v.threadId)this.thread(v.threadId,projectId);if(v.taskId)this.store.task(v.taskId,projectId);
-   send(response,this.store.command(projectId,v.commandKey,v,()=>{const threadId=v.threadId??randomUUID();if(!v.threadId)this.store.db.prepare('INSERT INTO engine_threads VALUES(?,?,?,0,?)').run(threadId,projectId,v.text.slice(0,100),Date.now());const id=randomUUID();this.store.db.prepare("INSERT INTO engine_messages VALUES(?,?,'user',?,?,?)").run(id,threadId,v.text,v.taskId??null,Date.now());this.store.db.prepare('INSERT INTO engine_message_search VALUES(?,?,?,?)').run(id,threadId,projectId,v.text);return {threadId,messageId:id};}),201);
+   const backend=await context.project(projectId);
+   send(response,this.store.command(projectId,v.commandKey,v,()=>{
+    const threadId=v.threadId??randomUUID();
+    if(!v.threadId)this.store.db.prepare('INSERT INTO engine_threads VALUES(?,?,?,0,?)').run(threadId,projectId,v.text.slice(0,100),Date.now());
+    const id=randomUUID();
+    this.store.db.prepare("INSERT INTO engine_messages VALUES(?,?,'user',?,?,?)").run(id,threadId,v.text,v.taskId??null,Date.now());
+    this.store.db.prepare('INSERT INTO engine_message_search VALUES(?,?,?,?)').run(id,threadId,projectId,v.text);
+
+    const blocks:string[]=[];
+    const rawBlocks=v.text.split(/(?=^#\s+)/m);
+    for(const b of rawBlocks){if(b.trim().startsWith('# ')&&b.includes('Acceptance Criteria'))blocks.push(b.trim());}
+    const createdTasks:{id:string;title:string;status:string;planId:string|null}[]=[];
+    if(blocks.length>0){
+     const envs=backend.database.listEnvironments(),env=envs.find(e=>e.kind!=='production')??envs[0];
+     if(env){
+      const roles=backend.database.listRoles().filter(r=>r.environmentId===env.id);
+      const taskContext={applicationId:env.applicationId,environmentId:env.id,roleIds:roles.length?[roles[0]!.id]:['guest'],build:'development',tenant:'default',featureFlags:{}};
+      for(let i=0;i<blocks.length;i++){
+       const markdown=blocks[i]!,title=markdown.split('\n').find(l=>l.startsWith('# '))?.slice(2,202)??`Ticket ${i+1}`;
+       const task=this.store.createTask({projectId,title,context:taskContext,markdown,sourceRef:`chat:${threadId}:${i+1}`,storyId:null,status:'Queued',strategy:'intelligent'});
+       this.store.enqueue(task,'plan',{allowExplore:true});
+       createdTasks.push({id:task.id,title:task.title,status:task.status,planId:task.planId});
+      }
+     }
+    }
+    const asstId=randomUUID();
+    const replyText=createdTasks.length>0
+     ?`I've queued ${createdTasks.length} ticket(s) for QA planning:\n`+createdTasks.map((t,idx)=>`${idx+1}. **${t.title}** (\`${t.id.slice(0,8)}\`)`).join('\n')+`\n\nReview the plan preview cards below to approve execution or request revisions.`
+     :(v.taskId?`Linked to ticket \`${v.taskId.slice(0,8)}\`.`:`Got it. I'm ready to help with QA. You can ask to test tickets by pasting acceptance criteria with '# Title' and '## Acceptance Criteria' to queue tests.`);
+    this.store.db.prepare("INSERT INTO engine_messages VALUES(?,?, 'assistant', ?, ?, ?)").run(asstId,threadId,replyText,createdTasks[0]?.id??v.taskId??null,Date.now()+1);
+    this.store.db.prepare('INSERT INTO engine_message_search VALUES(?,?,?,?)').run(asstId,threadId,projectId,replyText);
+    return {threadId,messageId:id,assistantMessageId:asstId,tasks:createdTasks};
+   }),201);
+   this.coordinator.tick();
   }else send(response,{error:'Unknown task operation'},404);
   return true;
  }
