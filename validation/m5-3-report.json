@@ -1,0 +1,805 @@
+{
+  "milestone": "M5.3",
+  "status": "complete",
+  "recordedAt": "2026-10-24T05:19:57.577972+00:00",
+  "git": {
+    "baseline": "6de07be",
+    "initialWorkingTree": "clean",
+    "branch": "feat/qaspider-m5-2-ux",
+    "implementationCommit": "895dd2861310016e85d4f1f47cebfe45a6079ac0",
+    "commitNote": "The implementation commit above contains the validated code, tests, migration, documentation and sanitized benchmark receipts. This report is retained in the subsequent evidence-only commit; its own commit is visible in git log.",
+    "pushed": false,
+    "published": false
+  },
+  "scope": "Story-first proposals, reviewed scoped permission decisions and deterministic execution only. M6 not started.",
+  "preflight": {
+    "reviewed": [
+      "contracts, policies, existing testing repositories and immutable plans",
+      "Codex isolation and context construction",
+      "Studio/project HTTP boundaries and cookie/CSRF authorization",
+      "SQLite migration history and benchmark fixtures"
+    ],
+    "m52VisualBaseline": "Original authenticated Studio UX acceptance passed before changes; desktop/mobile captures retained.",
+    "providerBaseline": "Actual synthetic CLI validation passed before adapter/context changes; private evidence d21efe7a-eca9-4541-8db1-153f9ab80e41 retained.",
+    "sandboxLimitation": "Initial unprivileged test/probe attempts hit EPERM. Reruns with authorized loopback/process access passed; sandbox-denied attempts are not reported as successful checks."
+  },
+  "filesChanged": [
+    "README.md",
+    "apps/viewer/src/style.css",
+    "apps/viewer/src/testing.tsx",
+    "docs/STORY-FIRST.md",
+    "docs/STUDIO-UX.md",
+    "docs/STUDIO.md",
+    "package.json",
+    "packages/cli/src/testing.ts",
+    "packages/core/src/cli-reference.ts",
+    "packages/core/src/index.ts",
+    "packages/core/src/permissions.ts",
+    "packages/core/src/testing.ts",
+    "packages/mcp/src/server.ts",
+    "packages/navigation/src/engine.ts",
+    "packages/providers/src/codex.ts",
+    "packages/qa/src/execution.ts",
+    "packages/qa/src/http.ts",
+    "packages/qa/src/service.ts",
+    "packages/storage/migrations/006_execution_permissions.sql",
+    "packages/storage/src/testing.ts",
+    "scripts/verify-story-first.mjs",
+    "tests/integration/cli.test.ts",
+    "tests/integration/navigation-storage.test.ts",
+    "tests/integration/planning.test.ts",
+    "tests/integration/storage.test.ts",
+    "tests/integration/story-first.test.ts",
+    "tests/integration/studio-http.test.ts",
+    "tests/smoke/story-first.spec.ts",
+    "tests/smoke/studio-ux.spec.ts",
+    "tests/smoke/testing.spec.ts",
+    "tests/smoke/workspace.spec.ts",
+    "tests/unit/permissions.test.ts",
+    "validation/m2-isolation-recheck.json",
+    "validation/m5-3-benchmark.json",
+    "validation/m5-3-report.json"
+  ],
+  "backend": {
+    "separation": [
+      "Read-only story analysis from stored navigation and approved scenario summaries",
+      "Deterministic permission requirement derivation from actual scenario operations",
+      "Explicit human plan/requirement approval",
+      "Append-only human Allow/Deny decisions",
+      "Minimum typed runtime policy compilation per scenario",
+      "AI-free deterministic execution with revalidation at relevant actions and intercepted POSTs"
+    ],
+    "contracts": [
+      "ProposedTestPlan/ProposedScenario aliases reuse existing strict proposal validation",
+      "PermissionRequirement with strict Zod schema",
+      "PermissionDecision and strict decision input validation",
+      "ApprovedExecutionPlan",
+      "ExecutionAuthorization"
+    ],
+    "planning": "No browser discovery or application actions during planning. Missing scopes may be represented as unavailable targets; execution blocks them. HTTP/MCP caller policy data cannot grant authority.",
+    "approvalPersistence": "Workspace-local database plus application/environment/role-set/tenant/build/feature-flags scope, exact revision ID and content hash, exact request snapshot, reviewer and timestamp. Decisions are append-only. Edits/configuration/revisions copy no decisions. Superseded managed revisions cannot execute.",
+    "leastPrivilege": "Only submission steps, HTTP assertions and owned fixture lifecycles derive requests. Unused AI allowedActions and broad policy entries grant nothing. Denied/pending/unsupported operations block their scenarios before setup or application interactions; independent authorized cases continue.",
+    "cli": [
+      "plan generate without --policy",
+      "plan permissions",
+      "plan authorize with exact --hash and decision file",
+      "plan configure-access creates an unapproved revision"
+    ],
+    "compatibility": "Historical explicit-policy plans and explicit local CLI --policy input retain the reviewed operator policy contract. Editing a legacy plan adopts new access decisions. Browser and MCP planning use proposal-only mode."
+  },
+  "frontend": {
+    "steps": [
+      "Describe",
+      "Review Plan",
+      "Approve Access",
+      "Execute",
+      "Results"
+    ],
+    "features": [
+      "Single Generate Test Plan action with no prerequisite endpoint grants",
+      "Existing stories/plans and unmapped configured environments",
+      "Scenario cards with role/environment, precondition, steps, expected outcomes, data and cleanup",
+      "Direct title editing, advanced complete-proposal editing and Codex revision requests",
+      "Risk/impact/origin/scenario/cleanup cards with individual Allow/Deny decisions",
+      "Separate exact-plan and side-effect approval",
+      "Advanced lifecycle configuration after planning",
+      "Actual job progress, cancellation/retry, loading access checks and persisted reports/evidence",
+      "Approved-plan execution without another AI call"
+    ],
+    "visualQa": {
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "manualInspection": "Desktop/mobile review and access screenshots inspected. Desktop stepper specificity corrected; responsive overflow assertions pass.",
+      "screenshots": [
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/administrator-setup-1440.png",
+          "sha256": "5daf5302871530814e51c02b147cfcfee69a367b411d67b788ba1dac08f68cbe",
+          "bytes": 269958
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/administrator-setup-390.png",
+          "sha256": "096d3a9dd0988a2b77490af24b14d5d378023ff78520bbee10f6aceff87fcdff",
+          "bytes": 62436
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/applications-1440.png",
+          "sha256": "d7c5d06f697900f00b0e440a6392385c072a131c02f3ef682bacabc9d9c9ae48",
+          "bytes": 167412
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/applications-390.png",
+          "sha256": "7ab47f036ba08ef08c7d9295406e7098d9aaf568d37117ae5349418d1c204ad9",
+          "bytes": 138778
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/cli-reference-1440.png",
+          "sha256": "ab0fb530183ce37ae0ba2ecf9362939a9aea9d710ab3f3cc4d57d9d98623608d",
+          "bytes": 222559
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/cli-reference-390.png",
+          "sha256": "3868126a66acb02d2fbd221f01c85a69b33915ccb65491be221aee5c5ce2e79e",
+          "bytes": 210878
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/empty-projects-1440.png",
+          "sha256": "978f0de2d8aeb42ec5bf509fd50bae5ac7eb6ba1a9a98d68d613402303b923e8",
+          "bytes": 160812
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/empty-projects-390.png",
+          "sha256": "784b9162a62e1dce81078604912d96dfcdfc7b4436b90b09421eaa40418c22b7",
+          "bytes": 136747
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/graph-1440.png",
+          "sha256": "8b43fc18195db152947b86debad25cc05b6372e55f9011853879757cfae36838",
+          "bytes": 351944
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/graph-390.png",
+          "sha256": "899914d9ba64e5f1d9951a78c7ee5337a978f4e46e4586c238a7fa81f729edfe",
+          "bytes": 335582
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/login-1440.png",
+          "sha256": "470698c706a2b1135895096a12238171fb9ebbcce83bb2bd0bd337f179cab8ad",
+          "bytes": 262049
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/login-390.png",
+          "sha256": "a4bbefd7d21c53fb551556fb3a49b65a355ea81d1625ddb0d374d6c801807282",
+          "bytes": 58514
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/mcp-reference-1440.png",
+          "sha256": "3b41470a92c678354648c510d9cae34730de3d18a26723e5bc2b8906f6e46878",
+          "bytes": 235094
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/mcp-reference-390.png",
+          "sha256": "3ebc2b0c90b98b3a45423a53bbdb3f9615d4f53a324cea731316de474ec3d13d",
+          "bytes": 178894
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/memory-1440.png",
+          "sha256": "ecd2251d68c6f3800535c4045843dc5c0d1ceb2c3b64b68b80de789082c0b51d",
+          "bytes": 158241
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/memory-390.png",
+          "sha256": "0ae1a84006d8e396feebae4e4592c6f459dbaf31bea76073a163c493b3a3b6aa",
+          "bytes": 128425
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/overview-1440.png",
+          "sha256": "69c763b22b2fd0c06c4e4576f6aaff6df7767e03bc2285a113e9c96c9365971f",
+          "bytes": 220162
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/overview-390.png",
+          "sha256": "a5f0062ef315ead0c22a54a1c874fcb4416d70ebf53ff49c797eb9901a533a1f",
+          "bytes": 175593
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/projects-1440.png",
+          "sha256": "37bd9f51050e0fc2415111dd481714c9a2fa3cf1d1af045c54ffdb7598195792",
+          "bytes": 184072
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/projects-390.png",
+          "sha256": "cab9310618012da748d59226ebe98e1f063fbff0265228a52be5a784ad0cdba8",
+          "bytes": 158697
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/run-existing-1440.png",
+          "sha256": "36071b20e486dab1bbabebbb382375bb79b4f7b02110ec07ac2b5f9718238d2d",
+          "bytes": 123563
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/run-existing-390.png",
+          "sha256": "30cc23260356770f06d7cb29728059ac24b099a4666c593906650d35775a79c1",
+          "bytes": 94520
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-ai-1440.png",
+          "sha256": "7ff6eb8c8110d09ddfcbc5a00e9b3da3e07fce10b3638f43958d8d8c255b8f8d",
+          "bytes": 141429
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-ai-390.png",
+          "sha256": "77df56f9cb1e366fe01d7a4b0b0dd11caafa320eb89888359100fc1ee37391b5",
+          "bytes": 112180
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-general-1440.png",
+          "sha256": "bed1e7b27a6292f779f8a96c57147c11f8cf5898c346019a012811be8b44fb77",
+          "bytes": 92807
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-general-390.png",
+          "sha256": "6121525045bceec7530fd20c38b66eb5b06f3556d61025d15d6f770d6958b3c0",
+          "bytes": 69189
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-security-1440.png",
+          "sha256": "2990442471b43e9c6c13c9e2b8f1ca3db97b1fb28dadf91307c5dd80f29657e9",
+          "bytes": 101314
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-security-390.png",
+          "sha256": "a5ba75c7f06868c20bc399657ff3f0b5d1950237db2870c218ad0576ffc9e595",
+          "bytes": 78596
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-review-1440.png",
+          "sha256": "4457877e4e09c2ab8a04dea4f6596b43e89e7f782b3a20dcf48c832067ec1005",
+          "bytes": 252266
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-review-390.png",
+          "sha256": "125bba1db8a3ebddf40e0dabe420df5df74cb80842ef20e76fcbcb2c49cc107a",
+          "bytes": 212977
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-runs-1440.png",
+          "sha256": "8bfc83f6f9e81d8f85131aff9b5c55afb42ea10bed84fd5128ad6e07352e50f1",
+          "bytes": 174592
+        },
+        {
+          "phase": "before",
+          "path": ".qaspider/m5-3/before/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-runs-390.png",
+          "sha256": "a273745615b635fef680ffac8be83bdba84e31a816c948f0c5944310df047178",
+          "bytes": 129758
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/approved-access-1440.png",
+          "sha256": "d75420feb17696f1631c2580fc7b6d2174b6d369105be7a2a5513dce198f2a2d",
+          "bytes": 404946
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/approved-access-390.png",
+          "sha256": "a73d9493a518e9ab8ca593e0c6c28a5c7c45201588f97682783f57fd773b0705",
+          "bytes": 359678
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/denied-access-1440.png",
+          "sha256": "308a568a7af3d57a8f758139ef3a8a08d7f4dc8bffe5194383abc0104efef284",
+          "bytes": 268809
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/denied-access-390.png",
+          "sha256": "41479ad9fb0d65130f176f67f09d1664c61984f933a49e822c10107a1164331e",
+          "bytes": 231761
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/describe-1440.png",
+          "sha256": "a4bdc8bf12a684951029f1e32e9c4cafce3d1f2db12263a8024dab76872bec96",
+          "bytes": 135142
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/describe-390.png",
+          "sha256": "2e582fdf8200cddf6f37e0cf5fc474de07c2af60efaa73c4787ed76e9dce0e53",
+          "bytes": 99798
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/results-1440.png",
+          "sha256": "8fe7405c70c8a2e5c2e5e1d49faaae50524360d6a922bcbee5ec39bb761d3247",
+          "bytes": 311405
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/results-390.png",
+          "sha256": "cc740d33fd3a2603c5ed42ebc64b9bcbf50ed54715532db7d6bcb10e30fdc4d2",
+          "bytes": 278346
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/review-1440.png",
+          "sha256": "3dfdb0d4377ec6f9f4709ff3ef4eee170921096f396b4c5bfcca0b128ab9ddf2",
+          "bytes": 355877
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/review-390.png",
+          "sha256": "dc7c118c9c82f7d63e3e2052d64fc45e91f64dce600292d4d165bf87e5ba85f5",
+          "bytes": 305641
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/unsupported-access-1440.png",
+          "sha256": "a7a26222b7be8c6df9969522aa21901c089ec5d935a789bbf78867efd718b4d4",
+          "bytes": 270015
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/story-first-story-first-ac-33e10-and-replays-after-reopening/unsupported-access-390.png",
+          "sha256": "8b5d86917e95a702ff907cc94e5ceb2397da6b66400f9c14a9ab9ea53a1a4b73",
+          "bytes": 232654
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/administrator-setup-1440.png",
+          "sha256": "5daf5302871530814e51c02b147cfcfee69a367b411d67b788ba1dac08f68cbe",
+          "bytes": 269958
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/administrator-setup-390.png",
+          "sha256": "096d3a9dd0988a2b77490af24b14d5d378023ff78520bbee10f6aceff87fcdff",
+          "bytes": 62436
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/applications-1440.png",
+          "sha256": "c36f9f25bcb19b695fadc709084eeb879ce3bf480eb7a3b491c63b9a3643cf2a",
+          "bytes": 167763
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/applications-390.png",
+          "sha256": "269f7d58e6ec14fa36f7b229d1fff0adae61b0024a9f58d01f25fe1e4838aa16",
+          "bytes": 138558
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/cli-reference-1440.png",
+          "sha256": "7ed0dae535b3fba17a912311d04260d1bd7e5b3b0634754b8810dde5cd556de2",
+          "bytes": 226832
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/cli-reference-390.png",
+          "sha256": "923ff0f8684e9fa4c41d4b9f63ac3a1ccf9e9b2cef8343f08e994f20c676f5d0",
+          "bytes": 211229
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/empty-projects-1440.png",
+          "sha256": "978f0de2d8aeb42ec5bf509fd50bae5ac7eb6ba1a9a98d68d613402303b923e8",
+          "bytes": 160812
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/empty-projects-390.png",
+          "sha256": "784b9162a62e1dce81078604912d96dfcdfc7b4436b90b09421eaa40418c22b7",
+          "bytes": 136747
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/graph-1440.png",
+          "sha256": "dcef0013391bcd9026d9134c6b514d97663740bc1e6184619e1dac29e5dbb5f0",
+          "bytes": 351626
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/graph-390.png",
+          "sha256": "d09ba2a082408f51476088392246ae641f13876ff94a359aa99462066655b110",
+          "bytes": 335271
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/login-1440.png",
+          "sha256": "470698c706a2b1135895096a12238171fb9ebbcce83bb2bd0bd337f179cab8ad",
+          "bytes": 262049
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/login-390.png",
+          "sha256": "a4bbefd7d21c53fb551556fb3a49b65a355ea81d1625ddb0d374d6c801807282",
+          "bytes": 58514
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/mcp-reference-1440.png",
+          "sha256": "2491d2cf8c6e852cbb15a3137691c50f23bec93e0b2c3de527be7549968aa797",
+          "bytes": 231634
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/mcp-reference-390.png",
+          "sha256": "2dc282c68985b3a147a9ec689a8218f8e3699ec6ab68a244ac4684f7f709871e",
+          "bytes": 177080
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/memory-1440.png",
+          "sha256": "ecd2251d68c6f3800535c4045843dc5c0d1ceb2c3b64b68b80de789082c0b51d",
+          "bytes": 158241
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/memory-390.png",
+          "sha256": "0ae1a84006d8e396feebae4e4592c6f459dbaf31bea76073a163c493b3a3b6aa",
+          "bytes": 128425
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/overview-1440.png",
+          "sha256": "7c1779d91dcea2c4cbd2d3a10edc011e4cf6e35e73cb280289c2509d973d3bd9",
+          "bytes": 219951
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/overview-390.png",
+          "sha256": "b376c45ed7253f83ea4c78a9a8e7df61fac288b61d77b73d7045c92314b1c39e",
+          "bytes": 175389
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/projects-1440.png",
+          "sha256": "37bd9f51050e0fc2415111dd481714c9a2fa3cf1d1af045c54ffdb7598195792",
+          "bytes": 184072
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/projects-390.png",
+          "sha256": "cab9310618012da748d59226ebe98e1f063fbff0265228a52be5a784ad0cdba8",
+          "bytes": 158697
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/run-existing-1440.png",
+          "sha256": "eb597c628358fbfe4f8302a3732ecd4d2a5e342886c832505026982d5cc19a26",
+          "bytes": 123602
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/run-existing-390.png",
+          "sha256": "032d155915a7d3c85cd2a06b406f5309fb06be4526b0a618af14c99eebd6b95d",
+          "bytes": 97567
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-ai-1440.png",
+          "sha256": "7ff6eb8c8110d09ddfcbc5a00e9b3da3e07fce10b3638f43958d8d8c255b8f8d",
+          "bytes": 141429
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-ai-390.png",
+          "sha256": "77df56f9cb1e366fe01d7a4b0b0dd11caafa320eb89888359100fc1ee37391b5",
+          "bytes": 112180
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-general-1440.png",
+          "sha256": "bed1e7b27a6292f779f8a96c57147c11f8cf5898c346019a012811be8b44fb77",
+          "bytes": 92807
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-general-390.png",
+          "sha256": "6121525045bceec7530fd20c38b66eb5b06f3556d61025d15d6f770d6958b3c0",
+          "bytes": 69189
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-security-1440.png",
+          "sha256": "2990442471b43e9c6c13c9e2b8f1ca3db97b1fb28dadf91307c5dd80f29657e9",
+          "bytes": 101314
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/settings-security-390.png",
+          "sha256": "a5ba75c7f06868c20bc399657ff3f0b5d1950237db2870c218ad0576ffc9e595",
+          "bytes": 78596
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-review-1440.png",
+          "sha256": "b5e4ebe657c948ded9ad068335b15d170955073a32b4e7f73dd4e4b4f093790d",
+          "bytes": 190356
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-review-390.png",
+          "sha256": "30b9d508746eb2c504774d4667331ee9d5db133a7a310746e5e1e03649f42ba1",
+          "bytes": 156086
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-runs-1440.png",
+          "sha256": "798f5974f500d2692a05fdcfae34225c0376cb12e6ba93b99e55c2c38a74fe86",
+          "bytes": 173755
+        },
+        {
+          "phase": "after",
+          "path": ".qaspider/m5-3/after/studio-ux-guided-Studio-cr-6632f-esponsive-real-data-screens/test-runs-390.png",
+          "sha256": "817307f971b584878386cde81f7d7a4d1ad9ca63c0ec044d59a6c9097328ae40",
+          "bytes": 129733
+        }
+      ]
+    }
+  },
+  "migrations": [
+    {
+      "file": "packages/storage/migrations/001_foundation.sql",
+      "sha256": "463667121ecff9266f0f78e070eb5e3cd147b8b2c753fe08cb7afa42ac6b6864",
+      "unchangedFromM52": true
+    },
+    {
+      "file": "packages/storage/migrations/002_navigation.sql",
+      "sha256": "d99431b96c3c531ae38cacfd1df0e3aa9f078d638b6c25cc73454d0f74317b96",
+      "unchangedFromM52": true
+    },
+    {
+      "file": "packages/storage/migrations/003_story_testing.sql",
+      "sha256": "7a97f66fae6689d60cd9708885fccfb2bf7db40e5ebb55cfef1073eec9a4521f",
+      "unchangedFromM52": true
+    },
+    {
+      "file": "packages/storage/migrations/004_governed_learning.sql",
+      "sha256": "57129f3dec10a9db8614041eac3d84170ea2b8359493f278fb8e4216030bcfd0",
+      "unchangedFromM52": true
+    },
+    {
+      "file": "packages/storage/migrations/005_operation_jobs.sql",
+      "sha256": "d90598b07bc4f2c097215343c2726c86dda0cba26e81f8534ed87c0eb634e530",
+      "unchangedFromM52": true
+    },
+    {
+      "file": "packages/storage/migrations/006_execution_permissions.sql",
+      "sha256": "aa7c1f5ee5ab1853dd9e48cefab36621faba57917de3de6e9c25ecdf2a673e50",
+      "unchangedFromM52": null
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "log": ".qaspider/m5-3/logs/qaspider-m53-gate-typecheck.log"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "log": ".qaspider/m5-3/logs/qaspider-m53-gate-build.log"
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "testFiles": 28,
+      "tests": 68,
+      "log": ".qaspider/m5-3/logs/qaspider-m53-gate-tests.log"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "status": "passed",
+      "tests": 14,
+      "log": ".qaspider/m5-3/logs/qaspider-m53-gate-smoke.log"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=<installed absolute CLI path> npm run verify:provider",
+      "status": "passed",
+      "manifest": "validation/m2-isolation-recheck.json",
+      "privateEvidence": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/087e0d5a-5137-47ea-a178-387870d35f07",
+      "currentSourceHashesMatch": true,
+      "log": ".qaspider/m5-3/logs/qaspider-m53-provider-final-confirmed.log"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright QASPIDER_CODEX_BIN=<installed absolute CLI path> npm run verify:story-first",
+      "status": "passed after quoted expectation clarification; second attempt used node scripts/verify-story-first.mjs against the built sources",
+      "result": "validation/m5-3-benchmark.json"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright node /tmp/qaspider-m53-final-replay.mjs",
+      "status": "passed",
+      "providerCalls": 0,
+      "benchmarkRestarted": true,
+      "sqliteReopened": true,
+      "log": ".qaspider/m5-3/logs/qaspider-m53-final-replay.log"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "acceptance": {
+    "newStoryWithoutPermissions": true,
+    "realCodexPlanWithoutGrants": true,
+    "justifiedMinimumRequests": true,
+    "planningRegistrations": 0,
+    "explicitDecisionsRequired": true,
+    "approvedValidAndInvalidCasesPass": true,
+    "duplicateEmailDefectDetected": true,
+    "deniedSubmissionCount": 0,
+    "deniedRegistrationScenariosBlocked": 3,
+    "independentReadOnlyScenarioPasses": 1,
+    "planEditInvalidatesDecisions": true,
+    "manipulatedExecutionPolicyRequestRejected": true,
+    "aiCannotGrantItselfAccess": true,
+    "persistedApprovedNavigationReused": true,
+    "fullApprovedAiFreeReplayAfterDatabaseAndBenchmarkRestart": true,
+    "scopeIsolation": [
+      "project database",
+      "application",
+      "role",
+      "environment",
+      "tenant",
+      "build/hash"
+    ],
+    "originalRequirementsPreserved": true
+  },
+  "realBenchmark": {
+    "receipt": "validation/m5-3-benchmark.json",
+    "privateWorkspace": "/home/avi/Opensource/qaspider/.qaspider/m5-3/real-benchmark/2026-10-24T05-07-09.636Z",
+    "successfulAttemptProviderCalls": 1,
+    "totalPlanningAttempts": 2,
+    "initialAttempt": "Rejected at review before execution: unquoted sentence-ending punctuation entered expected strings. Expected messages were clarified with explicit quotes; no failed proposal was automatically authorized.",
+    "summary": {
+      "PASS": 2,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "INCONCLUSIVE": 0,
+      "FLAKY": 0,
+      "NOT RUN": 0
+    },
+    "runId": "bb496a21-07dd-41e4-bb84-29e02c8e4485",
+    "initialAiFreeReplayRunId": "d50c9237-bba9-47dd-8bbc-59b0cc27c8af",
+    "finalBuildReplay": {
+      "recordedAt": "2026-10-24T05:16:14.860Z",
+      "finalBuild": true,
+      "providerCalls": 0,
+      "benchmarkRestarted": true,
+      "databaseReopened": true,
+      "runId": "8b110b94-3c30-467f-8ad0-abce35cfdc16",
+      "planHash": "fe8874fbdaeb92b175e30486631cb33701ebd6a545506d90a142d4a2a83f499f",
+      "summary": {
+        "PASS": 2,
+        "FAIL": 1,
+        "BLOCKED": 0,
+        "INCONCLUSIVE": 0,
+        "FLAKY": 0,
+        "NOT RUN": 0
+      },
+      "scenarioResults": [
+        {
+          "scenarioId": "registration-valid",
+          "status": "PASS",
+          "evidenceIds": [
+            "00045304-527c-442e-bfd1-3da94563f70c",
+            "784591d2-ff1a-4b66-9a91-de2502cc52d3",
+            "4d50d7cc-3e8d-4c73-85dc-7bb8def75f36",
+            "7c815886-2124-4312-8658-d187a1e4ec2a"
+          ]
+        },
+        {
+          "scenarioId": "registration-invalid-email",
+          "status": "PASS",
+          "evidenceIds": [
+            "98ec1353-dbf6-49c3-aee2-f160b91d31e2",
+            "8319c11a-58ea-4869-ad38-1661f0da1f69",
+            "bf17d449-86b2-4c5c-85c1-bf53e4a84617",
+            "b1b95ba3-bac2-44e2-b54d-a1943c509914"
+          ]
+        },
+        {
+          "scenarioId": "registration-duplicate-email",
+          "status": "FAIL",
+          "evidenceIds": [
+            "276a774f-5d0f-4562-9e5b-e7eb38d52876",
+            "246e4589-4fb4-488b-9553-1646a06ae4c8",
+            "7f016b8f-8983-4b88-82ca-f8414bfc2993",
+            "3bcad268-b90d-44eb-ac03-61a5aa40db25"
+          ]
+        }
+      ],
+      "fixtureCleanup": [
+        "cleaned",
+        "cleaned"
+      ],
+      "privateEvidence": "/home/avi/Opensource/qaspider/.qaspider/m5-3/real-benchmark/2026-10-24T05-07-09.636Z/final-build-replay.json",
+      "sha256": "1a70ab46dbcb95ebef7fb39fda8888d2dc82770bd6a39ba3da22da652bcd73eb"
+    },
+    "expectedFailure": "Duplicate-email defect is intentionally injected only in the owned benchmark; the FAIL is expected acceptance evidence, not a failed quality gate.",
+    "fixtureCleanup": [
+      "cleaned",
+      "cleaned"
+    ],
+    "requirementsPreserved": true,
+    "exactCitedRequirementMessageReview": "Verified every real-plan expected string and equality assertion against its exact cited acceptance criterion."
+  },
+  "securityChecks": {
+    "codexModelVisibleTools": 0,
+    "syntheticTimeoutAndCancellationExitVerified": true,
+    "sanitizedContextVerified": true,
+    "originalRealProviderValidationUnchanged": true,
+    "sameOriginCookieCsrfAndProjectAuthenticationTests": "passed",
+    "productionWriteApprovalRejected": true,
+    "unknownOriginsAndMalformedRequestsRejected": true,
+    "rawArtifactsExcludedFromProviderContext": true,
+    "artifactQuotaRetentionAndTraversalTests": "passed unchanged",
+    "noCredentialsTokensDatabasesTracesOrRawScreenshotsToBeCommitted": true,
+    "externalApplicationsModified": false,
+    "newDependencies": [],
+    "unresolvedCriticalFindings": []
+  },
+  "failuresAndResolutions": [
+    "Unprivileged process/loopback baseline attempts denied by sandbox; authorized reruns passed.",
+    "Intermediate MCP startup failures occurred while build outputs were incomplete; clean completed-build gates passed.",
+    "CLI reference count expectations advanced from 37 to 40; old migrations remained unchanged.",
+    "Legacy UI smoke flows updated for the new labels and waits for revised plans/loaded permission cards. All original result, authentication and evidence assertions remain.",
+    "Desktop workflow indicator initially inherited sidebar column styling; scoped grid styles corrected it.",
+    "Initial real Codex proposal failed exact-message review; clarified quoted requirements and reran without accepting the failed proposal."
+  ],
+  "limitations": [
+    "Unknown form endpoints/fixture lifecycles require independent identification and advanced configuration after planning; missing capabilities stay unsupported/BLOCKED.",
+    "Navigation discovery and route approval remain explicit separate operations; planning does not browse.",
+    "Roles require configured authentication references and any existing tenant identity assertions before execution.",
+    "Full step/assertion/data editing remains under Advanced Settings JSON; title editing and AI revision use simpler controls.",
+    "Historical explicit-policy plans are retained for compatibility rather than silently reauthorized or revoked.",
+    "If cleanup approval is revoked mid-run, owned records are marked orphaned for operator reconciliation.",
+    "Retrieval is bounded exact-scope keyword matching, not embeddings.",
+    "Claude/Gemini remain optional, deferred and unverified.",
+    "A running older Studio must be restarted to load the new build."
+  ],
+  "unresolvedBlockers": [],
+  "stopGate": "M5.3 complete; do not begin M6.",
+  "commitHash": "895dd2861310016e85d4f1f47cebfe45a6079ac0"
+}
