@@ -5,7 +5,8 @@ import {fileURLToPath} from 'node:url';
 /** Optional web client. It has no project database, QA browser or provider ownership. */
 export function createStudioClient(endpoint:string,options:{allowedHosts?:string[]}={}){
  const engine=new URL(endpoint);if(engine.protocol!=='http:'||engine.username||engine.password||engine.pathname!=='/'||engine.search||engine.hash)throw new Error('Use an operator-configured engine HTTP origin');
- const assets=fileURLToPath(new URL('../../../apps/viewer/public/',import.meta.url));
+ const compiled=fileURLToPath(new URL('../../../apps/viewer/public/',import.meta.url));
+ const assets=existsSync(resolve(compiled,'index.html'))?compiled:fileURLToPath(new URL('../../../dist/apps/viewer/public/',import.meta.url));
  const server=createServer((request,response)=>{void (async()=>{
   const host=request.headers.host,port=request.socket.localPort;
   if(!host||![`localhost:${port}`,`127.0.0.1:${port}`,...(options.allowedHosts??[])].includes(host))throw new Error('Invalid host');

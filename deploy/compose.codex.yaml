@@ -1,0 +1,10 @@
+# Optional operator-provisioned Linux Codex executable and auth reference.
+# Combine with compose.yaml only after reviewing these explicit mounts.
+services:
+  engine:
+    environment:
+      QASPIDER_CODEX_BIN: /opt/qaspider/codex
+      CODEX_HOME: /run/codex
+    volumes:
+      - ${QASPIDER_CODEX_EXECUTABLE_FILE:?Set an approved Linux Codex executable}:/opt/qaspider/codex:ro
+      - ${QASPIDER_CODEX_AUTH_FILE:?Set the private existing Codex auth.json file}:/run/codex/auth.json:ro

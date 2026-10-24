@@ -3,6 +3,7 @@ import {mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';import {join} from 'node:path';import {createHash} from 'node:crypto';
 import {StudioStore} from '../../packages/studio/src/store.js';import {ProjectRegistry} from '../../packages/studio/src/projects.js';
 import {createEngine} from '../../packages/engine/src/server.js';
+import {NavigationEngine} from '../../packages/navigation/src/engine.js';
 import {FakeProvider,type ProviderContext} from '../../packages/core/src/index.js';
 class Planner extends FakeProvider{override async plan(context:ProviderContext){const c=JSON.parse(context.summary) as {story:{requirements:{id:string}[]}};const id=c.story.requirements[0]!.id;return {title:'Plan',feature:'Home',inferredRequirements:[],scenarios:[{id:'home',title:'Heading',roleId:'guest',requirementIds:[id],targetStateId:'missing-navigation',data:[],steps:[],assertions:[{id:'heading',kind:'visible',locator:{kind:'role',role:'heading',name:'Home'},expected:true,requirementId:id}],allowedActions:[],cleanup:'owned-fixtures',severity:'low',retries:0}]};}}
 it('queues independent tickets, preserves idempotency, remembers scoped answers and keeps human authority separate',async()=>{
@@ -12,6 +13,7 @@ it('queues independent tickets, preserves idempotency, remembers scoped answers 
  const request=async(path:string,body?:unknown,human=false)=>{const session=human?engine.auth.open(true):null;return fetch(base+path,{method:body===undefined?'GET':'POST',headers:{...(session?{cookie:`qaspider-studio-${address.port}=${session.token}`,origin:endpoint,'x-csrf-token':session.csrf}:{authorization:`Bearer ${token}`}),...(body===undefined?{}:{'content-type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});};
  const context={applicationId:'benchmark',environmentId:'development',build:'b',tenant:'public',featureFlags:{},roleIds:['guest']};
  try{
+  const backend=await engine.context.project(p.id);await expect(new NavigationEngine(backend.database,backend.viewer.application.artifacts).map({applicationId:'benchmark',environmentId:'development',roleId:'guest',build:'b',tenant:'private-tenant',featureFlags:{}},'http://127.0.0.1:3000/')).rejects.toThrow('Non-public tenants require authenticated identity');
   const batch={commandKey:'create-batch-1',tickets:[{markdown:'# Unclear',sourceRef:'ticket-1',context},{markdown:'# Home\n## Acceptance Criteria\n- AC-1: Home is visible.',sourceRef:'ticket-2',context}]};
   const created=await request('tasks',batch);expect(created.status).toBe(201);const tasks=await created.json() as {id:string;status:string}[];expect(tasks[0]!.status).toBe('Needs Clarification');
   expect(await (await request('tasks',batch)).json()).toEqual(tasks);
@@ -19,6 +21,7 @@ it('queues independent tickets, preserves idempotency, remembers scoped answers 
   await expect.poll(async()=>{const task=await (await request('task?id='+tasks[1]!.id)).json() as {status:string};return task.status;}).toBe('Needs Permission');
   const ready=engine.orchestration.task(tasks[1]!.id,p.id);const job=engine.orchestration.jobs(p.id).find(j=>j.taskId===ready.id)!;expect(engine.orchestration.events(job.id,p.id).length).toBeGreaterThan(2);
   expect((await request('task-approve',{taskId:ready.id,planRevisionId:ready.planId,planHash:'wrong',requirementIds:[],decisions:[],commandKey:'approval-agent'})).status).toBe(403);
+  const source=backend.database.testing.getStory(ready.storyId!)!;backend.database.testing.approvePlan(ready.planId!,'fixture-human',source.requirements.map(r=>r.id));await expect.poll(()=>engine.orchestration.task(ready.id,p.id).status).toBe('Queued');expect((engine.orchestration.requests(ready.id,p.id) as {kind:string;status:string}[]).filter(r=>r.kind==='plan-review').every(r=>r.status==='resolved')).toBe(true);
   const pending=engine.orchestration.requests(tasks[0]!.id,p.id) as {id:string}[];
   const answer={taskId:tasks[0]!.id,requestId:pending[0]!.id,answer:'# Login\n## Acceptance Criteria\n- AC-1: Login is visible.',reuseKey:'login-fixture',credentialReferences:{account:'QA_USER_ACCOUNT'},commandKey:'answer-once-1'};
   expect((await request('task-clarify',answer)).ok).toBe(true);expect((await request('task-clarify',answer)).ok).toBe(true);

@@ -13,7 +13,7 @@ export function send(response:ServerResponse,value:unknown,status=200){response.
 export function createEngineApi(authFile:string,extension?:(request:IncomingMessage,response:ServerResponse,context:EngineContext,principal:Principal)=>Promise<boolean>){
  const authenticate=engineAuth(authFile);
  return async(request:IncomingMessage,response:ServerResponse,context:EngineContext)=>{
-  const url=new URL(request.url??'/','http://engine');if(!url.pathname.startsWith('/api/v'))return false;
+  const url=new URL(request.url??'/','http://engine');if(url.pathname==='/healthz'&&request.method==='GET'){send(response,{status:'ok',apiVersion:1});return true;}if(!url.pathname.startsWith('/api/v'))return false;
   try{
    const human=request.headers.authorization?null:context.human(request);
    const principal:Principal=human?{id:human,kind:'human',tokenHash:'',projects:context.registry.list().map(p=>p.id),actions:['read','plan','execute','explore','manage','review']}:authenticate(request.headers.authorization);
@@ -39,11 +39,12 @@ export function createEngineApi(authFile:string,extension?:(request:IncomingMess
     else if(operation==='job'){const job=store.testing.getJob(id);if(!job)throw new Error('Unknown job');send(response,job);}
     else if(operation==='report'){const report=store.testing.report(id);if(!report)throw new Error('Unknown run');send(response,report);}
     else if(operation==='evidence'){
-     const report=store.testing.report(url.searchParams.get('runId')??'');
-     if(!report)throw new Error('Unknown run');
-     const ids=new Set(report.results.flatMap(r=>r.attempts.flatMap(a=>a.evidenceIds)));
+     const runId=url.searchParams.get('runId')??'',report=store.testing.report(runId);
+     const navigation=report?null:store.navigation.listScopes().flatMap(s=>store.navigation.snapshot(s.scope).runs).find(run=>run.id===runId);
+     if(!report&&!navigation)throw new Error('Unknown run');
+     const ids=new Set(report?report.results.flatMap(r=>r.attempts.flatMap(a=>a.evidenceIds)):navigation!.evidenceIds);
      const artifact=store.getArtifact(id);
-     if(!ids.has(id)||!artifact||artifact.status!=='available'||artifact.kind==='trace')throw new Error('Evidence unavailable or restricted');
+     if(!ids.has(id)||!artifact||artifact.status!=='available'||artifact.kind==='trace'||artifact.sizeBytes>8*1024*1024)throw new Error('Evidence unavailable or restricted');
      response.writeHead(200,{'content-type':artifact.kind==='screenshot'?'image/png':'application/json','cache-control':'no-store','x-qaspider-api-version':'1'});response.end(service.artifacts.read(id));
     }
     else if(operation==='context'){const scope=scopeSchema.parse(JSON.parse(url.searchParams.get('scope')??'null'));send(response,store.navigation.snapshot(scope));}

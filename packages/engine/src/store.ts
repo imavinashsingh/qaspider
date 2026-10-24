@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import {readFileSync,readdirSync,chmodSync} from 'node:fs';
+import {readFileSync,readdirSync,chmodSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash,randomUUID} from 'node:crypto';
@@ -17,8 +17,10 @@ export class EngineStore {
   this.db.exec('CREATE TABLE IF NOT EXISTS engine_schema(version INTEGER PRIMARY KEY, checksum TEXT NOT NULL) STRICT');
   const directory=fileURLToPath(new URL('../migrations/',import.meta.url));const files=readdirSync(directory).filter(f=>/^\d+_[a-z_]+\.sql$/.test(f)).sort();
   this.atomic(()=>{const known=new Set(files.map(f=>Number(f.split('_')[0])));for(const row of this.db.prepare('SELECT version FROM engine_schema').all() as {version:number}[])if(!known.has(row.version))throw new Error('Engine schema is newer than this binary');for(const file of files){const version=Number(file.split('_')[0]),sql=readFileSync(join(directory,file),'utf8'),checksum=contentHash(sql);const old=this.db.prepare('SELECT checksum FROM engine_schema WHERE version=?').get(version) as {checksum:string}|undefined;if(old){if(old.checksum!==checksum)throw new Error('Engine migration checksum mismatch');}else{this.db.exec(sql);this.db.prepare('INSERT INTO engine_schema VALUES(?,?)').run(version,checksum);}}});
+  for(const suffix of ['-wal','-shm'])if(existsSync(path+suffix))chmodSync(path+suffix,0o600);
  }
  atomic<T>(work:()=>T):T{return this.db.transaction(work).immediate();}
+ cached(projectId:string,key:string,payload:unknown):unknown{const row=this.db.prepare('SELECT * FROM engine_commands WHERE project_id=? AND command_key=?').get(projectId,key) as Row|undefined;if(!row)return undefined;if(row.content_hash!==contentHash(payload))throw new Error('Idempotency key reused for a different command');return JSON.parse(String(row.result_json)) as unknown;}
  command<T>(projectId:string,key:string,payload:unknown,work:()=>T):T{return this.atomic(()=>{const old=this.db.prepare('SELECT * FROM engine_commands WHERE project_id=? AND command_key=?').get(projectId,key) as Row|undefined;const hash=contentHash(payload);if(old){if(old.content_hash!==hash)throw new Error('Idempotency key reused for a different command');return JSON.parse(String(old.result_json)) as T;}const result=work();this.db.prepare('INSERT INTO engine_commands VALUES(?,?,?,?)').run(projectId,key,hash,JSON.stringify(result));return result;});}
  private taskRow(row:Row):EngineTask{return{id:String(row.id),projectId:String(row.project_id),title:String(row.title),context:JSON.parse(String(row.context_json)) as StoryContext,markdown:String(row.markdown),sourceRef:String(row.source_ref),storyId:row.story_id?String(row.story_id):null,planId:row.plan_id?String(row.plan_id):null,status:String(row.status),strategy:row.strategy as EngineTask['strategy']};}
  task(id:string,projectId:string){const row=this.db.prepare('SELECT * FROM engine_tasks WHERE id=? AND project_id=?').get(id,projectId) as Row|undefined;if(!row)throw new Error('Unknown project task');return this.taskRow(row);}
@@ -36,7 +38,7 @@ export class EngineStore {
   for(const job of this.jobs().filter(j=>j.status==='queued')){
    if(active.filter(j=>j.projectId===job.projectId).length>=projectLimit)continue;
    if(this.db.prepare("SELECT 1 FROM engine_dependencies d JOIN engine_tasks t ON t.id=d.prerequisite_id WHERE d.task_id=? AND t.status<>'Reviewed' LIMIT 1").get(job.taskId))continue;
-   const task=this.task(job.taskId,job.projectId);const resource=job.kind==='execute'||job.payload.revalidateOnly===true?contentHash({projectId:job.projectId,environmentId:task.context.environmentId,tenant:task.context.tenant}):null;
+   const task=this.task(job.taskId,job.projectId);const resource=job.kind==='execute'||job.payload.revalidateOnly===true||job.payload.allowExplore===true?contentHash({projectId:job.projectId,environmentId:task.context.environmentId,tenant:task.context.tenant}):null;
    if(resource&&this.db.prepare('SELECT 1 FROM engine_locks WHERE resource=?').get(resource))continue;
    if(resource)this.db.prepare('INSERT INTO engine_locks VALUES(?,?)').run(resource,job.id);
    this.db.prepare("UPDATE engine_jobs SET status='running',owner=?,fence=fence+1,lease_until=?,updated_at=? WHERE id=? AND status='queued'").run(owner,Date.now()+leaseMs,Date.now(),job.id);this.event(job.id,'WORKER_CLAIMED',{});return this.job(job.id,job.projectId);

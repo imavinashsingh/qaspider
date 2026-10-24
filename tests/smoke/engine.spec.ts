@@ -8,6 +8,7 @@ import {SqliteStore,ArtifactStore} from '../../packages/storage/src/index.js';
 import {NavigationEngine} from '../../packages/navigation/src/engine.js';
 import {navigationConfigSchema,type Scope} from '../../packages/core/src/index.js';
 import {createEngine} from '../../packages/engine/src/server.js';
+import {createStudioClient} from '../../packages/studio/src/client.js';
 import {EngineClient} from '../../packages/bridge/src/client.js';
 test.use({trace:'off'});
 test('engine-only approved browser replay survives client disconnect and engine restart without AI',async({browser,baseURL},info)=>{
@@ -25,6 +26,8 @@ test('engine-only approved browser replay survives client disconnect and engine 
   const client=new EngineClient({endpoint:`http://127.0.0.1:${address.port}`,token,projectId:project.id});const job=await client.request('execute',{planRevisionId:plan.id}) as {id:string};
   await expect.poll(async()=>(await client.request('job?id='+job.id) as {status:string}).status,{timeout:30000}).toBe('complete');
   const completed=await client.request('job?id='+job.id) as {resultId:string};const report=await client.request('report?id='+completed.resultId) as {summary:{PASS:number}};expect(report.summary.PASS).toBe(1);
+  await engine.auth.setup(engine.auth.open(),'synthetic-engine-browser-password');engine.registry.select(project.id);const session=engine.auth.open(true);const web=createStudioClient(`http://127.0.0.1:${address.port}`);await new Promise<void>(r=>web.listen(0,'127.0.0.1',r));const webAddress=web.address();if(!webAddress||typeof webAddress==='string')throw new Error('No Studio');const page=await browser.newPage();
+  try{await page.context().addCookies([{name:`qaspider-studio-${address.port}`,value:session.token,domain:'127.0.0.1',path:'/',httpOnly:true,sameSite:'Strict'}]);const opened=await page.goto(`http://127.0.0.1:${webAddress.port}`);expect(opened?.ok()).toBe(true);await page.getByRole('button',{name:'CLI & MCP',exact:true}).click({timeout:10000});await expect(page.getByRole('heading',{name:'Engine MCP bridge',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Enable MCP',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'CLI commands',exact:true})).toHaveCount(0);await expect(page.getByLabel('Host MCP configuration template')).toHaveValue(/QASPIDER_ENGINE_CONNECTION_FILE/);}finally{await page.close();web.closeAllConnections();await new Promise<void>(r=>web.close(()=>r()));}
   await engine.shutdown();engine=createEngine(home,[projects],authFile,{planningProvider:()=>{throw new Error('No AI allowed');}});await new Promise<void>(r=>engine.server.listen(0,'127.0.0.1',r));address=engine.server.address();if(!address||typeof address==='string')throw new Error('No listener');const next=new EngineClient({endpoint:`http://127.0.0.1:${address.port}`,token,projectId:project.id});
   expect((await next.request('report?id='+completed.resultId) as {summary:{PASS:number}}).summary.PASS).toBe(1);expect((await next.request('jobs') as unknown[]).length).toBe(1);
   const tasks=await next.request('tasks',{commandKey:'known-regression-after-restart',tickets:[{markdown:story.markdown,sourceRef:'new-ticket',context:story.context}]}) as {id:string}[];

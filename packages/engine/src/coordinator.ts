@@ -12,7 +12,7 @@ export class Coordinator {
  private pending=new Map<string,{controller:AbortController;work:Promise<void>}>();
  private timer:ReturnType<typeof setInterval>|undefined;
  private stopping=false;
- private reconciling=false;
+ private reconciliation:Promise<void>|null=null;
  private requested=new Map<string,'pause'|'cancel'>();
  constructor(readonly store:EngineStore,private readonly context:EngineContext,readonly limits:WorkerLimits={global:3,perProject:2,leaseMs:30000}){
   this.knowledge=new Knowledge(store);
@@ -20,7 +20,7 @@ export class Coordinator {
   if(limits.jobMs!==undefined&&(!Number.isInteger(limits.jobMs)||limits.jobMs<1000||limits.jobMs>3600000))throw new Error('Invalid job time budget');
  }
  start(){this.store.recover();this.timer=setInterval(()=>this.tick(),250);this.timer.unref();this.tick();}
- tick(){if(this.stopping)return;this.store.recover();if(!this.reconciling){this.reconciling=true;void this.reconcileCompleted().finally(()=>{this.reconciling=false;});}for(const [id,pending]of this.pending){const job=this.store.jobs().find(j=>j.id===id);if(!job||job.status!=='running')pending.controller.abort();}
+ tick(){if(this.stopping)return;this.store.recover();if(!this.reconciliation){this.reconciliation=this.reconcileCompleted().catch(()=>{/* Leave durable state blocked if reconciliation cannot be verified. */}).finally(()=>{this.reconciliation=null;});}for(const [id,pending]of this.pending){const job=this.store.jobs().find(j=>j.id===id);if(!job||job.status!=='running')pending.controller.abort();}
   if(!this.store.jobs().some(j=>j.status==='queued'||j.status==='running')){
    const due=this.store.db.prepare('SELECT * FROM engine_revalidation_schedules WHERE enabled=1 AND next_at<=? ORDER BY next_at LIMIT 1').get(Date.now()) as {id:string;project_id:string;task_id:string;interval_ms:number}|undefined;
    if(due)this.store.atomic(()=>{const task=this.store.task(due.task_id,due.project_id);this.store.enqueue(task,'plan',{revalidateOnly:true,previousStatus:task.status,allowExplore:true,background:true});this.store.db.prepare('UPDATE engine_revalidation_schedules SET next_at=? WHERE id=?').run(Date.now()+due.interval_ms,due.id);});
@@ -34,7 +34,7 @@ export class Coordinator {
    const task=this.store.task(job.taskId,job.projectId),{viewer}=await this.context.project(job.projectId),qa=viewer.application.qa;
    if(!this.store.valid(job))return;this.store.updateTask(task.id,{status:job.kind==='plan'?'Planning':'Testing'});
    if(job.payload.revalidateOnly===true){
-    const result=await this.knowledge.revalidate(task,qa,signal);this.store.finish(job,result.incomplete?'blocked':'complete',{...result,providerCalls:0},{status:result.incomplete?'Blocked':String(job.payload.previousStatus??'Ready for Review')});return;
+    const result=await this.knowledge.revalidate(task,qa,signal);this.store.finish(job,result.incomplete?'blocked':'complete',{...result,providerCalls:0},{status:result.incomplete?'Blocked':result.changed?'Ready for Review':String(job.payload.previousStatus??'Ready for Review')});return;
    }
    if(job.kind==='plan'){
     if(!task.storyId){
@@ -43,8 +43,11 @@ export class Coordinator {
      this.store.updateTask(task.id,{storyId:story.id});task.storyId=story.id;
     }
     if(job.payload.allowExplore===true){this.store.event(job.id,'REVALIDATION_STARTED',{});await this.knowledge.revalidate(task,qa,signal);}
-    const reused=this.knowledge.regression(task,qa);
-    const plan=reused??await qa.plan(task.storyId,undefined,signal);signal.throwIfAborted();
+    const reused=job.payload.feedback?null:this.knowledge.regression(task,qa);
+    const base=task.planId?qa.store.testing.getPlan(task.planId):undefined;
+    const feedback=typeof job.payload.feedback==='string'?job.payload.feedback:null;
+    const plan=reused??await qa.plan(task.storyId,undefined,signal,feedback&&base?.storyRevisionId===task.storyId?{baseId:base.id,feedback}:undefined);
+    if(feedback)this.store.event(job.id,'PLAN_REVISED',{basePlanId:base?.id??null,planId:plan.id,reason:feedback});signal.throwIfAborted();
     if(reused)this.store.event(job.id,'REGRESSION_REUSED',{planId:plan.id,providerCalls:0});
     if(this.store.finish(job,'complete',{planId:plan.id},{status:reused?'Queued':'Needs Permission',planId:plan.id})&&!reused)this.store.request(task.id,'plan-review','Review the proposed plan and approve its source expectations and required access.');
    }else{
@@ -73,7 +76,7 @@ export class Coordinator {
    }
   }catch(error){
    const reason=safeText(error instanceof Error?error.message:'Worker failed');
-   if(this.store.valid(job)){const interrupted=inputSignal.aborted;const cancelled=this.requested.get(job.id)==='cancel';this.store.finish(job,interrupted?(cancelled?'cancelled':'paused'):'blocked',{reason},{status:interrupted?(cancelled?'Cancelled':'Paused'):'Blocked'});if(!interrupted)this.store.request(job.taskId,'blocked',reason);}
+   if(this.store.valid(job)){const interrupted=inputSignal.aborted;const cancelled=this.requested.get(job.id)==='cancel';const journal=this.store.db.prepare('SELECT reference_id FROM engine_operations WHERE job_id=? ORDER BY created_at DESC LIMIT 1').get(job.id) as {reference_id:string|null}|undefined;this.store.finish(job,interrupted?(cancelled?'cancelled':'paused'):'blocked',{reason,...(journal?.reference_id?{runId:journal.reference_id}:{})},{status:interrupted?(cancelled?'Cancelled':'Paused'):'Blocked'});if(!interrupted)this.store.request(job.taskId,'blocked',reason);}
   }finally{clearInterval(beat);this.requested.delete(job.id);
    if(typeof job.payload.legacyJobId==='string'){
     try{const current=this.store.job(job.id,job.projectId),backend=await this.context.project(job.projectId);const status=current.status==='complete'?'complete':current.status==='cancelled'?'cancelled':current.status==='paused'?'interrupted':'failed';backend.database.testing.updateJob(job.payload.legacyJobId,status,'Engine '+current.status,typeof current.result?.runId==='string'?current.result.runId:typeof current.result?.planId==='string'?current.result.planId:undefined);}catch{/* Durable engine job remains canonical if legacy projection is unavailable. */}
@@ -81,6 +84,14 @@ export class Coordinator {
   }
  }
  private async reconcileCompleted(){
+  for(const projectId of [...new Set(this.store.jobs().map(job=>job.projectId))]){
+   if(this.stopping)return;
+   const pending=this.store.tasks(projectId).filter(task=>task.status==='Needs Permission'&&task.planId);
+   if(!pending.length)continue;
+   try{const backend=await this.context.project(projectId);if(this.stopping)return;for(const task of pending){const plan=backend.database.testing.getPlan(task.planId!);if(plan?.status!=='approved'||plan.storyRevisionId!==task.storyId)continue;
+    this.store.atomic(()=>{const current=this.store.task(task.id,projectId);if(current.status!=='Needs Permission'||current.planId!==plan.id)return;this.store.db.prepare("UPDATE engine_requests SET status='resolved' WHERE task_id=? AND kind='plan-review' AND status='pending'").run(task.id);this.store.updateTask(task.id,{status:'Queued'});const job=this.store.jobs(projectId).filter(j=>j.taskId===task.id).at(-1);if(job)this.store.event(job.id,'PLAN_APPROVAL_OBSERVED',{planId:plan.id,source:'Persisted human workspace approval'});});
+   }}catch{/* Unavailable projects retain their pending requests. */}
+  }
   for(const job of this.store.jobs().filter(j=>j.status==='blocked')){
    const journal=this.store.db.prepare('SELECT reference_id FROM engine_operations WHERE job_id=? ORDER BY created_at DESC LIMIT 1').get(job.id) as {reference_id:string|null}|undefined;
    if(!journal?.reference_id)continue;
@@ -94,5 +105,5 @@ export class Coordinator {
  control(task:EngineTask,action:'pause'|'cancel'){
   this.store.atomic(()=>{for(const job of this.store.jobs(task.projectId).filter(j=>j.taskId===task.id&&['queued','running'].includes(j.status))){if(job.status==='running'){this.requested.set(job.id,action);this.pending.get(job.id)?.controller.abort();this.store.event(job.id,action==='pause'?'PAUSE_REQUESTED':'CANCEL_REQUESTED',{});}else{this.store.db.prepare('UPDATE engine_jobs SET status=? WHERE id=?').run(action==='pause'?'paused':'cancelled',job.id);this.store.event(job.id,'JOB_'+(action==='pause'?'PAUSED':'CANCELLED'),{});}}this.store.updateTask(task.id,{status:action==='pause'?'Paused':'Cancelled'});});
  }
- async shutdown(){this.stopping=true;if(this.timer)clearInterval(this.timer);for(const p of this.pending.values())p.controller.abort();await Promise.allSettled([...this.pending.values()].map(p=>p.work));}
+ async shutdown(){this.stopping=true;if(this.timer)clearInterval(this.timer);for(const p of this.pending.values())p.controller.abort();await Promise.allSettled([...this.pending.values()].map(p=>p.work));await this.reconciliation;}
 }

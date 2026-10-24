@@ -1,0 +1,96 @@
+{
+  "scope": "Initial V3 backend for Phases 1–4; MCP bridge and optional Studio; no standalone V3 QA CLI",
+  "status": "passed for the documented initial backend scope",
+  "implementationCommits": {
+    "phase1": "2dcda96",
+    "phase2": "7e3a502",
+    "phase3": "34da6cb",
+    "phase4": "The commit containing this record"
+  },
+  "ownerDecisions": [
+    "Configured accounts and approved setup/cleanup first",
+    "Ask for missing test data, pause the affected ticket and retain scoped reusable guidance",
+    "Remember credential references instead of secret values",
+    "Commit each phase separately; stop before Phases 5–6"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "build": "passed",
+    "unitIntegration": {
+      "status": "passed",
+      "tests": 76,
+      "files": 35
+    },
+    "browserSmoke": {
+      "status": "passed",
+      "tests": 18,
+      "finalRun": "complete suite"
+    },
+    "installedBridgeProtocol": {
+      "status": "passed",
+      "tests": 2
+    },
+    "providerIsolation": {
+      "status": "passed",
+      "syntheticOnly": true,
+      "modelVisibleTools": 0,
+      "timeoutAndCancellationExit": true,
+      "contextSanitization": true,
+      "manifest": "validation/m2-isolation-recheck.json"
+    },
+    "dependencyAudit": {
+      "totalVulnerabilities": 0
+    },
+    "legacyMigrations": {
+      "unchangedAgainst": "3669a5e",
+      "workspaceVersions": "001–008",
+      "studioVersions": "001"
+    },
+    "documentation": {
+      "sourceParagraphsPreserved": 268,
+      "requirementSections": 26,
+      "localLinks": "verified",
+      "whitespace": "passed"
+    },
+    "releasePrivateFileCheck": "passed"
+  },
+  "containerAcceptance": {
+    "status": "passed",
+    "containerBrowserReplay": "PASS",
+    "providerCalls": 0,
+    "containerRecreationPreservesReport": true,
+    "studioProjectsShared": true,
+    "engineJobCompletesAfterStudioStops": true,
+    "configuredHealthCommandsPassed": true,
+    "projectIsolation": true
+  },
+  "engineMigrationSha256": {
+    "001_orchestration.sql": "89118d7e485f7fecff0a07da5571a6c380f81b4fdd6d4fac975b6464433541c7",
+    "002_knowledge.sql": "47c375c40b183a21398b1418fd3ac9cc8092959844ace213238252acbad8accc",
+    "003_review.sql": "5de61a527effe552597ea40694fd43b06cbbf7e9cdfa2e47617829e164fa1ced"
+  },
+  "evidenceTypes": [
+    "Actual Chromium against owned local fixtures",
+    "Actual MCP v2 stdio protocol, including separately installed bridge",
+    "Actual non-root Docker engine and Studio containers",
+    "Synthetic planning/storage fixtures are labeled; existing Codex executable exercised against a local mock endpoint"
+  ],
+  "boundaries": [
+    "Real-model V3 ticket batch and optional Codex container mounts were not activated",
+    "New orchestrator-first Studio UI is Phase 5; only the existing engine-mode MCP setup pane was adapted",
+    "Five-ticket product acceptance, fault-injection matrix and productivity measurement remain Phase 6",
+    "Initial typed actions are fills/clicks and text/visibility/HTTP assertions; unsupported capabilities remain blocked",
+    "Browser work within one environment/tenant is conservatively serialized",
+    "Unfamiliar authentication/data provisioning and arbitrary form-selector repairs require explicit input or a future typed capability extension",
+    "Linux/Node 24 was verified; no cross-platform release matrix is claimed"
+  ],
+  "validationCorrections": [
+    "An interrupted browser run left its owned benchmark listener; its recorded PID was confirmed and stopped before rerun",
+    "A parallel gate run hit existing five-second authentication-test timeouts; the isolated full suite passed without changing timeout/security settings",
+    "The engine browser fixture disabled duplicate tracing and used the benchmark actual heading",
+    "The source-mode Studio proxy gained a built-asset fallback after its new browser check exposed a 404",
+    "Engine mode disables legacy MCP restore/start and directs Studio users to the forwarding bridge",
+    "User setup answers are retained as provisional guidance, not falsely labeled independently verified facts"
+  ],
+  "publication": "Local commits and local images only; no push, package publication or external deployment"
+}

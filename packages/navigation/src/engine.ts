@@ -57,6 +57,7 @@ export class NavigationEngine {
   private validate(scope: Scope) {
     const environment = this.store.getEnvironment(scope.environmentId); const role = this.store.getRole(scope.roleId);
     if (!environment || !role || environment.applicationId !== scope.applicationId || role.environmentId !== scope.environmentId) throw new NavigationError('Invalid role/environment scope', 'blocked');
+    if(scope.tenant!=='public'&&role.auth.kind==='guest')throw new NavigationError('Non-public tenants require authenticated identity and a tenant-ready assertion','blocked');
     if (environment.kind === 'production') throw new NavigationError('M1 mapping/replay is limited to development and QA', 'blocked');
     return { environment, role };
   }

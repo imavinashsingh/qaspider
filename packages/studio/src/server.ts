@@ -5,7 +5,7 @@ import{ManagedMcp}from'./mcp-lifecycle.js';
 import{diagnoseMcp}from'./mcp-diagnostics.js';
 import {createServer,type IncomingMessage,type ServerResponse} from 'node:http';
 import {existsSync,readFileSync,statSync,writeFileSync} from 'node:fs';import{join,resolve,extname,sep}from'node:path';import{fileURLToPath}from'node:url';import{z}from'zod';
-import{ProviderSettings,mcpInformation}from'./settings.js';
+import{ProviderSettings,mcpInformation,engineBridgeInformation}from'./settings.js';
 import{assertNoSymlinks}from'../../storage/src/filesystem.js';
 import{QaService}from'../../qa/src/service.js';
 import{StudioStore}from'./store.js';import{StudioAuth,type Session}from'./auth.js';import{ProjectRegistry}from'./projects.js';import{SqliteStore,ArtifactStore}from'../../storage/src/index.js';import{createGraphServer}from'../../navigation/src/viewer.js';
@@ -18,11 +18,11 @@ export interface StudioDependencies {
  planningProvider?:(projectId:string)=>ProviderAdapter;
  configureProject?:(qa:QaService,projectId:string)=>void;
  api?:(request:IncomingMessage,response:ServerResponse,context:EngineContext)=>Promise<boolean>;
- allowedHosts?:string[]; serveAssets?:boolean;
+ allowedHosts?:string[]; serveAssets?:boolean; engineMode?:boolean;
 }
 export function createStudioServer(home:string,roots:string[]=[],dependencies:StudioDependencies={}){
  const store=new StudioStore(home),auth=new StudioAuth(store),registry=new ProjectRegistry(store,roots),providers=new ProviderSettings(store);
- const managedMcp=new ManagedMcp(store,registry);const restoredMcp=managedMcp.restore();
+ const managedMcp=new ManagedMcp(store,registry);const restoredMcp=dependencies.engineMode?Promise.resolve():managedMcp.restore();
  const projects=new Map<string,Promise<{viewer:ReturnType<typeof createGraphServer>;database:SqliteStore;origin:string}>>();
  const json=(response:ServerResponse,value:unknown,status=200)=>{response.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});response.end(JSON.stringify(value));};
  const server=createServer((request,response)=>{void handle(request,response).catch(error=>json(response,{error:error instanceof HttpError?error.message:'Studio operation rejected; check input, project scope and operator configuration'},error instanceof HttpError?error.status:400));});
@@ -55,9 +55,9 @@ export function createStudioServer(home:string,roots:string[]=[],dependencies:St
     if(v.operation==='create'){const p=registry.create(v.input);registry.select(p.id);}else if(v.operation==='import'){const p=registry.importPath(v.path,v.name);registry.select(p.id);}else if(v.operation==='select')registry.select(v.id);else if(v.operation==='archive'){await managedMcp.disable(v.id);registry.archive(v.id);}else if(v.operation==='rename')registry.rename(v.id,v.name);
     json(response,{projects:registry.list(),selected:registry.selected(),roots:registry.roots});return;
    }
-   if(url.pathname==='/api/studio/cli'&&request.method==='GET'){const project=registry.get(url.searchParams.get('project')??'');const info=mcpInformation(project,store.home);json(response,{projectId:project.id,workspace:project.path,nodeVersion:process.version,version:metadata.version,installed:info.installed,command:info.configuration.mcpServers.qaspider.command,entry:info.configuration.mcpServers.qaspider.args[0],commands:cliReference});return;}
-   if(url.pathname==='/api/studio/mcp'&&request.method==='GET'){const project=registry.get(url.searchParams.get('project')??'');await restoredMcp;json(response,{...mcpInformation(project,store.home),managed:await managedMcp.status(project.id)});return;}
-   if(url.pathname==='/api/studio/mcp'&&request.method==='POST'){const v=z.object({projectId:z.string().uuid(),operation:z.enum(['enable','disable','diagnose','initialize']).default('diagnose')}).strict().parse(await body(request));const project=registry.get(v.projectId);await restoredMcp;if(v.operation==='initialize'){const file=join(project.path,'.qaspider/mcp-authorization.json');assertNoSymlinks(file);writeFileSync(file,JSON.stringify({grants:[]},null,2)+'\n',{flag:'wx',mode:0o600});json(response,{status:'initialized',grants:0});}else if(v.operation==='diagnose')json(response,await diagnoseMcp(project,store.home));else json(response,v.operation==='enable'?await managedMcp.enable(v.projectId):await managedMcp.disable(v.projectId));return;}
+   if(url.pathname==='/api/studio/cli'&&request.method==='GET'){const project=registry.get(url.searchParams.get('project')??'');const info=dependencies.engineMode?engineBridgeInformation(project):mcpInformation(project,store.home);json(response,{engineMode:!!dependencies.engineMode,projectId:project.id,workspace:project.path,nodeVersion:process.version,version:metadata.version,installed:info.installed,command:info.configuration.mcpServers.qaspider.command,entry:info.configuration.mcpServers.qaspider.args[0],commands:dependencies.engineMode?[]:cliReference});return;}
+   if(url.pathname==='/api/studio/mcp'&&request.method==='GET'){const project=registry.get(url.searchParams.get('project')??'');await restoredMcp;json(response,dependencies.engineMode?engineBridgeInformation(project):{...mcpInformation(project,store.home),managed:await managedMcp.status(project.id)});return;}
+   if(url.pathname==='/api/studio/mcp'&&request.method==='POST'){if(dependencies.engineMode)throw new HttpError(400,'Configure an external forwarding MCP bridge with a private engine connection file; legacy MCP processes are disabled in engine mode');const v=z.object({projectId:z.string().uuid(),operation:z.enum(['enable','disable','diagnose','initialize']).default('diagnose')}).strict().parse(await body(request));const project=registry.get(v.projectId);await restoredMcp;if(v.operation==='initialize'){const file=join(project.path,'.qaspider/mcp-authorization.json');assertNoSymlinks(file);writeFileSync(file,JSON.stringify({grants:[]},null,2)+'\n',{flag:'wx',mode:0o600});json(response,{status:'initialized',grants:0});}else if(v.operation==='diagnose')json(response,await diagnoseMcp(project,store.home));else json(response,v.operation==='enable'?await managedMcp.enable(v.projectId):await managedMcp.disable(v.projectId));return;}
    if(url.pathname==='/api/studio/providers'&&request.method==='GET'){const id=url.searchParams.get('project')??'';if(id)registry.get(id);json(response,providers.status(id));return;}
    if(url.pathname==='/api/studio/providers'&&request.method==='POST'){
     const v=z.discriminatedUnion('operation',[z.object({operation:z.literal('save'),projectId:z.string(),settings:z.unknown()}).strict(),z.object({operation:z.enum(['verify','clear']),projectId:z.string()}).strict()]).parse(await body(request));if(v.projectId)registry.get(v.projectId);

@@ -2,9 +2,17 @@
 
 V3 planning: [complete product requirements](REQUIREMENTS-V3.md) and [phased roadmap with implementation audit](ROADMAP-V3.md). Phase 0 preserves the requirements and audits V2 reuse. The current V3 plan uses an MCP bridge and optional Studio, with no standalone QASpider CLI deliverable; existing V2 CLI workflows below remain current implementation documentation. Phases 1–4 are authorized for implementation with separate phase commits; later phases require review. See [engine deployment](deploy/README.md).
 
+The initial **V3 backend for Phases 1–4** adds a persistent engine, MCP ticket workflow, scoped knowledge retrieval, bounded testing/investigation, reports and human review APIs. See [deployment and migration](deploy/README.md), [engine API and behavior](docs/V3-ENGINE.md) and [validation](validation/v3-phases-1-4.json). The new orchestrator-first Studio UI and five-ticket product acceptance remain Phases 5–6.
+
 Local-first QA following the approved QASpider V2 architecture. **M0–M5.4 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
-## Start locally
+## Start V3
+
+Build with `npm ci` and `npm run build`, then follow [engine setup and migration](deploy/README.md) to prepare the approved project root and private engine authorization file. Start the persistent service with `npm run start:engine`; optionally start its web client in another terminal with `npm run start:studio-client`. Connect AI tools using the separately installed MCP bridge and a private project-scoped connection file.
+
+The V3 engine uses its own configured home and API; the compatibility launcher below starts the V2 Studio instead. Stop legacy writers before transferring a workspace to engine ownership.
+
+## Legacy V2 startup
 
 ```sh
 npm ci

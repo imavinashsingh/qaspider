@@ -1,17 +1,17 @@
-FROM node:24-bookworm-slim AS build
+FROM node:24-bookworm-slim AS dependencies
 WORKDIR /app
 COPY package*.json ./
+RUN npm ci --workspaces=false
+RUN npx playwright install --with-deps chromium && mv /root/.cache/ms-playwright /opt/browsers && chmod -R a+rX /opt/browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/browsers
+FROM dependencies AS engine
 COPY packages ./packages
 COPY apps ./apps
 COPY scripts ./scripts
 COPY tsconfig*.json vite.config.ts ./
-RUN npm ci && npm run build
-RUN npx playwright install --with-deps chromium
-ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
-RUN mkdir -p /opt/browsers && cp -a /root/.cache/ms-playwright/. /opt/browsers/ && chmod -R a+rX /opt/browsers
-RUN npm prune --omit=dev && mkdir -p /data/projects && chown -R node:node /data
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/browsers QASPIDER_ENGINE_HOME=/data/engine QASPIDER_PROJECTS_ROOT=/data/projects QASPIDER_ENGINE_BIND=0.0.0.0 QASPIDER_ENGINE_PORT=4318
+RUN npm run build && npm prune --omit=dev --workspaces=false && mkdir -p /data/projects && chown -R node:node /data
+ENV QASPIDER_ENGINE_HOME=/data/engine QASPIDER_PROJECTS_ROOT=/data/projects QASPIDER_ENGINE_BIND=0.0.0.0 QASPIDER_ENGINE_PORT=4318
 USER node
 EXPOSE 4318
-HEALTHCHECK --interval=15s --timeout=3s CMD node -e "fetch('http://127.0.0.1:4318/api/studio/auth').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+HEALTHCHECK --interval=15s --timeout=3s CMD node -e "fetch('http://127.0.0.1:'+(process.env.QASPIDER_ENGINE_PORT||4318)+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node","dist/packages/engine/src/main.js"]

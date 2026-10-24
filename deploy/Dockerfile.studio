@@ -1,11 +1,12 @@
 FROM node:24-bookworm-slim AS build
 WORKDIR /app
 COPY package*.json ./
+RUN npm ci --workspaces=false
 COPY packages ./packages
 COPY apps ./apps
 COPY scripts ./scripts
 COPY tsconfig*.json vite.config.ts ./
-RUN npm ci && npm run build
+RUN npm run build
 FROM node:24-bookworm-slim
 WORKDIR /app
 COPY --from=build /app/dist/packages/studio/src/client*.js ./dist/packages/studio/src/
@@ -13,5 +14,5 @@ COPY --from=build /app/dist/apps/viewer/public ./dist/apps/viewer/public
 USER node
 ENV QASPIDER_STUDIO_BIND=0.0.0.0 QASPIDER_STUDIO_PORT=4319 QASPIDER_ENGINE_URL=http://engine:4318
 EXPOSE 4319
-HEALTHCHECK --interval=15s --timeout=3s CMD node -e "fetch('http://127.0.0.1:4319/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+HEALTHCHECK --interval=15s --timeout=3s CMD node -e "fetch('http://127.0.0.1:'+(process.env.QASPIDER_STUDIO_PORT||4319)+'/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node","dist/packages/studio/src/client-main.js"]
