@@ -1,0 +1,635 @@
+{
+  "milestone": "M5.4",
+  "status": "complete",
+  "recordedAt": "2026-10-24T10:53:24.107348+00:00",
+  "baseline": {
+    "commit": "973f4a7",
+    "workingTreeInitiallyClean": true,
+    "branch": "feat/qaspider-m5-2-ux",
+    "priorM5_3Implementation": "895dd28"
+  },
+  "scope": {
+    "M5_4Only": true,
+    "M6Started": false,
+    "pushedOrPublished": false,
+    "existingStudio4319Untouched": true,
+    "optionalProviders": "Claude/Gemini remain deferred and unverified"
+  },
+  "fixes": [
+    {
+      "id": "M54-001",
+      "change": "Read/replay native-anchor menuitem locators and use Playwright accessible names, preserving exact href/origin/safe-action checks."
+    },
+    {
+      "id": "M54-002",
+      "change": "Atomically persist work ownership; recover exited owners without affecting live peers; retain uncertain effects/evidence and require explicit owned-fixture reconciliation."
+    },
+    {
+      "id": "M54-003",
+      "change": "Expose persisted QA jobs and restore/reopen planning, execution and mapping activity after refresh."
+    },
+    {
+      "id": "M54-004",
+      "change": "Offer benchmark lifecycle shortcuts only for parsed loopback targets, never application IDs."
+    },
+    {
+      "id": "M54-005",
+      "change": "Clear prior story text/report when selecting a new story and saving a different story."
+    },
+    {
+      "id": "M54-006",
+      "change": "Retain and display unavailable saved provider executable instead of appearing unconfigured."
+    },
+    {
+      "id": "M54-007",
+      "change": "Require interruption review across edited plan revisions for the same role/application/environment/build/tenant/feature flags."
+    }
+  ],
+  "migrations": {
+    "added": [
+      "007_runtime_ownership.sql",
+      "008_interruption_reviews.sql"
+    ],
+    "unchanged": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006"
+    ],
+    "globalStudioSchemaChanged": false
+  },
+  "runtimeArchitectureFinding": "Stories, plans, approvals and runs were already runtime SQLite data. No hardcoded acceptance story was added to product code. Actual defects concerned native-menu compatibility and incomplete recovery/UI restoration. One-time product upgrades are distinguished from adding tests.",
+  "runtimeProof": {
+    "recordedAt": "2026-10-24T10:37:05.710Z",
+    "studioPid": 242598,
+    "sameProcess": true,
+    "trackedProductAndBuildFiles": 205,
+    "changedFiles": [],
+    "runtimeSourceChanges": 0,
+    "runtimeBuildChanges": 0,
+    "unplannedRuntimeRestarts": 0
+  },
+  "processTimeline": {
+    "beforeProofUpgradePids": [
+      237764,
+      238997,
+      242598
+    ],
+    "beforeProofIntentionalReplacements": 2,
+    "storyPhasePid": 242598,
+    "storyPhaseUnplannedRestarts": 0,
+    "postProofUnavailableProviderRestart": {
+      "from": 242598,
+      "to": 283704,
+      "reason": "Apply final generic interruption guard and verify full persistence with provider absent"
+    },
+    "restoreApprovedOperatorEnvironment": {
+      "from": 283704,
+      "to": 288219,
+      "reason": "Leave the interactive audit Studio with its original approved Codex path"
+    },
+    "privateEvidence": ".qaspider/m5-4/runtime-source-before.json and runtime-source-proof.json"
+  },
+  "dynamicStories": [
+    {
+      "title": "Registration",
+      "planRevisionId": "e554521c-2d03-4b0a-93b9-14df4ae61050",
+      "revision": 3,
+      "approvedHash": "120f8fcbdb771357e1d9908f75b63c3e8fc400145acfdfec511a43658f7b91a1",
+      "provider": {
+        "id": "codex",
+        "synthetic": false,
+        "validationId": "23259b08-5ea4-4812-9a81-184f3dc198cd"
+      },
+      "scenarioIds": [
+        "registration-valid",
+        "registration-invalid-email",
+        "registration-duplicate-email"
+      ],
+      "runs": [
+        {
+          "id": "cffc2246-ba37-4124-8a0e-2f56772a9639",
+          "status": "complete",
+          "summary": {
+            "PASS": 3,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 12
+        },
+        {
+          "id": "a4fd0691-ebcb-4415-9f35-7eeb37179bf8",
+          "status": "complete",
+          "summary": {
+            "PASS": 3,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 12
+        },
+        {
+          "id": "13e80f6e-1cf9-4926-8957-46db68705091",
+          "status": "complete",
+          "summary": {
+            "PASS": 3,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 12
+        }
+      ]
+    },
+    {
+      "title": "Login and Dashboard access",
+      "planRevisionId": "217f4de9-a139-4bb4-9026-f79d444df085",
+      "revision": 3,
+      "approvedHash": "115e19d71d4d36928df298397ed964040f2737351ae05e062aa9d3f408765340",
+      "provider": {
+        "id": "codex",
+        "synthetic": false,
+        "validationId": "1af56810-c749-460e-94c6-f9f56fbff0a3"
+      },
+      "scenarioIds": [
+        "ac-1-admin-bootstrap",
+        "ac-2-user-bootstrap",
+        "ac-3-dummy-login",
+        "ac-4-guest-admin-users",
+        "ac-5-user-admin-users",
+        "ac-6-admin-admin-users"
+      ],
+      "runs": [
+        {
+          "id": "417892ed-41e4-435b-b76f-fc0920a02982",
+          "status": "complete",
+          "summary": {
+            "PASS": 6,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 24
+        },
+        {
+          "id": "f49f5a26-72e3-4b3a-b5e7-71fdc7bdde26",
+          "status": "complete",
+          "summary": {
+            "PASS": 6,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 24
+        },
+        {
+          "id": "99dac69c-10b8-4b0c-89eb-d131c09eab4b",
+          "status": "complete",
+          "summary": {
+            "PASS": 6,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 24
+        }
+      ]
+    },
+    {
+      "title": "Navigation Home About Dashboard User management",
+      "planRevisionId": "9fd6d61b-17fe-4961-9f82-98018fce0c20",
+      "revision": 2,
+      "approvedHash": "4730bbc578d706233bbb2b0708bdbec89fb08d8e7f0d68830e9811fd6036ad43",
+      "provider": {
+        "id": "codex",
+        "synthetic": false,
+        "validationId": "ed6ec715-66ed-4b0e-9cd8-5bbaca3f8b74"
+      },
+      "scenarioIds": [
+        "guest-root-navigation",
+        "guest-about-navigation",
+        "admin-root-navigation",
+        "admin-dashboard-navigation",
+        "admin-user-management-navigation",
+        "user-root-navigation",
+        "user-dashboard-navigation"
+      ],
+      "runs": [
+        {
+          "id": "8ab19c62-5f80-4492-a0e8-773728e8f6c3",
+          "status": "complete",
+          "summary": {
+            "PASS": 7,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 40
+        },
+        {
+          "id": "9d00433d-b7e0-420c-b6f0-4341c3689edc",
+          "status": "complete",
+          "summary": {
+            "PASS": 7,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 40
+        },
+        {
+          "id": "99ed894b-b887-403a-8493-50411710bf0d",
+          "status": "complete",
+          "summary": {
+            "PASS": 7,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "INCONCLUSIVE": 0,
+            "FLAKY": 0,
+            "NOT RUN": 0
+          },
+          "allSelectedScenariosExecuted": true,
+          "fixturesCleaned": true,
+          "evidenceReferences": 40
+        }
+      ]
+    }
+  ],
+  "reviewNotes": [
+    "Four actual Codex planning jobs generated three distinct stories; authentication was explicitly revised once after correcting audit input expectations. Each final plan was reviewed and approved as runtime data.",
+    "The original authentication run and AI-free replay each retain PASS 4 / FAIL 2. The benchmark rejects malformed email before credential validation and returns 401 for anonymous access. Original approved requirements and failed evidence were not mutated.",
+    "Valid-looking literal email input remains rejected. Human review replaced a sanitized dummy literal with an owned unique address reservation; this reserves an address without creating an account. The Invalid credentials assertion was retained.",
+    "Human review removed redundant link clicks after approved destination replay from the navigation proposal; every destination and visibility assertion was retained.",
+    "Intermediate saved/approved revisions remain historical. Full replay here means every scenario in the three explicitly selected final revisions, not every intermediate revision with incomplete permissions."
+  ],
+  "restartPersistence": {
+    "recordedAt": "2026-10-24T10:42:32.299Z",
+    "beforePid": 242598,
+    "afterPid": 283704,
+    "fullProcessRestart": true,
+    "results": {
+      "selected": true,
+      "projects": true,
+      "provider": true,
+      "settings": true,
+      "configuration": true,
+      "stories": true,
+      "plans": true,
+      "jobs": true,
+      "runs": true,
+      "scopes": true
+    },
+    "allDurableRecordsIdentical": true,
+    "counts": {
+      "projects": 2,
+      "storyRevisions": 4,
+      "planRevisions": 9,
+      "runs": 8,
+      "scopes": 5
+    },
+    "planningJobsBefore": 4,
+    "planningJobsAfter": 4
+  },
+  "artifactPersistence": {
+    "originalRunEvidenceReferences": 200,
+    "availableAfterRestart": 200,
+    "missingOrUnavailable": []
+  },
+  "persistenceMatrix": [
+    {
+      "case": "Save/refresh and logout/login",
+      "result": "passed",
+      "evidence": "Expanded Studio Chromium E2E and headed audit"
+    },
+    {
+      "case": "Full process restart and unavailable provider",
+      "result": "passed",
+      "evidence": "Actual PID 242598 to 283704, identical persisted snapshots and browser setting assertions"
+    },
+    {
+      "case": "Independent workspace records and project switching",
+      "result": "passed",
+      "evidence": "Studio E2E imports CLI workspace, switches isolated projects and retrieves original graph/report"
+    },
+    {
+      "case": "Approved requirements/plans and permission scope",
+      "result": "passed",
+      "evidence": "Exact hashes, decisions and story records identical before/after restart"
+    },
+    {
+      "case": "Old report and evidence after restart",
+      "result": "passed",
+      "evidence": "200 original evidence references available; old screenshot reopened through Studio"
+    },
+    {
+      "case": "Interrupted owner and live peer protection",
+      "result": "passed",
+      "evidence": "Actual child-process exit integration regression; retains uncertain fixtures; live jobs remain running"
+    },
+    {
+      "case": "Cross-revision write reconciliation",
+      "result": "passed",
+      "evidence": "Red-to-green integration regression; explicit scoped cleanup exactly once"
+    },
+    {
+      "case": "MCP desired enable state",
+      "result": "passed",
+      "evidence": "Actual stdio connection, PID 280845 before restart and 283733 after; empty authorization grants"
+    },
+    {
+      "case": "AI-free full replay after restart",
+      "result": "passed",
+      "evidence": "All 16 scenarios pass with Codex absent and planning jobs unchanged at four"
+    }
+  ],
+  "providerValidation": {
+    "realPlanning": {
+      "provider": "codex",
+      "model": "gpt-6.1-sol",
+      "synthetic": false,
+      "planningJobs": 4,
+      "applicationContext": "Only sanitized owned benchmark context, explicit project consent"
+    },
+    "syntheticIsolation": {
+      "before": "58eefc6e-800d-44b4-ac22-4f8a211ecc21",
+      "after": "198415ce-e16c-409f-b09a-479f280e2dba",
+      "status": "passed",
+      "tools": 0,
+      "timeoutProcessExited": true,
+      "cancellationProcessExited": true,
+      "sanitizedContextVerified": true,
+      "manifest": "validation/m2-isolation-recheck.json",
+      "privateReceipts": ".qaspider/provider-validation/",
+      "runtimeGateBypassed": false
+    },
+    "unavailableProviderReplay": {
+      "allScenariosPassed": 16,
+      "planningJobsBefore": 4,
+      "planningJobsAfter": 4,
+      "savedSettingsRetained": true
+    }
+  },
+  "docuverus": {
+    "scope": "Existing explicitly approved Super Admin navigation only; no AI context sharing",
+    "build": "v1-readonly-accessible-check",
+    "initialVisibleChecks": {
+      "routes": [
+        "Dashboard",
+        "Manage Users",
+        "Log report"
+      ],
+      "completedReadRequests": 18,
+      "blockedWriteRequests": 6,
+      "completedWrites": 0,
+      "furtherRequestsPaused": true
+    },
+    "actualQaspiderEngineReplays": [
+      {
+        "id": "bc839b73-a1f4-4f1c-bd5c-e4422ecc0713",
+        "status": "complete",
+        "message": "Navigation work completed",
+        "evidenceIds": [
+          "eede4b7e-2123-4750-8066-1645c4154335",
+          "e5ddb16b-9e6f-4383-a82a-8a72af3efa6a"
+        ]
+      },
+      {
+        "id": "533ed31f-afab-457c-ac18-0b0949c2761b",
+        "status": "complete",
+        "message": "Navigation work completed",
+        "evidenceIds": [
+          "6c51fa47-0dd7-4189-9b96-3014074a66e5",
+          "65470a4d-23d2-4bdc-bf3c-8a94e10f2681"
+        ]
+      },
+      {
+        "id": "0c5bce7e-051e-45b5-8ac4-cc72638d0833",
+        "status": "complete",
+        "message": "Navigation work completed",
+        "evidenceIds": [
+          "28ceb2a0-6220-407f-8cd6-3cfb7aa702a9",
+          "da44f0f7-1b8c-4eb0-a81d-149bdfe57595"
+        ]
+      }
+    ],
+    "graph": {
+      "states": 4,
+      "approvedTransitions": 3,
+      "historyRetained": true
+    },
+    "limitations": "Verifies route, session and destination-state access only. No tenant switching, form submissions, business-data correctness assertions or POST-backed searches."
+  },
+  "learning": {
+    "realHeadedUi": true,
+    "headBuild": "m54-consent-audit",
+    "observedChange": {
+      "newStates": 1,
+      "missingStates": 2,
+      "changedTransitions": 16
+    },
+    "candidateId": "d6e49483-b244-4e61-9dbc-b2b138d27c35",
+    "verifiedTransitions": 4,
+    "evidenceReferences": 4,
+    "explicitApprovalThenRollback": true,
+    "originalRequirementsRetained": true,
+    "benchmarkConsentReset": true,
+    "baselineGuestNavigationReverified": true,
+    "noM6Work": true
+  },
+  "qualityGates": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed",
+      "detail": "All workspaces, including added regressions",
+      "log": "/tmp/qaspider-m54-typecheck-final.log"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "detail": "Production build; also rerun inside post-change provider verification",
+      "log": "/tmp/qaspider-m54-build.log"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "detail": "71 unit/integration tests in 30 files, including CLI, MCP stdio and security boundaries",
+      "log": "/tmp/qaspider-m54-tests-final.log"
+    },
+    {
+      "command": "PLAYWRIGHT_BROWSERS_PATH=/tmp/qaspider-playwright npm run test:smoke",
+      "result": "passed",
+      "detail": "16 actual Chromium tests; learning/rollback, navigation, auth, persistence, dynamic execution, MCP replay",
+      "log": "/tmp/qaspider-m54-smoke-final.log"
+    },
+    {
+      "command": "QASPIDER_CODEX_BIN=<installed absolute executable> npm run verify:provider",
+      "result": "passed",
+      "detail": "Actual synthetic isolation before and after changes, private wire and exit receipts retained",
+      "log": "/tmp/qaspider-m54-provider-after.log"
+    },
+    {
+      "command": "npm audit --audit-level=high --json",
+      "result": "passed",
+      "detail": "0 vulnerabilities, including 0 high/critical",
+      "log": "/tmp/qaspider-m54-audit.json"
+    },
+    {
+      "command": "node scripts/check-release.mjs",
+      "result": "passed",
+      "detail": "Private path/token/key/documentation checks; baseline migrations 001\u2013005 hashes unchanged",
+      "log": "/tmp/qaspider-m54-release-check-final.log"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "detail": "No whitespace errors",
+      "log": null
+    },
+    {
+      "command": "node dist/packages/cli/src/main.js doctor --workspace .qaspider/m5-4/headed-projects/m54-product-acceptance-20f8edc0",
+      "result": "passed",
+      "detail": "Exit 0, schema and configuration diagnostics",
+      "log": "/tmp/qaspider-m54-cli-doctor.json"
+    }
+  ],
+  "ci": {
+    "workflow": ".github/workflows/qaspider.yml",
+    "modified": false,
+    "localBuildTypecheckTestsSmokeAuditReleaseGatesPassed": true,
+    "hostedRunClaimed": false,
+    "dependencyReinstallationRequired": false
+  },
+  "security": {
+    "noCriticalFindings": true,
+    "dependencyVulnerabilities": 0,
+    "originRoleTenantProjectIsolation": "Existing and new negative tests pass; live Docuverus confined to previous approved routes",
+    "approvalBinding": "Exact hashes and original decisions persist; editing never transfers approval automatically",
+    "productionWrites": "Existing prohibitions unchanged",
+    "rawTraces": "Remain private; normal UI/API cannot expose full raw traces",
+    "secrets": "No Studio credentials/session tokens in URL or browser storage; private receipts/databases ignored; only secret-reference names persisted",
+    "mcp": "Actual stdio integration passes; managed service starts with zero grants, no automatic application authority",
+    "artifacts": "Existing quota/retention/traversal tests pass; 200 pre-restart evidence references retained",
+    "desktopMobile": "Actual headed 1440/390 viewport checks and full responsive Chromium suite pass"
+  },
+  "failuresAndCorrections": [
+    "Cross-revision retry regression failed before the guard fix, then passed.",
+    "Initial refresh harness used a Studio-only New Test locator in the project viewer; corrected to its actual Test Studio control, all assertions retained.",
+    "Original login audit inputs had two incorrect expectations; observed failures retained, explicit reviewed source revision and owned test-data edit subsequently passed.",
+    "Sandbox Git subprocess EPERM affected the first release check; authorized host execution passed.",
+    "Exploratory exact-label/asynchronous-load locator timeouts were driver errors, not product defects.",
+    "Automatic approval review rejected the first login fixture edit; executor evidence proved unique-email only reserves an address, and the narrower reviewed operation was approved without bypass."
+  ],
+  "remainingLimitations": [
+    "Single local administrator and loopback deployment remain the supported trust boundary.",
+    "Claude/Gemini integrations remain deferred/unverified.",
+    "Human plan review remains necessary; Codex proposals can contain redundant operations or unsupported literal test data.",
+    "Unsaved UI drafts, current route, checkbox selections and displayed image are temporary; saved records/settings persist.",
+    "Legacy running jobs created before migration 007 lack owner identity and are not automatically declared abandoned.",
+    "Recovery preserves active artifacts; explicit operator lifecycle reconciliation is needed before expiry pruning.",
+    "PID-start identity is strongest on Linux; unverifiable process ownership stays live/fail-closed.",
+    "Hosted CI was not triggered; local established quality gates passed.",
+    "Existing Vite node:crypto externalization and test NO_COLOR warnings remain non-failing."
+  ],
+  "screenshots": {
+    "privateDirectory": ".qaspider/m5-4/exploratory/",
+    "examples": [
+      "14-registration-results.png",
+      "19-authentication-original-mismatches.png",
+      "21-authentication-corrected-results.png",
+      "24-navigation-results.png",
+      "28-memory-rollback.png",
+      "30-provider-settings-after-restart.png",
+      "32-restart-replay-registration.png",
+      "32-restart-replay-authentication.png",
+      "32-restart-replay-navigation.png",
+      "33-docuverus-persisted-replay-history.png",
+      "34-original-report-evidence-after-restart.png"
+    ],
+    "publicRawImagesCommitted": false
+  },
+  "filesChanged": [
+    "qaspider/README.md",
+    "qaspider/apps/viewer/src/settings.tsx",
+    "qaspider/apps/viewer/src/testing.tsx",
+    "qaspider/apps/viewer/src/workspace.tsx",
+    "qaspider/docs/STUDIO.md",
+    "qaspider/packages/core/src/contracts.ts",
+    "qaspider/packages/core/src/navigation.ts",
+    "qaspider/packages/core/src/testing.ts",
+    "qaspider/packages/navigation/src/engine.ts",
+    "qaspider/packages/qa/src/execution.ts",
+    "qaspider/packages/qa/src/http.ts",
+    "qaspider/packages/qa/src/service.ts",
+    "qaspider/packages/storage/migrations/007_runtime_ownership.sql",
+    "qaspider/packages/storage/migrations/008_interruption_reviews.sql",
+    "qaspider/packages/storage/src/jobs.ts",
+    "qaspider/packages/storage/src/navigation.ts",
+    "qaspider/packages/storage/src/runtime.ts",
+    "qaspider/packages/storage/src/sqlite.ts",
+    "qaspider/packages/storage/src/testing.ts",
+    "qaspider/tests/integration/cli.test.ts",
+    "qaspider/tests/integration/navigation-storage.test.ts",
+    "qaspider/tests/integration/runtime-recovery.test.ts",
+    "qaspider/tests/integration/storage.test.ts",
+    "qaspider/tests/integration/studio-settings.test.ts",
+    "qaspider/tests/smoke/menuitem.spec.ts",
+    "qaspider/tests/smoke/runtime-refresh.spec.ts",
+    "qaspider/tests/smoke/studio.spec.ts",
+    "qaspider/tests/unit/fixture-target.test.ts",
+    "qaspider/validation/m2-isolation-recheck.json",
+    "qaspider/validation/m5-4-acceptance.md",
+    "qaspider/validation/m5-4-defects.md",
+    "qaspider/validation/m5-4-report.json"
+  ],
+  "implementationCommits": [
+    {
+      "hash": "bc5e93e3606caaf28e3b0b042a4be65d7bf3a62e",
+      "subject": "fix(m5.4): restore Studio activity and preserve durable settings"
+    },
+    {
+      "hash": "1f8f3fa05f4c969b0e217054075e51dd457de366",
+      "subject": "fix(m5.4): replay accessible native menu navigation safely"
+    },
+    {
+      "hash": "d8127936aae1317d7fd84ad716608a33079d8b92",
+      "subject": "fix(m5.4): reconcile interrupted execution without repeating writes"
+    }
+  ],
+  "reportCommit": "The Git commit containing this report records the final evidence; its hash is returned in the completion message.",
+  "stoppedBefore": "M6"
+}
