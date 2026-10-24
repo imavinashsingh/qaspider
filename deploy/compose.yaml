@@ -1,0 +1,31 @@
+services:
+  engine:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.engine
+    init: true
+    ports: ["127.0.0.1:4318:4318"]
+    environment:
+      QASPIDER_ENGINE_AUTH_FILE: /run/secrets/engine-auth.json
+      QASPIDER_ENGINE_ALLOWED_HOSTS: engine:4318
+    volumes:
+      - qaspider-data:/data
+      - ${QASPIDER_ENGINE_AUTH_FILE:?Set an absolute private engine auth file}:/run/secrets/engine-auth.json:ro
+    shm_size: 1gb
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    stop_grace_period: 30s
+  studio:
+    profiles: [studio]
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.studio
+    init: true
+    ports: ["127.0.0.1:4319:4319"]
+    depends_on:
+      engine:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+volumes:
+  qaspider-data:

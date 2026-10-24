@@ -10,7 +10,16 @@ import{assertNoSymlinks}from'../../storage/src/filesystem.js';
 import{QaService}from'../../qa/src/service.js';
 import{StudioStore}from'./store.js';import{StudioAuth,type Session}from'./auth.js';import{ProjectRegistry}from'./projects.js';import{SqliteStore,ArtifactStore}from'../../storage/src/index.js';import{createGraphServer}from'../../navigation/src/viewer.js';
 export class HttpError extends Error{constructor(readonly status:number,message:string){super(message);}}
-export function createStudioServer(home:string,roots:string[]=[],dependencies:{planningProvider?:(projectId:string)=>ProviderAdapter}={}){
+export interface EngineContext {
+ registry:ProjectRegistry; providers:ProviderSettings;
+ project:(id:string)=>Promise<{viewer:ReturnType<typeof createGraphServer>;database:SqliteStore;origin:string}>;
+}
+export interface StudioDependencies {
+ planningProvider?:(projectId:string)=>ProviderAdapter;
+ api?:(request:IncomingMessage,response:ServerResponse,context:EngineContext)=>Promise<boolean>;
+ allowedHosts?:string[]; serveAssets?:boolean;
+}
+export function createStudioServer(home:string,roots:string[]=[],dependencies:StudioDependencies={}){
  const store=new StudioStore(home),auth=new StudioAuth(store),registry=new ProjectRegistry(store,roots),providers=new ProviderSettings(store);
  const managedMcp=new ManagedMcp(store,registry);const restoredMcp=managedMcp.restore();
  const projects=new Map<string,Promise<{viewer:ReturnType<typeof createGraphServer>;database:SqliteStore;origin:string}>>();
@@ -23,9 +32,10 @@ export function createStudioServer(home:string,roots:string[]=[],dependencies:{p
  async function project(id:string){const record=registry.get(id);let cached=projects.get(id);if(!cached){cached=(async()=>{const database=new SqliteStore(join(record.path,'.qaspider/memory.db'));const artifacts=new ArtifactStore(database,join(record.path,'.qaspider/artifacts'));const qa=new QaService(database,artifacts,()=>dependencies.planningProvider?.(id)??providers.adapter(id));const viewer=createGraphServer(database,artifacts,qa);try{await new Promise<void>((resolve,reject)=>{viewer.server.once('error',reject);viewer.server.listen(0,'127.0.0.1',resolve);});const address=viewer.server.address();if(!address||typeof address==='string')throw new Error('Project service unavailable');return{database,viewer,origin:`http://127.0.0.1:${address.port}`};}catch(error){database.close();throw error;}})();projects.set(id,cached);cached.catch(()=>projects.delete(id));}return cached;}
  async function handle(request:IncomingMessage,response:ServerResponse){
   response.setHeader('content-security-policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");response.setHeader('x-content-type-options','nosniff');response.setHeader('referrer-policy','no-referrer');response.setHeader('cache-control','no-store');
-  const host=request.headers.host,port=request.socket.localPort;if(!host||![`127.0.0.1:${port}`,`localhost:${port}`].includes(host))throw new HttpError(403,'Invalid host');const origin=`http://${host}`;
+  const host=request.headers.host,port=request.socket.localPort;if(!host||![`127.0.0.1:${port}`,`localhost:${port}`,...(dependencies.allowedHosts??[])].includes(host))throw new HttpError(403,'Invalid host');const origin=`http://${host}`;
   if(request.headers.origin&&request.headers.origin!==origin)throw new HttpError(403,'Invalid origin');
   const url=new URL(request.url??'/',origin);if(url.origin!==origin||/%2f|%5c|%00/i.test(url.pathname))throw new HttpError(400,'Invalid path');
+  if(dependencies.api&&await dependencies.api(request,response,{registry,providers,project}))return;
   let current=session(request);
   if(url.pathname==='/api/studio/auth'&&request.method==='GET'){if(!current){current=auth.open();setCookie(request,response,current);}json(response,{configured:auth.configured(),authenticated:current.authenticated,csrf:current.csrf});return;}
   if(url.pathname.startsWith('/api/')){
@@ -55,6 +65,7 @@ export function createStudioServer(home:string,roots:string[]=[],dependencies:{p
    if(match){const id=z.string().uuid().parse(match[1]);const backend=await project(id);const payload=request.method==='POST'?JSON.stringify(await body(request)):undefined;const forwarded=await fetch(`${backend.origin}/${match[2]}${url.search}`,{method:request.method,headers:{'x-qaspider-token':backend.viewer.token,...(payload?{'content-type':'application/json',origin:backend.origin}:{})},...(payload?{body:payload}:{}),redirect:'error'});response.writeHead(forwarded.status,{'content-type':forwarded.headers.get('content-type')??'application/json','cache-control':'no-store'});response.end(Buffer.from(await forwarded.arrayBuffer()));return;}
    throw new HttpError(404,'Unknown Studio operation');
   }
+  if(dependencies.serveAssets===false)throw new HttpError(404,'Use the optional Studio client for the web interface');
   if(request.method!=='GET')throw new HttpError(405,'Method not allowed');
   const compiled=fileURLToPath(new URL('../../../apps/viewer/public/',import.meta.url));const assets=existsSync(compiled)?compiled:resolve('dist/apps/viewer/public');const path=resolve(assets,url.pathname==='/'?'index.html':'.'+decodeURIComponent(url.pathname));
   if(!path.startsWith(resolve(assets)+sep)||!existsSync(path)||!statSync(path).isFile())throw new HttpError(404,'Studio asset missing; run npm run build');

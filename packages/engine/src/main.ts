@@ -1,0 +1,10 @@
+import {resolve} from 'node:path';
+import {createEngine} from './server.js';
+const authFile=process.env.QASPIDER_ENGINE_AUTH_FILE;
+if(!authFile)throw new Error('QASPIDER_ENGINE_AUTH_FILE is required');
+const home=resolve(process.env.QASPIDER_ENGINE_HOME??'.qaspider/engine');
+const roots=(process.env.QASPIDER_PROJECTS_ROOT??'.qaspider/projects').split(',').map(p=>resolve(p));
+const port=Number(process.env.QASPIDER_ENGINE_PORT??4318);
+const engine=createEngine(home,roots,resolve(authFile),{allowedHosts:(process.env.QASPIDER_ENGINE_ALLOWED_HOSTS??'').split(',').filter(Boolean)});
+engine.server.listen(port,process.env.QASPIDER_ENGINE_BIND??'127.0.0.1',()=>process.stderr.write(`QASpider engine listening on port ${port}\n`));
+let stopping=false;for(const signal of ['SIGINT','SIGTERM'] as const)process.once(signal,()=>{if(stopping)return;stopping=true;void engine.shutdown().then(()=>{process.exitCode=0;});});

@@ -1,0 +1,145 @@
+# QASpider V3 roadmap and implementation audit
+
+## Status and source of truth
+
+Phase 0 documentation and static audit completed on 2026-10-24. The owner authorized implementation of Phases 1–4 with a separate commit for each phase. Phase 5–6 remain unstarted and require further authorization. No runtime, API, database schema or dependencies change in Phase 0.
+
+[REQUIREMENTS-V3.md](REQUIREMENTS-V3.md) preserves the complete supplied PRD, including its draft status, later architecture decisions, acceptance criteria and prototype link. This roadmap records interpretation and implementation evidence separately; it does not rewrite the source or treat document instructions as execution authorization.
+
+The existing repository is a local V2 implementation through M5.4. This audit inspected code, schemas, tests and retained reports; it did not rerun runtime tests, contact target applications, invoke providers, access private receipts or verify the remote prototype. Historical test results below are attributed to their records, not claimed as newly reproduced.
+
+Status meanings: **Implemented** means the specifically named existing behavior is present in inspected code; **Partial** means a reusable foundation exists but the full V3 requirement is unmet; **Missing** means no implementation was found in the inspected packages, apps, migrations and scripts; **Requires verification** means environment, runtime, visual or interoperability evidence remains necessary. No capability is declared V3 complete from static inspection alone.
+
+MCP scope: task creation, planning, execution, job control, blocker clarification, results, retesting and review resources are first-class engine operations shared with Studio. Phase 1 existing-workflow acceptance is a foundation test, not a permanent MCP limitation. Sensitive approvals and signoff require authenticated human authority.
+
+## Current V3 scope amendment
+
+Owner decision on 2026-10-24: remove the standalone QASpider CLI from the V3 delivery plan. The two V3 client interfaces are the MCP bridge for compatible AI tools and optional Studio for visual workflows, both connecting to the same persistent engine. Engine-only deployment remains supported through MCP.
+
+This decision supersedes standalone CLI delivery and CLI acceptance requirements in FR-09 and §§13–14, 22–23 of the preserved PRD. The original requirements document stays unchanged as a source record. Existing CLI code and historical validation remain V2 evidence; this planning change does not remove runtime code. Command-line process launchers needed to start the engine or MCP bridge remain implementation infrastructure, not a standalone QA CLI product. Provider executables such as Codex CLI are unaffected.
+
+## Capability audit
+
+| Requirement or capability | Status | Existing evidence and V3 gap | Delivery |
+| --- | --- | --- | --- |
+| FR-01 multi-project management | Partial | [Project registry](packages/studio/src/projects.ts), [Studio server](packages/studio/src/server.ts) and [project tests](tests/integration/studio-projects.test.ts) implement create/import/select/archive and separate workspace databases. Engine-owned management independent of Studio remains absent. | 1, 5 |
+| FR-02 ticket intake | Partial | [Story storage](packages/storage/src/testing.ts), [CLI import](packages/cli/src/testing.ts) and [testing UI](apps/viewer/src/testing.tsx) persist scoped story revisions and source criteria. Durable tickets, batch intake and clarification requests are missing; tracker import remains later-release work. | 2, 5 |
+| FR-03 autonomous planning | Partial | [QA service](packages/qa/src/service.ts) retrieves bounded scoped navigation and approved scenario context, invokes a typed planner and stores revisions. Autonomous ticket planning, risk-based coverage justification and prerequisite discovery need extension. | 2, 3 |
+| FR-04 execution and outcomes | Partial | [Executor](packages/qa/src/execution.ts) runs approved typed actions and assertions with retries, permissions and evidence. [Testing schema](packages/storage/migrations/003_story_testing.sql) includes all six scenario outcomes. Autonomous exploration/investigation and adaptive worker lifecycle are incomplete. | 3 |
+| New tests without code changes or restart | Implemented | Runtime story/plan/run persistence exists in [testing storage](packages/storage/src/testing.ts); [M5.4 acceptance](validation/m5-4-acceptance.md) records three UI-created stories and unchanged product/build files. V3 ticket and container versions still require acceptance. | 2, 6 |
+| FR-05 multiple-ticket execution | Partial | [QA service](packages/qa/src/service.ts) and [application service](packages/application/src/service.ts) persist jobs but start in-process promises immediately. [Operation jobs](packages/storage/src/jobs.ts) start as running. No durable eligible queue, pause/resume scheduler, worker leases, fencing, cross-ticket locks or atomic event stream was found. | 2 |
+| FR-06 intelligent approvals | Partial | [Permission derivation](packages/core/src/permissions.ts), [permission storage](packages/storage/src/testing.ts) and [permission migration](packages/storage/migrations/006_execution_permissions.sql) bind decisions to exact plan hash and scope; runtime authorization is checked. Cross-ticket reusable grants, expiry and revocation policy are missing. | 2, 4 |
+| FR-07 persistent learning | Partial | [Navigation storage](packages/storage/src/navigation.ts) and [learning storage](packages/storage/src/learning.ts) retain scopes, evidence, candidates, approval and rollback. Current promotion is explicit human review, not automatic independently verified operational learning. | 3 |
+| Approved deterministic regression without AI | Implemented | [Executor](packages/qa/src/execution.ts) replays approved plans without a provider call; [MCP run_tests](packages/mcp/src/server.ts) uses that service. [M5.4 report](validation/m5-4-report.json) records 16 passing scenarios with Codex absent. V3 engine-only and worker behavior require fresh proof. | 1, 3, 6 |
+| FR-08 findings and review | Partial | [Stored reports](packages/storage/src/testing.ts) and [results UI](apps/viewer/src/testing.tsx) expose attempts, assertions, fixtures and evidence. V3 findings, incidental changes, reviewer classifications, linked retests and explicit final QA signoff are absent. Plan approval is not result signoff. | 4, 5 |
+| FR-09 shared entry points | Partial | [Application service](packages/application/src/service.ts), [CLI](packages/cli/src/main.ts) and [MCP](packages/mcp/src/server.ts) share domain services/storage, but clients instantiate local services. Under the scope amendment, V3 delivers the forwarding MCP bridge and Studio against one persistent engine; standalone host CLI delivery is excluded. | 1 |
+| Provider interchangeability | Requires verification | [Provider contract](packages/core/src/provider.ts) and [Codex adapter](packages/providers/src/codex.ts) exist. [Settings](packages/studio/src/settings.ts) supports Codex/disabled; [M5.4 limitations](validation/m5-4-report.json) defer Claude/Gemini. Cross-provider memory reuse is not verified. No new adapter installation is authorized. | 3, 6 |
+| §§5, 23, 26 orchestrator-first Studio | Missing | [Current Studio](apps/viewer/src/studio.tsx) and [workspace UI](apps/viewer/src/workspace.tsx) use existing project/overview/test workflows. No orchestrator chat or persistent threads found. Reuse authentication, project switcher, settings and evidence views. | 5 |
+| §6 safety boundaries | Partial | [Navigation engine](packages/navigation/src/engine.ts), [policy](packages/core/src/policy.ts) and [executor](packages/qa/src/execution.ts) enforce scoped allowed actions, budgets and production restrictions. Extend enforcement to all V3 commands, autonomous workers and recovery without weakening existing guards. | 1–6 |
+| §7 ticket lifecycle | Missing | Existing QA jobs and test-run statuses in [testing schema](packages/storage/migrations/003_story_testing.sql) do not model the full ticket progression, clarification, permission wait, pause or human review state. | 2, 4 |
+| §§8–9 five-ticket challenge and metrics | Missing | [Existing benchmark methodology](docs/BENCHMARKS.md) and [M5.4 acceptance](validation/m5-4-acceptance.md) are V2 evidence. No V3 five-ticket autonomous acceptance or hands-on-time baseline was found. | 6 |
+| §§12, 20 retrieval and freshness | Partial | [QA context construction](packages/qa/src/service.ts) uses title terms, exact scope and graph paths with a 16,000-character bound. No FTS5 index, general provenance-aware retrieval service or scored freshness model found. SQL/graph reuse is a foundation; vector search remains optional after evaluation. | 3 |
+| §§13–14 Docker engine and client contract | Missing | [CLI application entry](packages/cli/src/application.ts) opens local SQLite/services; [Studio server](packages/studio/src/server.ts) owns project backends. No Docker/Compose files or independent versioned engine HTTP API found. Existing Studio routes are not the V3 API contract. The amended V3 client contract covers MCP and Studio; host QA CLI delivery is excluded. | 1 |
+| §15 persistent permission memory | Partial | Existing [permission decisions](packages/storage/migrations/006_execution_permissions.sql) record plan-bound allow/deny. Reusable operation/resource scope, expiry, revocation, eligible reuse and remembered denial across tickets require new policy and storage. | 2 |
+| §§16–17 intelligent coverage and stop policy | Partial | [Plan types](packages/core/src/testing.ts), [planning service](packages/qa/src/service.ts) and [executor](packages/qa/src/execution.ts) support scenarios, assertions and retry limits. No autonomous risk selection, deep-exploration mode or coverage-based Ready for Review aggregation found. | 3, 4 |
+| §18 autonomous failure investigation | Partial | [Executor](packages/qa/src/execution.ts) retains attempts/evidence and bounded retries. It does not implement the full evidence-based diagnosis lifecycle or six-way finding classification; retries alone do not satisfy investigation. | 3, 4 |
+| §19 intelligent test-data isolation | Partial | [Fixture reservations](packages/storage/migrations/003_story_testing.sql) cover unique/duplicate email; [executor](packages/qa/src/execution.ts) uses configured setup/cleanup endpoints and owns generated records. General resource ownership/leases and safe discovery/provisioning on unfamiliar apps remain unresolved. | 2, 3 |
+| §§20–21 evolution without release metadata | Partial | [Learning service](packages/learning/src/service.ts) requires matching scope family and distinct builds for targeted exploration; candidate promotion is reviewed. Ticket-driven mismatch detection, build-optional adaptation, independent authentication-change findings and opt-in idle revalidation remain missing. | 3, 4 |
+| §22 layered reporting and governance | Partial | [Report assembly](packages/storage/src/testing.ts), [QA HTTP routes](packages/qa/src/http.ts) and [MCP reports](packages/mcp/src/server.ts) expose persisted run data and evidence references. Canonical V3 review resources, report layers, HTML/Markdown/JUnit export and governed correction history need implementation. | 4 |
+| §23 persistent conversations | Missing | [Studio migration](packages/studio/migrations/001_studio.sql) contains registry/session/settings tables; workspace migrations contain no threads/messages. Cross-thread ticket references, search, archive and audited conversation deletion policy are absent. | 2, 5 |
+| §24 event-driven orchestrator | Missing | Existing [job services](packages/application/src/service.ts) and [QA jobs](packages/qa/src/service.ts) use process-local pending maps. No durable command idempotency, per-job ordered versioned events, replay delivery or worker fencing found. | 2 |
+| §24 recovery | Partial | [Runtime ownership](packages/storage/src/runtime.ts) detects exited PID/start-marker owners and marks work interrupted; [reconciliation](packages/qa/src/service.ts) requires explicit scoped cleanup/review. [Recovery tests](tests/integration/runtime-recovery.test.ts) cover that foundation. No autonomous operation-journal/checkpoint recovery exists. | 2 |
+| §25 adaptive ticket workers | Missing | Current [executor](packages/qa/src/execution.ts) loops fixed approved scenarios; no independent mission lifecycle, adaptive plan revisions, escalation coordination or safe shared-knowledge checkpoint adoption found. | 3 |
+| §26 retained prototype availability | Requires verification | The source includes a Drive link and exact HTML filename. No local `qaspider-studio-v3-orchestrator-chat-threads.html` was found in the workspace/Downloads search. Remote contents and visual tokens were not inspected. Obtain the exact artifact before frontend implementation. | 5 |
+
+### Evidence limits
+
+The [M5.4 acceptance audit](validation/m5-4-acceptance.md) and [structured report](validation/m5-4-report.json) record prior local typecheck/build, 71 unit/integration tests, 16 Chromium tests, synthetic provider isolation and restart replay. They do not establish current V3 behavior or current dependency security. Raw traces and databases stay private; do not copy credentials, bootstrap links or operator-specific paths into V3 documentation.
+
+## Reuse and compatibility boundaries
+
+- Preserve typed domain contracts, SQLite scope separation, navigation verification, deterministic execution, evidence quotas/retention, provider isolation and human authority over expectations. Reuse [application services](packages/application/src/service.ts), [storage](packages/storage/src/sqlite.ts), [navigation](packages/navigation/src/engine.ts), [QA](packages/qa/src/service.ts) and [learning](packages/learning/src/service.ts) behind the new engine rather than duplicating orchestration in clients.
+- Studio currently owns the registry, provider settings, sessions, managed MCP lifecycle and project backends. Inventory those responsibilities when moving persistent ownership to the engine; stopping optional Studio must no longer shut down jobs. Retain cookie/CSRF protections where applicable and never treat internal project transport tokens as user authorization.
+- Existing CLI/MCP commands open workspace databases directly. Phase 1 must move the MCP bridge to engine APIs and define bridge installation/configuration. Existing V2 CLI/workspace compatibility or retirement must be explicit, without creating a V3 QA CLI deliverable. Do not silently redirect commands, relocate existing workspaces or allow legacy writers to compete with the engine for managed databases.
+- Workspace migrations 001–008 and Studio migration 001 are checksummed historical inputs. Add migrations for new resources; do not rewrite applied SQL. Specify backup/import, registry/settings transfer, old workspace compatibility and rollback limits in each implementation plan. Approval hashes, requirement sources, historical reports and evidence references must survive migration.
+- Build is currently part of scope identity; optional release metadata in V3 requires an explicit compatibility design, not removal of scope checks. Reuse must still enforce project/application/environment/role/tenant/flags and current permission boundaries.
+- The new versioned HTTP API will be a public interface. Define version negotiation, project authorization, asynchronous job/report/evidence access and useful errors before client conversion. Keep domain logic in the engine; no wire schema is finalized by this documentation phase.
+
+## Delivery phases and acceptance gates
+
+| Phase | Status | Objective and dependencies | Acceptance gate |
+| --- | --- | --- | --- |
+| 0 Requirements and audit | Complete | Preserve full PRD; inspect V2 boundaries; record gaps, decisions and references; link root documentation. | Verify all 26 sections, source paragraphs and URLs; audit references exist; documentation-only diff and clean whitespace. |
+| 1 Engine and client foundation | Implemented; foundation checks passed | Depends on Phase 0 review. Specify engine ownership, API/auth/version contract, workspace migration and MCP bridge packaging; deliver engine image, optional Studio image and forwarding MCP bridge. | Engine-only MCP can submit and inspect an existing approved workflow; Studio can inspect the same project/run through engine APIs; neither interface owns a project database, QA browser or provider runtime; bridge/client exit or Studio stop does not stop submitted work; volume recreation preserves settings/history; unauthorized/project-mismatched access fails. Full autonomous tickets arrive in later phases. |
+| 2 Durable ticket orchestration | Not started; requires authorization | Depends on Phase 1. Add structured manual ticket/batch intake, threads/message persistence, commands/events, scheduler, bounded configurable worker pool, dependency/resource ownership, progressive permissions, journal/checkpoints and reconciliation. | Repeated command creates one job; stale workers cannot commit; conflicting resources serialize; independent work continues during permission/clarification waits; pause/resume/cancel are durable; disconnect/restart replay recovers state without blindly repeating uncertain writes. Threads cannot delete underlying QA data. |
+| 3 Autonomous testing and knowledge | Not started; requires authorization | Depends on Phase 2 and test-data provisioning decision. Add scoped SQL/graph/FTS retrieval, worker missions, adaptive typed plans, intelligent/deep coverage, bounded investigation, independently verified operational learning and targeted revalidation. | New tickets need no source edits/restarts; known regression uses zero LLM calls; hypotheses never become authority by observation; safe locator repair retains assertions/history; changed authentication is reported independently; background checks default off; budgets stop safely and original failures persist. |
+| 4 Reports and human review | Not started; requires authorization | Depends on durable events and execution evidence from Phases 2–3. Add canonical coverage/findings/report layers, structured review and signoff, linked retests, review-to-memory decisions and exports. | All six outcomes remain truthful; incidental changes stay separate from ticket results; retest preserves old evidence; false-positive rejection retains history; expectation revisions require authority; only authenticated authorized humans sign off; MCP/Studio report matching decisions; exports enforce evidence access. |
+| 5 Orchestrator-first Studio | Not started; requires authorization | Depends on Phases 1–4 engine resources and exact prototype retrieval/review. Build conversational intake/coordination, durable thread UX, inline typed approvals/reviews, QA Tickets, Knowledge, Settings and header project switching. | Three-ticket chat intake launches independent jobs; another thread can inspect them; switching/archiving/closing chat does not stop jobs or delete evidence; reconnect restores history; no secrets in messages/logs; responsive visual review matches retained prototype. |
+| 6 V3 acceptance | Not started; requires authorization | Depends on Phases 1–5. Run the five-ticket challenge, fault injection, interface parity, isolation, recovery, container persistence and productivity baseline measurement. | Five distinct tickets progress independently with only necessary approvals, evidence-backed defects and per-ticket review; blocked/incomplete work never passes; engine restart reconciles safely; deterministic replay works with AI unavailable; verify and disclose supported provider matrix. Record measurements without claiming unmeasured productivity gains. |
+
+Cross-cutting safety, parity and evidence checks apply in every phase. Each next phase requires a detailed implementation plan defining affected interfaces/types, migration approach, tests and concrete acceptance evidence before code changes. The phases describe dependency order; foundational report/evidence types may be needed earlier than the complete reporting feature. No phase permits weakening existing policy to pass its acceptance gate.
+
+### Requirement coverage map
+
+| PRD sections | Primary phases |
+| --- | --- |
+| 1–3 vision, audience and journey | 1–6; user journey integrated in 5 and demonstrated in 6 |
+| 4 functional requirements | 1–5 as individually mapped in the capability audit |
+| 5 Studio experience | 5, using later §§23/26 direction |
+| 6 safety | 1–6 |
+| 7 lifecycle | 2, 4 |
+| 8 acceptance challenge; 9 success metrics | 6 |
+| 10 delivery priorities | P0 through 1–6; P1/P2 deferred separately |
+| 11 open decisions | Decision register below; resolve relevant blockers before affected phase |
+| 12 memory and RAG | 3, validated in 6 |
+| 13 Docker; 14 host client contract | 1, validated in 6; standalone CLI requirements superseded by the scope amendment |
+| 15 authorization | 2; review surfaces in 4–5 |
+| 16 coverage; 17 completion | 3–4 |
+| 18 investigation | 3–4 |
+| 19 isolation/test data | 2–3 |
+| 20 evolution; 21 metadata-free adaptation | 3–4 |
+| 22 reporting/review | 4, surfaced in 5 |
+| 23 conversations/Studio | Storage in 2; interface in 5 |
+| 24 orchestrator backend | 2 |
+| 25 autonomous workers | 3, using Phase 2 scheduler |
+| 26 final visual reference | 5 |
+
+## Decision and conflict register
+
+Later explicit decisions guide planning where they resolve earlier proposals, but the source text remains intact. Unresolved product questions require owner input before the dependent implementation phase; routine implementation choices belong in that phase's plan.
+
+| Topic | Source relationship and current planning disposition | Gate |
+| --- | --- | --- |
+| V3 client interfaces | Owner amendment removes standalone QASpider CLI delivery across all phases. Retain MCP bridge and optional Studio, shared engine APIs/memory, engine-only MCP operation and parity between those two interfaces. Preserve source PRD and V2 CLI evidence; provider CLIs and process launchers are unaffected. | 1–6 |
+| Overall status | Title says Draft/Under Discussion; §§24–25 describe selected/approved target architecture. Preserve both. User has authorized Phase 0 only, not all implementation described as approved in the PRD. | Every phase |
+| Studio navigation | §5 proposes Work Queue/Agent Workspace/Review Center/Projects; §§23/26 explicitly select Orchestrator/QA Tickets/Knowledge/Settings, header project switching and inline reviews. Use later direction; preserve underlying review services. | 5 |
+| Intake/integrations | §11 asks manual versus immediate Azure; §§4/10 defer Jira/Azure and §23 selects conversational intake. Plan structured manual single/batch intake shared by clients, chat in Studio; tracker integration is outside core delivery. | 2, 5 |
+| Concurrency | §11 leaves level open; §24 selects a configurable pool with suggested global 3/per-project 2. Treat those as proposed defaults to confirm in Phase 2; resource safety may serialize below either limit. | 2 |
+| Unclear criteria | §§16–17/25 require visible uncertainty and human escalation. Never invent authoritative criteria; specify when independent scenarios may proceed and how clarification re-enters a plan. Exact behavior needs a Phase 2/3 decision. | 2–3 |
+| Reusable authorization | §15 resolves reuse in principle and requires narrow scope, denials, expiry/revocation and fresh approval where appropriate. Exact eligible operation classes, lifetimes and policy migration are unresolved. | 2 |
+| Ready for Review | §§17/22 separate coverage/evidence readiness from scenario PASS and human QA approval. Include explicit gaps/blockers; define the aggregate state rules in the reporting plan. | 4 |
+| Browser visibility | §§22–23 choose low-noise milestones with evidence drilldown. Default live-browser visibility/streaming is not finalized; do not assume continuous video. | 5 |
+| Instructions during execution | §§23/25 allow conversational clarification and bounded plan adaptation. Sensitive approvals/signoff require typed authenticated operations. Define revision/cancellation/checkpoint rules before accepting mid-run changes. | 2–3, 5 |
+| Individual versus batch | §§3/23 support both through shared structured tickets and independent jobs. No mandatory separate Studio intake form. | 2, 5 |
+| Memory promotion | V2 explicitly reviews navigation candidates; §12/20/25 permit automatic independently verified low-risk operational updates. Specify deterministic promotion thresholds, compatibility checks, rollback and safe checkpoint adoption; retain human authority over business expectations. | 3 |
+| Test-data provisioning | Owner selected configured accounts/setup/cleanup first. When required data cannot be determined or prepared safely, pause the affected ticket, request specific input and retain scoped reusable guidance for future similar tickets. Persist credential references rather than passwords/OTPs/tokens; independent jobs continue. General unfamiliar-app provisioning remains deferred. | 2 resource contract; 3 provisioning |
+| Optional release metadata | §§20–21 prohibit requiring build/deployment/CI metadata for change detection. Existing build-keyed comparison is a gap; specify a safe compatibility model while retaining scope isolation. | 3 |
+| Prototype | §26 initially says artifact is not linked, then appends a retained [Drive prototype](https://drive.google.com/file/d/1DUoLPm5xJMOX8jEHW3b46ETEwhgOcGIy/view?usp=drivesdk). Preserve both historical statements. Exact HTML is absent locally and remote access/content is unverified; acquire and inspect before visual coding. | 5 |
+| Conversation deletion | §23 allows archive but requires explicit audited destructive-deletion policy. Retention, deletion authorization and treatment of linked references need a decision; archiving never deletes QA resources. | 2, 5 |
+| Providers | Provider-independent interfaces exist; only Codex has retained real-planning evidence. Decide the required V3 provider verification matrix; never claim Claude/Gemini compatibility without testing. | 3, 6 |
+
+Azure/Jira and consequential tracker updates, team workspaces, advanced scheduling, CI/CD, distributed execution, vector search without retrieval evaluation and PDF exports remain later-release or conditional items as stated in the PRD. Engine authentication/project authorization are core; a multi-user enterprise model is not implied.
+
+## Phase 0 validation and next milestone
+
+Phase 0 validation passed: all 268 nonempty source DOCX paragraphs match the Markdown in order; all 26 section headings, nine FR headings and two URL occurrences are preserved; the recorded source SHA-256 matches. All 91 local links across the requirements, roadmap and README resolve. `git diff --check` and explicit whitespace checks for the new files passed. No source tables or supplemental footnote/endnote/header/footer/comment parts were present. The final change set contains only the two new Markdown files and README links.
+
+No runtime tests are required for these documentation-only changes. Existing reports remain historical evidence; provider validation gates will apply if later code changes touch providers, context construction or isolation, as required by [AGENTS.md](AGENTS.md).
+
+Recommended next milestone: review Phase 0, then authorize a detailed Phase 1 engine/API/client migration plan. Resolve engine ownership, MCP bridge packaging and legacy V2 workspace/CLI compatibility before implementation. The V3 client plan includes MCP and Studio only. No Phase 1 code or subsequent milestone is included here.
+
+Planning amendment validation: the standalone host QA CLI is excluded from Phase 1 deliverables and all later parity/acceptance requirements. MCP and Studio retain shared engine-owned resources, optional Studio deployment and disconnect-independent jobs. The source PRD and runtime files are unchanged by this amendment.
+
+## Implementation evidence
+
+Phase 1: authenticated engine API v1, engine-owned legacy services/registry, forwarding MCP bridge, standalone bridge package preparation, optional Studio proxy/assets, engine/Studio Dockerfiles and loopback Compose deployment are implemented. See [deployment and migration instructions](deploy/README.md). Current validation: typecheck/build, 72 unit/integration tests, the new engine-only Chromium replay, both Docker image builds and [container acceptance](scripts/verify-engine-container.mjs) passed. Container acceptance used a synthetic approved fixture with a real Chromium assertion, zero provider calls, retained report after recreation and project denial. Historical V2 code/tests remain available; no standalone V3 QA CLI is added. Codex must still be provisioned/approved and pass isolation inside the engine before real planning; container acceptance does not claim that setup is complete.

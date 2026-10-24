@@ -66,7 +66,7 @@ export function createGraphServer(store: SqliteStore, artifacts: ArtifactStore, 
     const types: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
     response.writeHead(200, { 'Content-Type': types[extname(path)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' }); response.end(readFileSync(path));
   }
-  return { server, token, shutdown: async () => { await learning.shutdown(); await application.shutdown(); } };
+  return { server, token, application, shutdown: async () => { await learning.shutdown(); await application.shutdown(); } };
 }
 function evidenceIds(graph: NavigationGraph): Set<string> {
   return new Set([...graph.states.map(state => state.evidenceId), ...graph.transitions.flatMap(edge => edge.evidenceId ? [edge.evidenceId] : []), ...graph.runs.flatMap(run => run.evidenceIds)]);

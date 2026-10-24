@@ -1,5 +1,7 @@
 # QASpider — Story-driven QA
 
+V3 planning: [complete product requirements](REQUIREMENTS-V3.md) and [phased roadmap with implementation audit](ROADMAP-V3.md). Phase 0 preserves the requirements and audits V2 reuse. The current V3 plan uses an MCP bridge and optional Studio, with no standalone QASpider CLI deliverable; existing V2 CLI workflows below remain current implementation documentation. Phases 1–4 are authorized for implementation with separate phase commits; later phases require review. See [engine deployment](deploy/README.md).
+
 Local-first QA following the approved QASpider V2 architecture. **M0–M5.4 are implemented for the local beta scope.** QASpider maps safe navigation into SQLite, verifies candidate transitions by replay, accepts explicit batch approval, and replays approved paths without AI. The React Navigation Graph displays actual persisted records. M2 adds reviewed story plans, an isolated Codex CLI planning adapter, deterministic scenario execution, Test Studio and persisted Test Runs. M3 adds governed build comparison, targeted discovery, candidate review and reversible navigation promotion. M4 adds the official MCP SDK v2 server, explicit scoped authorization, persistent discovery jobs, Applications, Configuration and Overview.
 
 ## Start locally

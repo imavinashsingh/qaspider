@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+.qaspider
+test-results
+playwright-report
+.env
+**/*.db
+**/*.db-wal
+**/*.db-shm
