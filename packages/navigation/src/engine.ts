@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { SqliteStore } from '../../storage/src/index.js';
-import { budgetsSchema, findPath, httpUrlSchema, isSafeNavigation, navigationConfigSchema, normalizeObservation, normalizeUrl, type ArtifactStorage, type LocatorSpec, type NavigationAction, type NavigationBudgets, type NavigationConfig, type NavigationRun, type NormalizedObservation, type Observation, type Scope, type Transition, type UIState } from '../../core/src/index.js';
+import { budgetsSchema, findPath, httpUrlSchema, isSafeNavigation, navigationConfigSchema, normalizeObservation, normalizeUrl, type ArtifactStorage, type LocatorSpec, type NavigationAction, type NavigationBudgets, type NavigationConfig, type NavigationRun, type NormalizedObservation, type Observation, type Control, type Scope, type Transition, type UIState } from '../../core/src/index.js';
 export class NavigationError extends Error { constructor(message: string, readonly status: NavigationRun['status']) { super(message); } }
 class Budget {
   actions = 0; requests = 0; states = 0; private lastAction = 0;
@@ -28,17 +28,26 @@ async function observe(page: Page, config: NavigationConfig, secrets: string[], 
   // Static read-only snapshot code, never supplied by a page, story or AI provider.
   const snapshot = await page.evaluate(({ volatileSelectors, privateSelectors }) => {
     const excluded = [...volatileSelectors, ...privateSelectors];
-    const visible = (element: Element) => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden' && !excluded.some(selector => element.matches(selector) || !!element.closest(selector));
+    const visible = (element: Element) => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden' && !element.closest('[aria-hidden="true"]') && !excluded.some(selector => element.matches(selector) || !!element.closest(selector));
     const name = (element: Element) => {
       const labelled = element.getAttribute('aria-labelledby');
       return element.getAttribute('aria-label') || (labelled ? labelled.split(/\s+/).map(id => document.getElementById(id)?.textContent ?? '').join(' ') : '') || ('labels' in element ? Array.from((element as HTMLInputElement).labels ?? []).map(label => label.textContent ?? '').join(' ') : '') || element.textContent || '';
     };
-    const controls = Array.from(document.querySelectorAll('a[href],button,input,select,textarea,[role="tab"],[role="button"]')).slice(0, 1000).filter(visible).map(element => {
+    const controls = Array.from(document.querySelectorAll('a[href],button,input,select,textarea,[role="tab"],[role="button"]')).slice(0, 1000).map((element,elementIndex)=>({element,elementIndex})).filter(({element})=>visible(element)).map(({element,elementIndex}) => {
       const role = element.getAttribute('role') || (element.tagName === 'A' ? 'link' : element.tagName === 'BUTTON' ? 'button' : 'textbox');
-      return { role, name: name(element).replace(/\s+/g, ' ').trim().slice(0, 200), testId: element.getAttribute('data-testid'), href: element instanceof HTMLAnchorElement ? element.href : null, expanded: element.hasAttribute('aria-expanded') ? element.getAttribute('aria-expanded') === 'true' : null, selected: element.hasAttribute('aria-selected') ? element.getAttribute('aria-selected') === 'true' : null, disabled: 'disabled' in element && Boolean(element.disabled), checked: 'checked' in element && Boolean(element.checked) };
+      return { elementIndex, role, name: name(element).replace(/\s+/g, ' ').trim().slice(0, 200), testId: element.getAttribute('data-testid'), href: element instanceof HTMLAnchorElement ? element.href : null, expanded: element.hasAttribute('aria-expanded') ? element.getAttribute('aria-expanded') === 'true' : null, selected: element.hasAttribute('aria-selected') ? element.getAttribute('aria-selected') === 'true' : null, disabled: 'disabled' in element && Boolean(element.disabled), checked: 'checked' in element && Boolean(element.checked) };
     });
     return { url: location.href, headings: Array.from(document.querySelectorAll('h1,h2,h3,[role="heading"]')).slice(0, 100).filter(visible).map(element => name(element).trim()), dialogs: Array.from(document.querySelectorAll('dialog[open],[role="dialog"]')).filter(visible).map(element => name(element).trim()), controls };
-  }, config) as Observation;
+  }, config) as Observation & {controls:Array<Control & {elementIndex:number}>};
+  for(const control of snapshot.controls){
+    if(!control.href||!['link','menuitem'].includes(control.role))continue;
+    const target=page.locator('a[href],button,input,select,textarea,[role="tab"],[role="button"]').nth(control.elementIndex);
+    if(await target.evaluate(element=>element instanceof HTMLAnchorElement?element.href:null)!==control.href)throw new NavigationError('Navigation changed during observation','blocked');
+    const tree=await target.ariaSnapshotJSON({depth:1});
+    const accessible=Array.isArray(tree)&&tree.length===1?tree[0]:null;
+    if(!accessible||accessible.role!==control.role||typeof accessible.name!=='string')throw new NavigationError('Accessible navigation identity unavailable','blocked');
+    control.name=accessible.name.slice(0,200);
+  }
   return normalizeObservation(snapshot, config, secrets);
 }
 export interface WorkflowSession { context: BrowserContext; page: Page; budget: Budget; secrets: string[]; origins: string[]; permitWrite<T>(url: string, work: () => Promise<T>, authorize?:()=>void): Promise<T>; }
@@ -112,7 +121,7 @@ export class NavigationEngine {
     for (const control of observation.controls) {
       if (control.disabled) continue;
       const spec: LocatorSpec = control.testId ? { kind: 'testId', value: control.testId } : { kind: 'role', role: control.role as 'link', name: control.name };
-      if (control.role === 'link' && control.href) {
+      if (['link','menuitem'].includes(control.role) && control.href) {
         const action: NavigationAction = { kind: 'link', locator: spec, targetUrl: control.href };
         if (isSafeNavigation(action, session.origins, config)) actions.push(action);
       }
