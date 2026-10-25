@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
+import { Workspace, type WorkspaceBridge } from './Workspace.js';
 
 export interface CaptureResult {
   status: 'success' | 'error';
@@ -10,7 +11,7 @@ export interface CaptureResult {
   screenshot?: string;
 }
 declare global {
-  interface Window { qaspider: { openBrowser: (url: string) => Promise<CaptureResult> } }
+  interface Window { qaspider: WorkspaceBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
 }
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
   }
 
   return <main>
-    <header><span className="brand">Q</span><div><strong>QASpider</strong><small>DESKTOP · MILESTONE 1</small></div><span className="badge">Local browser</span></header>
+    <header><span className="brand">Q</span><div><strong>QASpider</strong><small>DESKTOP QA</small></div><span className="badge">Local browser</span></header>
     <section className="intro"><p className="eyebrow">YOUR FIRST QA CHECK</p><h1>Open. Capture. Inspect.</h1><p>Visit your development or QA application and capture its current screen.</p></section>
     <form onSubmit={event => void openBrowser(event)} className="card">
       <label htmlFor="target">Target application URL</label>
@@ -41,7 +42,8 @@ function App() {
       {result?.visitedUrl && <p className="visited"><strong>Visited URL</strong><br/><span data-testid="visited-url">{result.visitedUrl}</span>{result.httpStatus != null && <small>HTTP {result.httpStatus}</small>}</p>}
       {result?.screenshot ? <figure><img src={result.screenshot} alt="Captured target application"/><figcaption>1280 × 800 viewport · captured before browser cleanup</figcaption></figure> : <div className="placeholder">Your captured screenshot will appear here.</div>}
     </section>
-    <footer>Stagehand + local Chromium · one capture at a time</footer>
+    <Workspace/>
+    <footer>Stagehand + local Chromium · one browser operation at a time</footer>
   </main>;
 }
 

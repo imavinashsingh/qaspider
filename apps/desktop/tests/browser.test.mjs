@@ -3,6 +3,7 @@ import { captureTarget, validateTarget } from '../electron/browser.mjs';
 
 function fixture(failure) {
   const page = {
+    on: vi.fn(), mainFrame: () => 'main',
     setViewportSize: vi.fn(async () => {}),
     goto: vi.fn(async () => { if (failure === 'navigation') throw new Error('Connection refused'); return { status: () => 200 }; }),
     url: vi.fn(async () => 'http://localhost:3000/login'),
@@ -38,7 +39,7 @@ describe('desktop capture', () => {
     const f = fixture();
     const result = await captureTarget('http://localhost:3000/login', {}, f.dependencies);
     expect(result).toMatchObject({ status: 'success', visitedUrl: 'http://localhost:3000/login', screenshot: 'data:image/png;base64,cG5n' });
-    expect(f.dependencies.Stagehand.create).toHaveBeenCalledWith({ browser: f.browser, cache: false, selfHeal: false });
+    expect(f.dependencies.Stagehand.create).toHaveBeenCalledWith({ browser: f.browser, cache: false, selfHeal: false, logging: { level: 'off' } });
     expect(f.stagehand.close).toHaveBeenCalledOnce();
     expect(f.browser.close).toHaveBeenCalledOnce();
   });
@@ -69,6 +70,22 @@ describe('desktop capture', () => {
     f.page.url.mockResolvedValue('https://elsewhere.example/');
     expect((await captureTarget('http://localhost:3000', {}, f.dependencies)).status).toBe('error');
     expect(f.page.screenshot).not.toHaveBeenCalled();
+    expect(f.browser.close).toHaveBeenCalledOnce();
+  });
+
+  it('reports an unreachable app instead of treating Chromium error pages as redirects', async () => {
+    const f = fixture();
+    f.page.goto.mockImplementation(async () => {
+      const handler = f.page.on.mock.calls.find(([event]) => event === 'requestfailed')[1];
+      handler({ isNavigationRequest: () => true, frame: () => 'main', url: () => 'http://localhost:3000/', failure: () => ({ errorText: 'net::ERR_CONNECTION_REFUSED' }) });
+      return null;
+    });
+    f.page.url.mockResolvedValue('chrome-error://chromewebdata/');
+    const result = await captureTarget('http://localhost:3000', {}, f.dependencies);
+    expect(result.status).toBe('error');
+    expect(result.message).toContain('ERR_CONNECTION_REFUSED');
+    expect(result.message).toContain('Start the development application');
+    expect(result.message).not.toContain('page left');
     expect(f.browser.close).toHaveBeenCalledOnce();
   });
 

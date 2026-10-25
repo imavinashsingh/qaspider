@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-10-25T07:00:10.615Z",
+  "provider": "codex-cli",
+  "liveInference": true,
+  "controlledLoginOnly": true,
+  "instruction": "Find the Username and Password input fields and the Sign in button on this login page. Propose fill for both input fields using synthetic demo values, and click for Sign in. Do not execute any action.",
+  "discoveredRows": [
+    "Username input fieldfill · xpath=/html[1]/body[1]/form[1]/p[1]/input[1]BLOCKED: Only discovered links and buttons with argument-free click actions are supported.",
+    "Password input fieldfill · xpath=/html[1]/body[1]/form[1]/p[2]/input[1]BLOCKED: Only discovered links and buttons with argument-free click actions are supported.",
+    "Sign in buttonclick · xpath=/html[1]/body[1]/form[1]/button[1]Sign inBLOCKED: Hidden, disabled, form, download and new-window actions cannot be validated in M2."
+  ],
+  "displayedInDesktop": true,
+  "formActionsBlocked": true,
+  "credentialsEntered": false,
+  "loginExecuted": false,
+  "browserSessionClosed": true,
+  "screenshot": "test-results/desktop-live/m2-login.png"
+}

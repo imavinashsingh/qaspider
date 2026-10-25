@@ -1,5 +1,7 @@
 # QASpider Desktop — Milestone 1
 
+Milestone 2 extends this app with observation, authorized clicks and deterministic assertions. See the [Milestone 2 setup and learning walkthrough](MILESTONE-2.md). The sections below describe the model-free Milestone 1 capture path, which remains available above the testing workspace.
+
 A local desktop application that visits one development/QA URL, captures a screenshot, reports the result and closes its browser. No inference provider, API key, Docker, database or server process is required.
 
 ## Run it

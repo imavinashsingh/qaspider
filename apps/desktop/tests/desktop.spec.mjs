@@ -70,6 +70,7 @@ test('blocked redirect never reaches the other origin and UI can recover', async
     await page.getByLabel('Target application URL').fill(origin + '/redirect');
     await page.getByRole('button', { name: 'Open Browser' }).click();
     await expect(page.getByTestId('status')).toHaveText('Failed');
+    await expect(page.getByRole('alert')).toContainText(`Navigation to ${forbiddenOrigin} was blocked`);
     expect(forbiddenHits).toBe(hitsBefore);
     await page.getByLabel('Target application URL').fill(origin);
     await page.getByRole('button', { name: 'Open Browser' }).click();

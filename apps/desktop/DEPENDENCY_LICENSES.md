@@ -1,5 +1,7 @@
 # Installed dependency license review
 
+Milestone 2 declares the already installed Zod 4.6.7 (MIT) directly and adds no other npm dependency. The separately installed Codex CLI 0.164.0 reports Apache-2.0 in its installed package manifest; it is an external prerequisite, not a bundled runtime dependency. Its provider service terms and account access are separate from its source license.
+
 Reviewed 2026-10-25 from the installed package manifests for the desktop runtime and development dependency trees. This is an inventory, not a license grant. Preserve upstream license and copyright notices when redistributing. Optional platform-specific binaries and bundled Chromium also carry their own notices.
 
 The existing repository remains Apache-2.0. No AGPL/GPL-only npm dependency was found in this installed tree. Electron includes `LICENSES.chromium.html`; Chrome/Chromium distributions have additional third-party notices that must accompany redistributed binaries.

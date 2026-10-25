@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-25T06:46:55.524Z",
+  "provider": "codex-cli",
+  "liveInference": true,
+  "controlledDemoOnly": true,
+  "instruction": "Find the Save demo button. Return only its click action.",
+  "action": {
+    "selector": "xpath=/html[1]/body[1]/button[1]",
+    "description": "Save demo button",
+    "method": "click",
+    "arguments": []
+  },
+  "assertion": {
+    "kind": "text",
+    "selector": "#status",
+    "expected": "Saved"
+  },
+  "actual": "Saved",
+  "outcome": "PASS",
+  "screenshot": "test-results/desktop-live/m2-workspace.png"
+}

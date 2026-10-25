@@ -16,18 +16,25 @@ export function validateTarget(input) {
 }
 
 /**
- * One short capture session, with framework-owned browser startup and teardown.
+ * A single local browser session. Callers must close it; startup failures close
+ * partially acquired resources here. Shared by capture and observation.
  * @param {unknown} input
- * @param {{headless?: boolean, executablePath?: string | undefined}} options
+ * @param {{headless?: boolean, executablePath?: string | undefined, model?: import('@browserbasehq/stagehand').ClientLLM}} options
  * @param {{localBrowser: typeof localBrowser, Stagehand: typeof Stagehand, chromium: typeof chromium}} dependencies
  */
-export async function captureTarget(input, options = {}, dependencies = { localBrowser, Stagehand, chromium }) {
+export async function openBrowserSession(input, options = {}, dependencies = { localBrowser, Stagehand, chromium }) {
   /** @type {import('@browserbasehq/stagehand').StagehandBrowser | undefined} */
   let browser;
+  /** @type {import('@browserbasehq/stagehand').Stagehand | undefined} */
   let stagehand;
   let phase = 'validation';
-  /** @type {import('../src/main.tsx').CaptureResult | undefined} */
-  let result;
+  let closing;
+  const close = () => closing ??= (async () => {
+    const errors = [];
+    try { await stagehand?.close(); } catch { errors.push('Stagehand session'); }
+    try { await browser?.close(); } catch { errors.push('Chromium browser'); }
+    if (errors.length) throw new Error('Cleanup failed: ' + errors.join(', '));
+  })();
   try {
     const target = validateTarget(input);
     phase = 'browser startup';
@@ -43,7 +50,7 @@ export async function captureTarget(input, options = {}, dependencies = { localB
       ...(options.executablePath ? { executablePath: options.executablePath } : {}),
     });
     // No model configuration: ordinary browser methods make no inference calls.
-    stagehand = await dependencies.Stagehand.create({ browser, cache: false, selfHeal: false });
+    stagehand = await dependencies.Stagehand.create({ browser, cache: false, selfHeal: false, logging: { level: 'off' }, ...(options.model ? { model: options.model } : {}) });
     phase = 'navigation';
     // Stagehand 4.3 domain policies reject localhost. Playwright supplies a CDP
     // session so Chromium checks every request, including each redirect hop.
@@ -55,6 +62,14 @@ export async function captureTarget(input, options = {}, dependencies = { localB
     if (!context) throw new Error('Local browser context is unavailable.');
     const controlledPage = context.pages()[0];
     if (!controlledPage) throw new Error('Local browser page is unavailable.');
+    let navigationFailure = '';
+    let failedNavigationOrigin = '';
+    controlledPage.on('requestfailed', request => {
+      if (request.isNavigationRequest() && request.frame() === controlledPage.mainFrame()) {
+        navigationFailure = request.failure()?.errorText ?? 'Navigation request failed';
+        failedNavigationOrigin = new URL(request.url()).origin;
+      }
+    });
     const network = await context.newCDPSession(controlledPage);
     network.on('Fetch.requestPaused', event => {
       const allowed = new URL(event.request.url).origin === target.origin;
@@ -71,31 +86,53 @@ export async function captureTarget(input, options = {}, dependencies = { localB
     await page.setViewportSize(1280, 800);
     const response = await page.goto(target.href, { waitUntil: 'load', timeout: 20_000 });
     const visitedUrl = await page.url();
-    if (new URL(visitedUrl).origin !== target.origin) {
-      throw new Error('The page left the entered application origin.');
+    // Stagehand can return null instead of throwing when Chromium displays its
+    // internal error document. That document is not an application redirect.
+    if (navigationFailure || visitedUrl.startsWith('chrome-error:') || visitedUrl === 'about:blank') {
+      if (failedNavigationOrigin && failedNavigationOrigin !== target.origin) {
+        throw new Error(`Navigation to ${failedNavigationOrigin} was blocked. Allowed origin: ${target.origin}. Enter the intended final application URL to explicitly choose its origin.`);
+      }
+      const hint = navigationFailure.includes('ERR_CONNECTION_REFUSED')
+        ? 'Start the development application and check its port, then retry.'
+        : 'Check that the application is running and the URL is reachable, then retry.';
+      throw new Error(`Could not load ${target.origin}${navigationFailure ? ` (${navigationFailure})` : ''}. ${hint}`);
     }
-    phase = 'screenshot';
-    const screenshot = await page.screenshot({ type: 'png', fullPage: false, timeout: 10_000 });
-    const httpStatus = response?.status() ?? null;
+    if (new URL(visitedUrl).origin !== target.origin) {
+      throw new Error(`The page reached origin ${new URL(visitedUrl).origin}; allowed origin: ${target.origin}. Enter the intended final application URL to explicitly choose its origin.`);
+    }
+    return { target, browser, stagehand, page, controlledPage, context, network, response, close,
+      screenshot: async () => 'data:image/png;base64,' + Buffer.from(await page.screenshot({ type: 'png', fullPage: false, timeout: 10_000 })).toString('base64') };
+  } catch (error) {
+    let cleanup = '';
+    try { await close(); } catch (cause) { cleanup = ' ' + String(cause); }
+    throw new Error(`${phase}: ${error instanceof Error ? error.message : 'Unexpected browser error'}${cleanup}`);
+  }
+}
+
+/**
+ * Milestone 1 capture remains model-free.
+ * @param {unknown} input
+ * @param {{headless?: boolean, executablePath?: string | undefined}} options
+ * @param {{localBrowser: typeof localBrowser, Stagehand: typeof Stagehand, chromium: typeof chromium}} dependencies
+ */
+export async function captureTarget(input, options = {}, dependencies = { localBrowser, Stagehand, chromium }) {
+  let session;
+  /** @type {import('../src/main.tsx').CaptureResult | undefined} */
+  let result;
+  try {
+    session = await openBrowserSession(input, options, dependencies);
+    const visitedUrl = await session.page.url();
+    const httpStatus = session.response?.status() ?? null;
     result = {
-      status: httpStatus !== null && httpStatus >= 400 ? 'error' : 'success',
-      visitedUrl,
-      httpStatus,
-      screenshot: `data:image/png;base64,${Buffer.from(screenshot).toString('base64')}`,
-      message: httpStatus !== null && httpStatus >= 400
-        ? `Application returned HTTP ${httpStatus}.`
-        : 'Page captured.',
+      status: httpStatus !== null && httpStatus >= 400 ? 'error' : 'success', visitedUrl, httpStatus,
+      screenshot: await session.screenshot(),
+      message: httpStatus !== null && httpStatus >= 400 ? `Application returned HTTP ${httpStatus}.` : 'Page captured.',
     };
   } catch (error) {
-    result = { status: 'error', message: `${phase}: ${error instanceof Error ? error.message : 'Unexpected browser error'}` };
+    result = { status: 'error', message: (session ? 'screenshot: ' : '') + (error instanceof Error ? error.message : 'Unexpected browser error') };
   } finally {
-    // Try both releases even when initialization or the first close failed.
-    const errors = [];
-    try { await stagehand?.close(); } catch { errors.push('Stagehand session'); }
-    try { await browser?.close(); } catch { errors.push('Chromium browser'); }
-    if (errors.length) {
-      result = { ...result, status: 'error', message: `${result?.message ?? ''} Cleanup failed: ${errors.join(', ')}. Close any remaining browser window.` };
-    }
+    try { await session?.close(); }
+    catch (error) { result = { ...result, status: 'error', message: `${result?.message ?? ''} ${String(error)}` }; }
   }
   return result ?? { status: 'error', message: 'Capture did not produce a result.' };
 }

@@ -10,13 +10,17 @@
     "start": "npm run build && electron .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "test:smoke": "npm run build && playwright test"
+    "test:smoke": "npm run build && playwright test",
+    "demo": "node demo/server.mjs",
+    "verify:live": "npm run build && node scripts/verify-live.mjs",
+    "verify:login": "npm run build && node scripts/verify-login.mjs"
   },
   "dependencies": {
     "@browserbasehq/stagehand": "4.3.0",
     "playwright": "1.64.1",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "electron": "45.0.0",
