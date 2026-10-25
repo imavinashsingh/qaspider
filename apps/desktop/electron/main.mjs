@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { captureTarget } from './browser.mjs';
 import { CodexProvider } from './codex-provider.mjs';
 import { TestingWorkspace } from './workspace.mjs';
+import { runScenarioSuite } from './scenario-runner.mjs';
 
 const uiUrl = new URL('../dist/index.html', import.meta.url).href;
 let activeRun;
@@ -40,6 +41,7 @@ void app.whenReady().then(() => {
   handle('desktop:observe', input => workspace.observe(input));
   handle('desktop:execute', input => workspace.execute(input));
   handle('desktop:close-session', async () => { await workspace.close(); return { status: 'closed' }; });
+  handle('desktop:run-scenarios', async input => { await workspace.close(); return runScenarioSuite(input, browserOptions); });
   createWindow();
   app.on('activate', () => { if (!quitting && BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Wait for the bounded capture and its finally block before allowing app exit.

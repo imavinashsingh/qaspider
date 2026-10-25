@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 import { Workspace, type WorkspaceBridge } from './Workspace.js';
+import { Scenarios, type ScenarioBridge } from './Scenarios.js';
 
 export interface CaptureResult {
   status: 'success' | 'error';
@@ -11,7 +12,7 @@ export interface CaptureResult {
   screenshot?: string;
 }
 declare global {
-  interface Window { qaspider: WorkspaceBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
+  interface Window { qaspider: WorkspaceBridge & ScenarioBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
 }
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
       {result?.screenshot ? <figure><img src={result.screenshot} alt="Captured target application"/><figcaption>1280 × 800 viewport · captured before browser cleanup</figcaption></figure> : <div className="placeholder">Your captured screenshot will appear here.</div>}
     </section>
     <Workspace/>
+    <Scenarios/>
     <footer>Stagehand + local Chromium · one browser operation at a time</footer>
   </main>;
 }
