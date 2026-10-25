@@ -13,7 +13,8 @@
     "test:smoke": "npm run build && playwright test",
     "demo": "node demo/server.mjs",
     "verify:live": "npm run build && node scripts/verify-live.mjs",
-    "verify:login": "npm run build && node scripts/verify-login.mjs"
+    "verify:login": "npm run build && node scripts/verify-login.mjs",
+    "verify:ticket": "npm run build && node scripts/verify-ticket.mjs"
   },
   "dependencies": {
     "@browserbasehq/stagehand": "4.3.0",

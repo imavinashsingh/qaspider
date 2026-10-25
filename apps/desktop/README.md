@@ -1,5 +1,7 @@
 # QASpider Desktop — Milestone 1
 
+Milestone 4.1 adds review-only ticket understanding through the existing Codex provider. See the [ticket planning setup and walkthrough](MILESTONE-4.1.md).
+
 Milestone 3 adds isolated controlled login scenarios, per-step reporting and masked evidence. See the [Milestone 3 setup and learning walkthrough](MILESTONE-3.md).
 
 Milestone 2 extends this app with observation, authorized clicks and deterministic assertions. See the [Milestone 2 setup and learning walkthrough](MILESTONE-2.md). The sections below describe the model-free Milestone 1 capture path, which remains available above the testing workspace.

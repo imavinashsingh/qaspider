@@ -4,6 +4,7 @@ import { captureTarget } from './browser.mjs';
 import { CodexProvider } from './codex-provider.mjs';
 import { TestingWorkspace } from './workspace.mjs';
 import { runScenarioSuite } from './scenario-runner.mjs';
+import { TicketPlanner } from './ticket-planner.mjs';
 
 const uiUrl = new URL('../dist/index.html', import.meta.url).href;
 let activeRun;
@@ -12,6 +13,7 @@ let allowQuit = false;
 const browserOptions = { executablePath: process.env.CHROME_PATH, headless: process.env.QASPIDER_DESKTOP_HEADLESS === '1' };
 const provider = (!process.env.QASPIDER_DESKTOP_PROVIDER || process.env.QASPIDER_DESKTOP_PROVIDER === 'codex') ? new CodexProvider() : null;
 const workspace = new TestingWorkspace({ provider, options: browserOptions });
+const ticketPlanner = new TicketPlanner({ provider });
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -42,6 +44,7 @@ void app.whenReady().then(() => {
   handle('desktop:execute', input => workspace.execute(input));
   handle('desktop:close-session', async () => { await workspace.close(); return { status: 'closed' }; });
   handle('desktop:run-scenarios', async input => { await workspace.close(); return runScenarioSuite(input, browserOptions); });
+  handle('desktop:propose-ticket-plan', input => ticketPlanner.propose(input));
   createWindow();
   app.on('activate', () => { if (!quitting && BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Wait for the bounded capture and its finally block before allowing app exit.

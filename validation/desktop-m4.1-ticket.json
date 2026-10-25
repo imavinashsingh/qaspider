@@ -1,0 +1,330 @@
+{
+  "verifiedAt": "2026-10-25T07:48:51.242Z",
+  "provider": "codex-cli",
+  "liveInference": true,
+  "syntheticTicketOnly": true,
+  "displayedInDesktop": true,
+  "executionRequested": false,
+  "screenshot": "test-results/desktop-live/m4.1-ticket.png",
+  "input": {
+    "title": "Validate registration form",
+    "description": "Check registration using an email address.",
+    "acceptanceCriteria": [
+      "Email is required.",
+      "Duplicate email addresses must be rejected.",
+      "Valid registration should succeed."
+    ]
+  },
+  "plan": {
+    "assumptions": [
+      {
+        "id": "AS-1",
+        "description": "A browser-accessible registration form and an isolated test environment are available."
+      },
+      {
+        "id": "AS-2",
+        "description": "Otherwise valid registration data and an unused email address are available; any additional mandatory fields are identified before testing."
+      },
+      {
+        "id": "AS-3",
+        "description": "An existing account fixture and a reviewable way to determine registration success, account creation, and changes to that fixture are available."
+      }
+    ],
+    "criteria": [
+      {
+        "criterionId": "AC-1",
+        "interpretation": "testable",
+        "explanation": "The form must require an email. Exact validation wording and presentation are unspecified but do not prevent conceptual verification.",
+        "negativeTests": {
+          "applicability": "included",
+          "reason": "Submission without an email is covered."
+        },
+        "boundaryTests": {
+          "applicability": "included",
+          "reason": "Clearing a populated email field to empty covers the required-field boundary."
+        }
+      },
+      {
+        "criterionId": "AC-2",
+        "interpretation": "testable",
+        "explanation": "An email already associated with an account must be rejected. Email normalization and comparison rules are unspecified.",
+        "negativeTests": {
+          "applicability": "included",
+          "reason": "Attempting to reuse an existing email with different registration details covers forbidden duplicate registration."
+        },
+        "boundaryTests": {
+          "applicability": "unspecified",
+          "reason": "No case, whitespace, aliasing, or other email-equivalence boundaries are defined."
+        }
+      },
+      {
+        "criterionId": "AC-3",
+        "interpretation": "testable",
+        "explanation": "Successful registration with valid data has clear conceptual intent. Valid fixtures and an observable success outcome are needed; exact success text and destination are unspecified.",
+        "negativeTests": {
+          "applicability": "included",
+          "reason": "A registration missing the required email must not produce a successful registration."
+        },
+        "boundaryTests": {
+          "applicability": "unspecified",
+          "reason": "No limits or additional boundaries for valid registration data are supplied."
+        }
+      }
+    ],
+    "scenarios": [
+      {
+        "id": "S-1",
+        "criterionId": "AC-1",
+        "category": "positive",
+        "title": "A supplied email satisfies the required-field check",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2"
+        ],
+        "preconditions": [
+          "The registration form is open.",
+          "An unused valid email and otherwise valid registration data are available."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete registration with the available valid data, including the email.",
+            "expectedOutcome": "The form contains an email."
+          },
+          {
+            "instruction": "Submit the form.",
+            "expectedOutcome": "Email-required validation does not block submission."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "A populated valid email satisfies the email-required condition.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-2",
+        "criterionId": "AC-1",
+        "category": "negative",
+        "title": "Reject submission with email omitted",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2"
+        ],
+        "preconditions": [
+          "The registration form is open.",
+          "All other mandatory fields can be completed with valid data."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete the other mandatory fields while leaving email empty.",
+            "expectedOutcome": "Email is absent and other required data is supplied."
+          },
+          {
+            "instruction": "Attempt to submit registration.",
+            "expectedOutcome": "Registration is blocked because email is required."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "Registration cannot succeed without an email.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-3",
+        "criterionId": "AC-1",
+        "category": "boundary",
+        "title": "Required validation applies after email is cleared",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2"
+        ],
+        "preconditions": [
+          "The registration form is open with otherwise valid data."
+        ],
+        "steps": [
+          {
+            "instruction": "Enter a valid email, then remove its entire contents.",
+            "expectedOutcome": "The email field changes from populated to empty."
+          },
+          {
+            "instruction": "Attempt to submit registration.",
+            "expectedOutcome": "The empty email blocks registration."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "Previously entering an email does not allow an empty email to pass required validation.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-4",
+        "criterionId": "AC-2",
+        "category": "positive",
+        "title": "Reject an email already registered",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3"
+        ],
+        "preconditions": [
+          "An existing account's email is known.",
+          "The registration form is open."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete otherwise valid registration data using the existing account's email exactly as stored.",
+            "expectedOutcome": "The submission contains a known duplicate email."
+          },
+          {
+            "instruction": "Submit registration.",
+            "expectedOutcome": "The application rejects the duplicate email."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "The duplicate email is rejected and no additional account is created for it.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-5",
+        "criterionId": "AC-2",
+        "category": "negative",
+        "title": "Different registration details do not bypass duplicate rejection",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3"
+        ],
+        "preconditions": [
+          "An existing account fixture is available.",
+          "Otherwise valid registration details differing from that account are available."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete registration using the existing email and different values for the other available registration details.",
+            "expectedOutcome": "The email remains an exact duplicate despite the different details."
+          },
+          {
+            "instruction": "Submit registration and inspect the account outcome.",
+            "expectedOutcome": "The duplicate registration is rejected without creating an additional account or replacing the existing account's details."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "Changing other registration details does not permit registration with an existing email.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-6",
+        "criterionId": "AC-3",
+        "category": "positive",
+        "title": "Complete registration with valid data",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3"
+        ],
+        "preconditions": [
+          "The registration form is open.",
+          "A complete valid registration fixture with an unused email is available.",
+          "The registration success outcome can be observed."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete all mandatory registration fields with valid data.",
+            "expectedOutcome": "The form contains a complete valid registration."
+          },
+          {
+            "instruction": "Submit registration.",
+            "expectedOutcome": "Registration succeeds."
+          },
+          {
+            "instruction": "Review the observable registration outcome.",
+            "expectedOutcome": "The outcome confirms successful registration of the new account."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "Valid registration creates the intended account and produces an observable success outcome; exact wording and destination remain unspecified.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      },
+      {
+        "id": "S-7",
+        "criterionId": "AC-3",
+        "category": "negative",
+        "title": "An incomplete registration does not report success",
+        "assumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3"
+        ],
+        "preconditions": [
+          "The registration form is open.",
+          "Otherwise valid registration data is available."
+        ],
+        "steps": [
+          {
+            "instruction": "Complete the registration data while omitting the required email.",
+            "expectedOutcome": "The registration is incomplete."
+          },
+          {
+            "instruction": "Attempt submission and review the registration outcome.",
+            "expectedOutcome": "Registration is blocked and no successful account creation is reported."
+          }
+        ],
+        "assertions": [
+          {
+            "kind": "behavior",
+            "description": "A submission missing the required email does not create an account or produce a successful registration outcome.",
+            "exactValue": null,
+            "sourceQuote": null
+          }
+        ]
+      }
+    ],
+    "version": 1,
+    "status": "draft",
+    "proposalSource": "ai",
+    "ticket": {
+      "title": "Validate registration form",
+      "description": "Check registration using an email address.",
+      "acceptanceCriteria": [
+        {
+          "id": "AC-1",
+          "text": "Email is required."
+        },
+        {
+          "id": "AC-2",
+          "text": "Duplicate email addresses must be rejected."
+        },
+        {
+          "id": "AC-3",
+          "text": "Valid registration should succeed."
+        }
+      ]
+    }
+  }
+}

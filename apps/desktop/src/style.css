@@ -12,3 +12,6 @@
 .outcome-fail { color: #a02c3c; }
 .outcome-blocked { color: #805307; }
 .outcome-inconclusive { color: #53647b; }
+.ticket-planning p, .ticket-planning li { overflow-wrap: anywhere; line-height: 1.6; }
+.ticket-criterion { border-left: 3px solid #0d9c8a; padding: 4px 16px; margin: 18px 0; }
+.ticket-planning form button { margin-top: 16px; }

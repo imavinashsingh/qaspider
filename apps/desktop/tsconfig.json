@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": { "module": "ESNext", "moduleResolution": "Bundler", "allowJs": true, "checkJs": true, "rootDir": "." },
-  "include": ["src/**/*.tsx", "vite.config.ts", "electron/browser.mjs"],
+  "include": ["src/**/*.tsx", "shared/**/*.mjs", "vite.config.ts", "electron/browser.mjs"],
   "exclude": ["dist"]
 }
