@@ -1,5 +1,7 @@
 # QASpider — Story-driven QA
 
+**New direction: QASpider Desktop.** Start Milestone 1 with `npm ci` and `npm run desktop` (Node 24 and local Chrome/Chromium required). See the [desktop setup, architecture and code walkthrough](apps/desktop/README.md). The desktop app uses Electron, React, Vite and Stagehand; it does not import the engines described below. The remaining V2/V3 documentation is historical reference and does not authorize further desktop milestones.
+
 V3 planning: [complete product requirements](REQUIREMENTS-V3.md) and [phased roadmap with implementation audit](ROADMAP-V3.md). Phase 0 preserves the requirements and audits V2 reuse. The current V3 plan uses an MCP bridge and optional Studio, with no standalone QASpider CLI deliverable; existing V2 CLI workflows below remain current implementation documentation. Phases 1–4 are authorized for implementation with separate phase commits; later phases require review. See [engine deployment](deploy/README.md).
 
 The initial **V3 backend for Phases 1–4** adds a persistent engine, MCP ticket workflow, scoped knowledge retrieval, bounded testing/investigation, reports and human review APIs. See [deployment and migration](deploy/README.md), [engine API and behavior](docs/V3-ENGINE.md) and [validation](validation/v3-phases-1-4.json). The new orchestrator-first Studio UI and five-ticket product acceptance remain Phases 5–6.

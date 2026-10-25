@@ -12,6 +12,10 @@
     "apps/*"
   ],
   "scripts": {
+    "desktop": "npm run start --workspace @qaspider/desktop",
+    "desktop:build": "npm run build --workspace @qaspider/desktop",
+    "desktop:test": "npm run test --workspace @qaspider/desktop",
+    "desktop:smoke": "npm run test:smoke --workspace @qaspider/desktop",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json && node scripts/build.mjs && vite build",
     "test": "vitest run",
@@ -40,7 +44,7 @@
     "playwright": "^1.64.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "zod": "^4.0.0"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
@@ -53,6 +57,9 @@
     "vite": "^8.3.5",
     "vitepress": "^1.6.4",
     "vitest": "^4.0.0"
+  },
+  "overrides": {
+    "zod": "$zod"
   },
   "bin": {
     "qaspider": "dist/packages/cli/src/main.js"
