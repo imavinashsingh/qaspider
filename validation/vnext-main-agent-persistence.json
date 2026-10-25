@@ -1,0 +1,179 @@
+{
+  "decision": "Official SqliteSaver 1.1.0 with narrow node:sqlite driver adapter; no native rebuild or external Node runtime",
+  "results": [
+    {
+      "runtime": "node",
+      "driver": "native-addon",
+      "exitCode": 0,
+      "result": {
+        "status": "PASS",
+        "node": "24.11.1",
+        "electron": null,
+        "abi": "137",
+        "resumedCount": 2,
+        "separateThreadCount": 1
+      }
+    },
+    {
+      "runtime": "node",
+      "driver": "builtin-adapter",
+      "exitCode": 0,
+      "result": {
+        "status": "PASS",
+        "node": "24.11.1",
+        "electron": null,
+        "abi": "137",
+        "resumedCount": 2,
+        "separateThreadCount": 1
+      }
+    },
+    {
+      "runtime": "electron",
+      "driver": "native-addon",
+      "exitCode": 1,
+      "result": {
+        "status": "FAIL",
+        "node": "24.22.0",
+        "electron": "45.0.0",
+        "abi": "150",
+        "message": "The module '/home/avi/Opensource/qaspider/node_modules/better-sqlite3/build/Release/better_sqlite3.node'\nwas compiled against a different Node.js version using\nNODE_MODULE_VERSION 137. This version of Node.js requires\nNODE_MODULE_VERSION 150. Please try re-compiling or re-installing\nthe module (for instance, using `npm rebuild` or `npm install`)."
+      }
+    },
+    {
+      "runtime": "electron",
+      "driver": "builtin-adapter",
+      "exitCode": 0,
+      "result": {
+        "status": "PASS",
+        "node": "24.22.0",
+        "electron": "45.0.0",
+        "abi": "150",
+        "resumedCount": 2,
+        "separateThreadCount": 1
+      }
+    }
+  ],
+  "addedPackageLicenses": [
+    {
+      "packagePath": "node_modules/@cfworker/json-schema",
+      "version": "4.1.1",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/core",
+      "version": "1.3.0",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph",
+      "version": "1.5.2",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-checkpoint",
+      "version": "1.2.1",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-checkpoint-sqlite",
+      "version": "1.1.0",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-sdk",
+      "version": "1.12.7",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-sdk/node_modules/eventemitter3",
+      "version": "5.0.4",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-sdk/node_modules/p-queue",
+      "version": "9.3.5",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/langgraph-sdk/node_modules/p-timeout",
+      "version": "7.0.2",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@langchain/protocol",
+      "version": "0.0.20",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/@types/json-schema",
+      "version": "7.0.15",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/eventemitter3",
+      "version": "4.0.7",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/is-network-error",
+      "version": "1.3.2",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/js-tiktoken",
+      "version": "1.0.21",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/langsmith",
+      "version": "0.11.1",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/mustache",
+      "version": "4.2.0",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/p-finally",
+      "version": "1.0.0",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/p-queue",
+      "version": "6.6.2",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/p-retry",
+      "version": "7.1.1",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    },
+    {
+      "packagePath": "node_modules/p-timeout",
+      "version": "3.2.0",
+      "license": "MIT",
+      "nativeAddonPresent": false
+    }
+  ],
+  "audit": "npm install reported 0 vulnerabilities"
+}

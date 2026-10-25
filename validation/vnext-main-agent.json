@@ -1,0 +1,113 @@
+{
+  "recordedAt": "2026-10-25T21:22:14.576450+00:00",
+  "userDate": "2026-10-26",
+  "userTimezone": "Asia/Kolkata",
+  "checkpoint": "Read-only LangGraph Project Main Agent",
+  "checkpointReadyForReview": true,
+  "initiativeComplete": false,
+  "testingSubagentsImplemented": false,
+  "documentIngestionImplemented": false,
+  "taskSchedulingImplemented": false,
+  "softwareGraphImplemented": false,
+  "browserActionTools": false,
+  "planMutationTools": false,
+  "checks": [
+    {
+      "command": "npm run desktop:test",
+      "status": "PASS",
+      "tests": 120
+    },
+    {
+      "command": "npm run desktop:smoke",
+      "status": "PASS",
+      "tests": 55,
+      "duration": "2.7m"
+    },
+    {
+      "command": "npm run typecheck --workspace @qaspider/desktop",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run desktop:build",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "tests": 76
+    },
+    {
+      "command": "npm run verify:provider (baseline and final)",
+      "status": "PASS",
+      "includesRootBuild": true,
+      "syntheticOnly": true
+    },
+    {
+      "command": "Official saver / node:sqlite adapter probe",
+      "status": "PASS",
+      "runtimes": [
+        "Node 24.11.1 ABI 137",
+        "Electron 45.0.0 Node 24.22.0 ABI 150"
+      ]
+    },
+    {
+      "command": "node apps/desktop/scripts/verify-main-agent-live.mjs",
+      "status": "PASS",
+      "liveInference": true
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    },
+    {
+      "command": "Root browser smoke",
+      "status": "NOT_RUN"
+    }
+  ],
+  "realModelMetrics": {
+    "replies": 5,
+    "modelCalls": 7,
+    "reportedTokens": 78443,
+    "durationMs": 63184.27615
+  },
+  "persistenceReceipt": "validation/vnext-main-agent-persistence.json",
+  "artifacts": [
+    {
+      "path": "validation/vnext-main-agent-evidence/live-after-restart.png",
+      "bytes": 116619,
+      "sha256": "83ac968d47c1fda9623f498a05753f55c8343918dd5ad84f71d29c4a0a0b534e"
+    },
+    {
+      "path": "validation/vnext-main-agent-evidence/live-project-b-isolation.png",
+      "bytes": 113215,
+      "sha256": "32d2478c20a74836d4e5c85519315703045654ec2a8015af1ebc22b6c0b3af33"
+    },
+    {
+      "path": "validation/vnext-main-agent-evidence/live-receipt.json",
+      "bytes": 7219,
+      "sha256": "39e486d8fcc420ba809b645903feaacf45b84d088371f7835c9b8b36e4ccc26d"
+    },
+    {
+      "path": "validation/vnext-main-agent-evidence/live-stored-report-and-knowledge.png",
+      "bytes": 163779,
+      "sha256": "5a8555eef102c44c45c63faffe0fdb7b08e7d68d9442f46f068a41d76beb96aa"
+    },
+    {
+      "path": "validation/vnext-main-agent-evidence/synthetic-agent-and-sources.png",
+      "bytes": 110377,
+      "sha256": "7f54ac035165b2eebf897d0ac3a06cd3e6c1a44ffac25395258b00299560f2c8"
+    },
+    {
+      "path": "validation/vnext-main-agent-evidence/synthetic-receipt.json",
+      "bytes": 2035,
+      "sha256": "04bbbe7b7d3b47b0a654d7c6c3113dd555cc18035a4b49be79cce9fc6260a463"
+    }
+  ],
+  "providerIsolationManifest": "validation/m2-isolation-recheck.json",
+  "committed": false,
+  "stagedFoundationPreserved": true
+}

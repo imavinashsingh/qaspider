@@ -1,0 +1,81 @@
+{
+  "mode": "Real Electron, Chromium, Stagehand and Codex CLI transport; explicitly synthetic model responses",
+  "publicLoginExecuted": false,
+  "task": "On /registration, click Create account with empty fields; the visible status must be exactly Name and email are required.",
+  "projectId": "3c68766b-d3ec-4e95-a4eb-2f85b452cb0d",
+  "conversationId": "8e203689-271b-4898-a3a4-225a3c9b323b",
+  "planId": "0fbc862f-4421-44c3-88c9-0997856fc9d0",
+  "durationMs": 9587.556932,
+  "inferenceRequests": 3,
+  "first": {
+    "id": "8caeac8a-1991-4c1f-8828-e53f092400ca",
+    "outcome": "PASS",
+    "hash": "865e3f79ed75ef08f13c584e9a5b7e04211b658f8bec13386e48fc10fd82f362",
+    "origin": "http://127.0.0.1:39133",
+    "startedAt": "2026-10-25T20:54:09.889Z",
+    "completedAt": "2026-10-25T20:54:10.745Z",
+    "scope": {
+      "project": "3c68766b-d3ec-4e95-a4eb-2f85b452cb0d",
+      "environment": "owned-qa-fixtures",
+      "role": "synthetic-tester",
+      "application": "owned-qa-apps-v1"
+    },
+    "metrics": {
+      "reusedSteps": 0,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 848.4907579999999
+    },
+    "assertions": 3,
+    "evidenceIds": [
+      "82e3259c-9dac-458b-b38c-3c4497945475-1",
+      "82e3259c-9dac-458b-b38c-3c4497945475-2",
+      "82e3259c-9dac-458b-b38c-3c4497945475-3",
+      "82e3259c-9dac-458b-b38c-3c4497945475-4",
+      "82e3259c-9dac-458b-b38c-3c4497945475-5"
+    ]
+  },
+  "reusedAfterRestart": {
+    "id": "c0002d03-0298-457b-b4d5-abba5da830fe",
+    "outcome": "PASS",
+    "hash": "865e3f79ed75ef08f13c584e9a5b7e04211b658f8bec13386e48fc10fd82f362",
+    "origin": "http://127.0.0.1:38887",
+    "startedAt": "2026-10-25T20:54:12.073Z",
+    "completedAt": "2026-10-25T20:54:12.982Z",
+    "scope": {
+      "project": "3c68766b-d3ec-4e95-a4eb-2f85b452cb0d",
+      "environment": "owned-qa-fixtures",
+      "role": "synthetic-tester",
+      "application": "owned-qa-apps-v1"
+    },
+    "metrics": {
+      "reusedSteps": 1,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 900.5555589999999
+    },
+    "assertions": 3,
+    "evidenceIds": [
+      "cf7d1285-fb88-4408-ba81-ad9d206252b9-1",
+      "cf7d1285-fb88-4408-ba81-ad9d206252b9-2",
+      "cf7d1285-fb88-4408-ba81-ad9d206252b9-3",
+      "cf7d1285-fb88-4408-ba81-ad9d206252b9-4",
+      "cf7d1285-fb88-4408-ba81-ad9d206252b9-5"
+    ]
+  },
+  "screenshots": [
+    "chat-start.png",
+    "reviewed-plan.png",
+    "separate-authorization.png",
+    "first-report.png",
+    "knowledge-evidence.png",
+    "settings.png",
+    "legacy-fallback.png"
+  ]
+}

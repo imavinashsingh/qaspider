@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { privateDirectory } from '../../../packages/storage/src/filesystem.ts';
 import { validateTarget } from './browser.mjs';
+import { ProjectProfiles } from './project-profile.mjs';
 
 export const applicationContext = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('selected'), url: z.string().max(4096).transform(value => validateTarget(value).href) }).strict(),
@@ -19,8 +20,21 @@ export function backupBeforeConsolidation(db, path) {
   const migrated = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='desktop_conversations'").get();
   const existing = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='desktop_plans'").get();
   if (migrated || !existing) return null;
+  return snapshotDatabase(db, path, 'consolidation');
+}
+
+export function backupBeforeProjectFoundation(db, path) {
+  if (path === ':memory:' || !existsSync(path)) return null;
+  const existing = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='desktop_conversations'").get();
+  const ledger = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='desktop_additive_migrations'").get();
+  const migrated = ledger && db.prepare('SELECT 1 FROM desktop_additive_migrations WHERE name=?').get('vnext-project-foundation-1');
+  if (!existing || migrated) return null;
+  return snapshotDatabase(db, path, 'project-foundation');
+}
+
+export function snapshotDatabase(db, path, name) {
   const folder = privateDirectory(join(dirname(path), 'desktop-backups'));
-  const backup = join(folder, `before-consolidation-${randomUUID()}.sqlite`);
+  const backup = join(folder, `before-${name}-${randomUUID()}.sqlite`);
   db.exec(`VACUUM INTO '${backup.replaceAll("'", "''")}'`);
   chmodSync(backup, 0o600);
   const check = new DatabaseSync(backup, { readOnly: true });
@@ -49,19 +63,25 @@ export class ConversationStore {
         this.linkPlan('legacy', row.id, `Previous plan: ${JSON.parse(row.original_json).ticket.title}`);
       }
     });
+    this.profiles = new ProjectProfiles(store);
   }
   list() {
-    return this.db.prepare('SELECT * FROM desktop_projects ORDER BY created_at,id').all().map(project => ({ ...project,
+    return this.db.prepare('SELECT * FROM desktop_projects ORDER BY created_at,id').all().map(project => ({ ...project, ...this.profiles.get(project.id),
       conversations: this.db.prepare('SELECT id,title FROM desktop_conversations WHERE project_id=? ORDER BY rowid').all(project.id),
     }));
   }
   createProject(input) {
-    const request = z.object({ title }).strict().parse(input), projectId = randomUUID();
-    this.db.prepare('INSERT INTO desktop_projects VALUES(?,?,?)').run(projectId, request.title, new Date().toISOString());
+    const request = z.object({ title, description: z.string().trim().max(4000).default('') }).strict().parse(input), projectId = randomUUID();
+    this.store.atomic(() => {
+      const now = new Date().toISOString();
+      this.db.prepare('INSERT INTO desktop_projects VALUES(?,?,?)').run(projectId, request.title, now);
+      this.profiles.initialize(projectId, now, request.description);
+    });
     return projectId;
   }
   create(input) {
     const request = z.object({ projectId: id, title, context: applicationContext }).strict().parse(input), conversationId = randomUUID();
+    if (this.profiles.get(request.projectId).archived) throw new Error('Restore the archived project before adding conversations.');
     this.db.prepare('INSERT INTO desktop_conversations VALUES(?,?,?,?,?,?)').run(conversationId, request.projectId, request.title, JSON.stringify(request.context), 1, new Date().toISOString());
     return this.get(conversationId);
   }

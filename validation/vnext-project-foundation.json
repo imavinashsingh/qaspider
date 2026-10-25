@@ -1,0 +1,145 @@
+{
+  "recordedAt": "2026-10-25T20:56:29.034935+00:00",
+  "userDate": "2026-10-26",
+  "userTimezone": "Asia/Kolkata",
+  "initiativeComplete": false,
+  "checkpoint": "Repository audit and additive project foundation; subset of Phase 1",
+  "completed": [
+    "Architecture audit and six design/status documents",
+    "Persistent logical supervisor identity",
+    "Project description and rename/archive/restore",
+    "Scoped user-statement context with progressive optional prompts",
+    "Versioned history and migration backup gate",
+    "Actual Electron project/restart regression"
+  ],
+  "pending": [
+    "LangGraph supervisor and testing graph",
+    "Electron-native checkpoint packaging",
+    "Structured provider decision dispatch",
+    "Formal roles/environments and configuration",
+    "Document parsers and source-aware intake",
+    "Project memory retrieval tools",
+    "Task registry/events/leases/queue/cancellation",
+    "Software Graph learning and divergence",
+    "Remaining VNext acceptance scenarios and real model-backed demonstration"
+  ],
+  "dependencyChanges": false,
+  "committed": false,
+  "publicLoginExecuted": false,
+  "newModelBackedVNextDemonstration": false,
+  "checks": [
+    {
+      "command": "npm run desktop:test",
+      "status": "PASS",
+      "tests": 111
+    },
+    {
+      "command": "npm run desktop:smoke",
+      "status": "PASS",
+      "tests": 54,
+      "duration": "2.3m",
+      "classification": "Real Electron/browser execution; synthetic model responses where inference is used"
+    },
+    {
+      "command": "npm run typecheck --workspace @qaspider/desktop",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run desktop:build",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "tests": 76
+    },
+    {
+      "command": "npm run verify:provider",
+      "status": "PASS",
+      "includesRootBuild": true,
+      "classification": "Synthetic isolation verification"
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    },
+    {
+      "command": "Isolated LangGraph/SQLite Node runtime probe",
+      "status": "PASS",
+      "receipt": "validation/vnext-langgraph-feasibility.json"
+    },
+    {
+      "command": "Isolated LangGraph/SQLite Electron runtime probe",
+      "status": "FAIL",
+      "blocker": "better-sqlite3 ABI 137 vs Electron ABI 150; no dependency adopted",
+      "receipt": "validation/vnext-langgraph-feasibility.json"
+    },
+    {
+      "command": "Root browser smoke",
+      "status": "NOT_RUN"
+    }
+  ],
+  "metrics": {
+    "profileModelCalls": 0,
+    "profileBrowserExecutions": 0,
+    "newSoftwareGraphEntries": 0,
+    "realPlanningGroundingTokens": null,
+    "retainedWorkflowReceipt": "validation/vnext-project-foundation-evidence/retained-workflow-regression.json"
+  },
+  "artifacts": [
+    {
+      "path": "validation/vnext-project-foundation-evidence/project-profile-after-restart.png",
+      "bytes": 108518,
+      "sha256": "0f8d4524ee42275c1f87bd1f2c037ba1e6b9d775704b979bfd5a647052c2a168"
+    },
+    {
+      "path": "validation/vnext-project-foundation-evidence/project-profile.png",
+      "bytes": 108599,
+      "sha256": "a1035b9f1e5e2e9d96c95cf2bac81cc5a2cf4d9f8a2adbe8cbda2786d9dba9e3"
+    },
+    {
+      "path": "validation/vnext-project-foundation-evidence/receipt.json",
+      "bytes": 514,
+      "sha256": "17ebfb788988c3994c34d0b19494c330c0f27bcdba587965a460d9c34efbef5e"
+    },
+    {
+      "path": "validation/vnext-project-foundation-evidence/retained-workflow-regression.json",
+      "bytes": 2720,
+      "sha256": "b99bb3cd33b54e49672cc0ade777b66a228f159b88c926e6d4dc3d358b3fe5d2"
+    }
+  ],
+  "providerIsolationManifest": "validation/m2-isolation-recheck.json",
+  "changedPaths": [
+    "apps/desktop/README.md",
+    "apps/desktop/electron/conversations.mjs",
+    "apps/desktop/electron/main.mjs",
+    "apps/desktop/electron/plan-store.mjs",
+    "apps/desktop/electron/preload.cjs",
+    "apps/desktop/electron/project-profile.mjs",
+    "apps/desktop/scripts/verify-langgraph-runtime.mjs",
+    "apps/desktop/src/ChatDesktop.tsx",
+    "apps/desktop/src/ProjectDetails.tsx",
+    "apps/desktop/src/chat-types.ts",
+    "apps/desktop/src/style.css",
+    "apps/desktop/tests/consolidation.test.mjs",
+    "apps/desktop/tests/project-profile.spec.mjs",
+    "apps/desktop/tests/project-profile.test.mjs",
+    "docs/architecture/vnext-agent-lifecycle.md",
+    "docs/architecture/vnext-architecture.md",
+    "docs/architecture/vnext-data-model.md",
+    "docs/architecture/vnext-implementation-report.md",
+    "docs/architecture/vnext-security.md",
+    "docs/architecture/vnext-software-graph.md",
+    "validation/m2-isolation-recheck.json",
+    "validation/vnext-langgraph-feasibility.json",
+    "validation/vnext-project-foundation-evidence/project-profile-after-restart.png",
+    "validation/vnext-project-foundation-evidence/project-profile.png",
+    "validation/vnext-project-foundation-evidence/receipt.json",
+    "validation/vnext-project-foundation-evidence/retained-workflow-regression.json",
+    "validation/vnext-project-foundation.json"
+  ]
+}

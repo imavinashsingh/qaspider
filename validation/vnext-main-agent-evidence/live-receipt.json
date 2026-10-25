@@ -1,0 +1,201 @@
+{
+  "verifiedAt": "2026-10-25T21:18:38.535Z",
+  "liveInference": true,
+  "mode": "Real signed-in Codex CLI + LangGraph + Electron + SQLite; owned synthetic project data. Browser report produced by existing runner from explicit fixture-reviewed expectations, not AI planning or agent execution.",
+  "seeded": {
+    "projectA": {
+      "projectId": "aec2fa8c-9201-4a10-b6c6-1b77cb1e10df",
+      "conversationId": "7f1c3bf3-99c8-4d16-9326-1af929f4ce77"
+    },
+    "projectB": {
+      "projectId": "2188692f-b5bf-489f-9e11-6eeed8828413",
+      "conversationId": "b642b918-f6e2-42ce-a369-2c06e94f3d01"
+    },
+    "planId": "27a289ae-add2-4089-99a2-41eaecc196ea",
+    "reportId": "71c83c15-e341-424e-8c3b-0a9cc1fae457",
+    "approvalHash": "68c034f3f83c8571ba9e59dbc1522c3d438113fde1ea5b73f12a985b93152614",
+    "workflowRevisionId": "e55a24d0-0c7c-4e1a-b730-3d4e2164e011",
+    "browserReport": {
+      "outcome": "PASS",
+      "scenarios": [
+        {
+          "id": "S-1",
+          "outcome": "PASS",
+          "assertions": 3,
+          "evidenceIds": [
+            "8524631e-e5fb-4cf5-9f92-b2f403219377-1",
+            "8524631e-e5fb-4cf5-9f92-b2f403219377-2",
+            "8524631e-e5fb-4cf5-9f92-b2f403219377-3",
+            "8524631e-e5fb-4cf5-9f92-b2f403219377-4",
+            "8524631e-e5fb-4cf5-9f92-b2f403219377-5"
+          ]
+        },
+        {
+          "id": "S-2",
+          "outcome": "PASS",
+          "assertions": 3,
+          "evidenceIds": [
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-1",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-2",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-3",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-4",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-5",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-6",
+            "088f49bd-c78c-4a54-b6f3-4c5a20b159bb-7"
+          ]
+        }
+      ]
+    }
+  },
+  "durationMs": 63184.27615,
+  "projectA": {
+    "id": "911d42ec-e8de-4830-913b-6c1555544da4",
+    "status": "COMPLETED",
+    "reply": "According to the saved user-provided context, Clinic Alpha schedules outpatient visits and has project code AMBER-482. Its known user roles are receptionists, who schedule visits, and clinicians, who review appointments.",
+    "sources": [
+      {
+        "id": "project:aec2fa8c-9201-4a10-b6c6-1b77cb1e10df",
+        "kind": "project",
+        "label": "Project: Clinic Alpha (profile revision 2)"
+      },
+      {
+        "id": "note:451d0db4-19d2-4e33-afb1-cf7d360efba7",
+        "kind": "note",
+        "label": "User context: roles"
+      }
+    ],
+    "metrics": {
+      "modelCalls": 1,
+      "reportedTokens": 10964,
+      "tokensComplete": true,
+      "durationMs": 15272.009141,
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "totalTokens": 10964
+    }
+  },
+  "projectB": {
+    "id": "0cbcd285-f4a4-4eef-bda1-37207e8ec939",
+    "status": "COMPLETED",
+    "reply": "You’re working on Inventory Beta, with saved project code COBALT-713. The supplied context describes warehouse stock tracking; no clinician roles are recorded in it. These details are user-provided context, not verified requirements.",
+    "sources": [
+      {
+        "id": "project:2188692f-b5bf-489f-9e11-6eeed8828413",
+        "kind": "project",
+        "label": "Project: Inventory Beta (profile revision 1)"
+      }
+    ],
+    "metrics": {
+      "modelCalls": 1,
+      "reportedTokens": 10785,
+      "tokensComplete": true,
+      "durationMs": 5921.265146999998,
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "totalTokens": 10785
+    }
+  },
+  "qa": {
+    "id": "55996ab7-a760-419a-b189-8a98021b8ddd",
+    "status": "COMPLETED",
+    "reply": "Saved QA plan: QA-5: Registration and contact\n- Plan ID: 27a289ae-add2-4089-99a2-41eaecc196ea\n- Latest report ID: 71c83c15-e341-424e-8c3b-0a9cc1fae457\n- Verdict: PASS\n- Report status: COMPLETED",
+    "sources": [
+      {
+        "id": "plan:27a289ae-add2-4089-99a2-41eaecc196ea",
+        "kind": "plan",
+        "label": "QA plan: QA-5: Registration and contact"
+      },
+      {
+        "id": "report:71c83c15-e341-424e-8c3b-0a9cc1fae457",
+        "kind": "report",
+        "label": "Report: QA-5: Registration and contact — PASS"
+      }
+    ],
+    "metrics": {
+      "modelCalls": 2,
+      "reportedTokens": 22245,
+      "tokensComplete": true,
+      "durationMs": 12659.204934000001,
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "totalTokens": 22245
+    }
+  },
+  "report": {
+    "id": "cce6c939-2f81-4871-88ca-622447d5ca4b",
+    "status": "COMPLETED",
+    "reply": "Saved report 71c83c15-e341-424e-8c3b-0a9cc1fae457 is COMPLETED with verdict PASS. S-1 and S-2 each passed 3 assertions, with 5 and 7 evidence items respectively: 6 assertions and 12 evidence items total. The recorded run lasted 2.258 seconds. Raw inputs, screenshots and page text are excluded, so specific field behavior cannot be assessed from this data.\n\nThe /registration workflow is VERIFIED and linked to this report’s S-1 in owned-qa-fixtures, using synthetic-tester on owned-qa-apps-v1. This is an operational observation, not a business requirement; environment and role must match before future reuse. No tests were executed for this response.",
+    "sources": [
+      {
+        "id": "report:71c83c15-e341-424e-8c3b-0a9cc1fae457",
+        "kind": "report",
+        "label": "Saved QA report: PASS"
+      },
+      {
+        "id": "workflow:e55a24d0-0c7c-4e1a-b730-3d4e2164e011",
+        "kind": "workflow",
+        "label": "/registration workflow — VERIFIED"
+      }
+    ],
+    "metrics": {
+      "modelCalls": 2,
+      "reportedTokens": 23133,
+      "tokensComplete": true,
+      "durationMs": 15498.079864,
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "totalTokens": 23133
+    }
+  },
+  "resumed": {
+    "id": "b5b960a9-8986-4e0b-b170-c1c0ed0616d2",
+    "status": "COMPLETED",
+    "reply": "According to the saved user-provided project context, this project's code is AMBER-482.",
+    "sources": [
+      {
+        "id": "project:aec2fa8c-9201-4a10-b6c6-1b77cb1e10df",
+        "kind": "project",
+        "label": "Project: Clinic Alpha (profile revision 2)"
+      }
+    ],
+    "metrics": {
+      "modelCalls": 1,
+      "reportedTokens": 11316,
+      "tokensComplete": true,
+      "durationMs": 9853.959849,
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "totalTokens": 11316
+    }
+  },
+  "threadId": "a0f6ef54-32fd-4dbf-ba3b-3ccdfdbe8c79:7f1c3bf3-99c8-4d16-9326-1af929f4ce77",
+  "historyPreservedExactly": true,
+  "crossProjectRequestRejected": true,
+  "originalApprovalUnchanged": true,
+  "screenshots": [
+    "live-project-b-isolation.png",
+    "live-stored-report-and-knowledge.png",
+    "live-after-restart.png"
+  ],
+  "screenshotVerification": {
+    "additionalDesktopRestart": true,
+    "provider": "none",
+    "savedRealModelReplyVisible": true,
+    "newModelCalls": 0
+  }
+}

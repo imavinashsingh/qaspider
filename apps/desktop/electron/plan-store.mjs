@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { assertNoSymlinks, privateDirectory } from '../../../packages/storage/src/filesystem.ts';
 import { ticketPlanSchema, validateTicketPlan } from '../shared/ticket-plan.mjs';
 import { initialReview, validateReviewContent, plannedCoverage, approvalIssues } from '../shared/plan-review.mjs';
-import { ConversationStore, backupBeforeConsolidation } from './conversations.mjs';
+import { ConversationStore, backupBeforeConsolidation, backupBeforeProjectFoundation } from './conversations.mjs';
 import { normalizePlan, genericAssertionSchema } from './generic-execution.mjs';
 
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
@@ -33,12 +33,14 @@ export class PlanStore {
       for (const suffix of ['', '-journal', '-wal', '-shm']) assertNoSymlinks(path + suffix);
     }
     this.db = new DatabaseSync(path);
+    this.path = path;
     try {
       if (path !== ':memory:') chmodSync(path, 0o600);
       this.db.exec('PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;');
       const version = this.db.prepare('PRAGMA user_version').get().user_version;
       if (![0, 1, 2].includes(version)) throw new Error('Plan database version is unsupported.');
       this.backupPath = backupBeforeConsolidation(this.db, path);
+      this.projectBackupPath = this.backupPath ? null : backupBeforeProjectFoundation(this.db, path);
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS desktop_plans (id TEXT PRIMARY KEY, original_json TEXT NOT NULL, created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS desktop_plan_revisions (

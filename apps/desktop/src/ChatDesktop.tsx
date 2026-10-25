@@ -5,6 +5,8 @@ import type { TicketReport } from './execution-types.js';
 import { PlanReview } from './PlanReview.js';
 import { ReportCard } from './ApprovedExecution.js';
 import { Knowledge } from './Knowledge.js';
+import { ProjectDetails } from './ProjectDetails.js';
+import { AgentChat } from './AgentChat.js';
 
 function value<T>(reply: ReviewReply<T>): T {
   if (reply.status !== 'ok') throw new Error(reply.message);
@@ -12,14 +14,16 @@ function value<T>(reply: ReviewReply<T>): T {
 }
 
 export function ChatDesktop({ legacy }: { legacy: ReactNode }) {
-  const [view, setView] = useState<'chat' | 'knowledge' | 'settings' | 'legacy'>(new URLSearchParams(location.search).get('legacy') === '1' ? 'legacy' : 'chat');
+  const [view, setView] = useState<'chat' | 'agent' | 'knowledge' | 'settings' | 'legacy'>(new URLSearchParams(location.search).get('legacy') === '1' ? 'legacy' : 'chat');
   const [projects, setProjects] = useState<Project[]>([]), [projectId, setProjectId] = useState('');
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [projectName, setProjectName] = useState(''), [text, setText] = useState(''), [message, setMessage] = useState('');
   const [localBusy, setLocalBusy] = useState(false), [operation, setOperation] = useState<{ busy: boolean; channel?: string }>({ busy: false });
   const [refresh, setRefresh] = useState(0);
   const [synthetic, setSynthetic] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const busy = localBusy || operation.busy;
+  useEffect(() => { setText(''); }, [projectId, conversation?.id]);
   async function loadProjects() { const result = value(await window.qaspider.projects()); setProjects(result); return result; }
   async function open(id: string) { const result = value(await window.qaspider.conversation(id)); setConversation(result); setProjectId(result.projectId); setRefresh(count => count + 1); }
   useEffect(() => {
@@ -28,7 +32,7 @@ export function ChatDesktop({ legacy }: { legacy: ReactNode }) {
     void window.qaspider.projects().then(reply => {
       if (!alive) return;
       const result = value(reply); setProjects(result);
-      const project = result.at(-1); setProjectId(project?.id ?? '');
+      const project = result.filter(item => !item.archived).at(-1); setProjectId(project?.id ?? '');
       if (project?.conversations.at(-1)) void open(project.conversations.at(-1)!.id).catch(error => setMessage(error.message));
     }).catch(() => setMessage('Could not load projects. The legacy workspace remains available in Settings.'));
     const timer = setInterval(() => { void window.qaspider.operationStatus().then(reply => { if (alive && reply.status === 'ok') setOperation(reply.value); }).catch(() => {}); }, 400);
@@ -45,26 +49,34 @@ export function ChatDesktop({ legacy }: { legacy: ReactNode }) {
   return <div className="desktop-shell">
     <aside className="sidebar">
       <div className="desktop-brand"><span className="brand">Q</span><strong>QASpider<small>Your QA teammate</small></strong></div>
+      <button aria-current={view === 'agent' ? 'page' : undefined} onClick={() => setView('agent')}>Main Agent</button>
       <nav aria-label="Desktop views"><button aria-current={view === 'chat' ? 'page' : undefined} disabled={busy} onClick={() => setView('chat')}>Conversations</button><button aria-current={view === 'knowledge' ? 'page' : undefined} disabled={busy} onClick={() => setView('knowledge')}>Knowledge</button><button aria-current={view === 'settings' ? 'page' : undefined} disabled={busy} onClick={() => setView('settings')}>Settings</button></nav>
       <label>Project<select aria-label="Project" value={projectId} disabled={busy} onChange={event => { const project = projects.find(item => item.id === event.target.value); setProjectId(event.target.value); setConversation(null); if (project?.conversations[0]) void work(() => open(project.conversations[0]!.id)); }}>
-        {projects.map(project => <option key={project.id} value={project.id}>{project.title}</option>)}
+        {projects.filter(project => showArchived || !project.archived).map(project => <option key={project.id} value={project.id}>{project.title}{project.archived ? ' (archived)' : ''}</option>)}
       </select></label>
+      <label className="archive-filter"><input type="checkbox" checked={showArchived} disabled={busy} onChange={event => { setShowArchived(event.target.checked); if (!event.target.checked && activeProject?.archived) { setProjectId(''); setConversation(null); } }}/>Show archived projects</label>
       <form onSubmit={event => { event.preventDefault(); void work(async () => { const id = value(await window.qaspider.createProject({ title: projectName })); await loadProjects(); setProjectId(id); setConversation(null); setProjectName(''); }); }}>
         <label>New project name<input value={projectName} onChange={event => setProjectName(event.target.value)} disabled={busy} required maxLength={200}/></label><button disabled={busy || !projectName.trim()}>Create project</button>
       </form>
       <div className="conversation-list" aria-label="Project conversations">{activeProject?.conversations.map(item => <button className={conversation?.id === item.id ? 'selected' : ''} key={item.id} disabled={busy} onClick={() => void work(() => open(item.id))}>{item.title}</button>)}</div>
-      {projectId !== 'legacy' && <button className="secondary" disabled={busy || !projectId} onClick={() => void work(async () => {
+      {projectId !== 'legacy' && <button className="secondary" disabled={busy || !projectId || activeProject?.archived} onClick={() => void work(async () => {
         const result = value(await window.qaspider.createConversation({ projectId, title: `QA conversation ${(activeProject?.conversations.length ?? 0) + 1}`, context: { mode: 'selected', url: 'https://example.com/' } }));
         setConversation(result); await loadProjects(); setView('chat');
       })}>New conversation</button>}
       <p className="hint sidebar-note">Plans need review. Browser actions need separate authorization.</p>
     </aside>
     <main className="conversation-main">
-      <header className="conversation-header"><div><strong>{activeProject?.title ?? 'QASpider Desktop'}</strong><small>{view === 'chat' ? conversation?.title ?? 'Conversations' : view === 'knowledge' ? 'Application knowledge' : 'Settings'}</small></div><span className="badge" role="status" data-testid="shared-operation-status">{busy ? operationLabel(operation.channel) : 'Ready'}</span></header>
+      <header className="conversation-header"><div><strong>{activeProject?.title ?? 'QASpider Desktop'}</strong><small>{view === 'agent' ? 'Project Main Agent' : view === 'chat' ? conversation?.title ?? 'Conversations' : view === 'knowledge' ? 'Application knowledge' : 'Settings'}</small></div><span className="badge" role="status" data-testid="shared-operation-status">{busy ? operationLabel(operation.channel) : 'Ready'}</span></header>
       {synthetic && <p role="note" className="hint">Synthetic inference enabled by the regression environment. Browser interactions are real.</p>}
       {message && <p role="alert" className="error">{message}</p>}
+      {view === 'chat' && activeProject && <ProjectDetails key={activeProject.id} project={activeProject} busy={busy} save={action => work(async () => {
+        value(await window.qaspider.updateProject({ projectId: activeProject.id, version: activeProject.version, action }));
+        if (action.type === 'archive' && action.archived) setShowArchived(true);
+        await loadProjects();
+      })}/>}
       {view === 'settings' && <Settings busy={busy} work={work} legacy={() => setView('legacy')}/>}
       {view === 'knowledge' && <Knowledge key={projectId} projectId={projectId}/>}
+      {view === 'agent' && (conversation && projectId !== 'legacy' ? <AgentChat key={conversation.id} projectId={projectId} conversationId={conversation.id}/> : <section className="chat-welcome"><h1>Your project Main Agent</h1><p>Select a project conversation, or create one with New conversation, then open Main Agent.</p></section>)}
       {view === 'chat' && <>
         {!conversation ? <section className="chat-welcome"><p className="eyebrow">QA, TOGETHER</p><h1>What should we verify?</h1><p>Create a project and conversation. Add your application URL, then describe the behavior you expect.</p></section> : <>
           {conversation.id !== 'legacy' && <ApplicationContextForm key={`${conversation.id}-${conversation.version}`} conversation={conversation} busy={busy} save={context => work(async () => { setConversation(value(await window.qaspider.setContext({ conversationId: conversation.id, version: conversation.version, context }))); })}/>}

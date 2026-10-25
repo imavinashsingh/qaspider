@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { DesktopService } from './desktop-service.mjs';
 import { isAbsolute } from 'node:path';
+import { ProjectMainAgent } from './main-agent.mjs';
 
 const uiUrl = new URL('../dist/index.html' + (process.env.QASPIDER_DESKTOP_LEGACY_UI === '1' ? '?legacy=1' : ''), import.meta.url).href;
 let activeRun;
@@ -23,6 +24,8 @@ const workspace = new TestingWorkspace({ provider, options: browserOptions });
 let ticketPlanner = new TicketPlanner({ provider });
 let planStore;
 let planExecution;
+let projectAgent;
+const agent = () => projectAgent ??= new ProjectMainAgent(savedPlans(), { provider: () => provider });
 const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_DESKTOP_DATA_DIR ?? app.getPath('userData'), 'desktop-plans.sqlite'));
 const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions, provider });
 const desktopService = () => new DesktopService(savedPlans(), { planner: ticketPlanner, provider, options: browserOptions, onProgress: phase => { operationStatus = { ...operationStatus, phase }; } });
@@ -73,6 +76,7 @@ void app.whenReady().then(() => {
       return { status: 'error', message: 'Request is not from the desktop application.' };
     }
     if (readOnly) return operation(input);
+    if (channel === 'desktop:save-settings' && projectAgent?.busy) return { status: 'error', message: 'Wait for the Main Agent reply before changing provider settings.' };
     if (activeRun) return { status: 'error', message: operationStatus.channel === 'desktop:open-browser' ? 'A browser capture is already running.' : 'Another desktop operation is already running.' };
     operationStatus = { busy: true, channel, startedAt: new Date().toISOString() };
     activeRun = Promise.resolve().then(() => operation(input));
@@ -80,8 +84,22 @@ void app.whenReady().then(() => {
     finally { activeRun = undefined; operationStatus = { busy: false }; }
   });
   handle('desktop:operation-status', () => ({ status: 'ok', value: operationStatus }), true);
+  const agentReply = operation => async input => {
+    try { return { status: 'ok', value: await operation(input) }; }
+    catch (error) {
+      const safe = ['Conversation does not belong to this project.', 'Restore the project before sending a new message.', 'The Main Agent is replying. Wait for the current reply before sending another message.', 'Leave credentials, access tokens and secrets out of chat. Use test-data references instead.'];
+      return { status: 'error', message: safe.includes(error.message) ? error.message : 'Main Agent request rejected. Select a current project conversation and check the message length.' };
+    }
+  };
+  // Independent inference lane: these fixed operations cannot own or release browser resources.
+  handle('desktop:agent-start', agentReply(input => agent().start(input)), true);
+  handle('desktop:agent-send', agentReply(input => agent().send(input)), true);
+  handle('desktop:agent-history', agentReply(input => agent().history(input)), true);
+  handle('desktop:agent-status', agentReply(input => agent().status(input)), true);
   handle('desktop:projects', reviewReply(() => savedPlans().conversations.list()), true);
   handle('desktop:create-project', reviewReply(input => savedPlans().conversations.createProject(input)));
+  handle('desktop:project-profile', reviewReply(input => savedPlans().conversations.profiles.get(input)), true);
+  handle('desktop:update-project', reviewReply(input => savedPlans().conversations.profiles.mutate(input)));
   handle('desktop:create-conversation', reviewReply(input => savedPlans().conversations.create(input)));
   handle('desktop:conversation', reviewReply(input => savedPlans().conversations.get(input)), true);
   handle('desktop:report', reviewReply(input => savedPlans().executionReport(input)), true);
@@ -137,12 +155,13 @@ void app.whenReady().then(() => {
   app.on('activate', () => { if (!quitting && BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Wait for the bounded capture and its finally block before allowing app exit.
   app.on('before-quit', (event) => {
-    if (allowQuit || (!activeRun && !workspace.hasSession && !planExecution?.pending)) return;
+    if (allowQuit || (!activeRun && !workspace.hasSession && !planExecution?.pending && !projectAgent?.busy)) return;
     event.preventDefault();
     if (quitting) return;
     quitting = true;
-    void Promise.resolve(activeRun).catch(() => {}).then(() => workspace.close()).then(() => planExecution?.close()).catch(() => {}).finally(() => { allowQuit = true; app.quit(); });
+    const agentClosing = projectAgent?.close();
+    void Promise.allSettled([Promise.resolve(activeRun), agentClosing]).then(() => workspace.close()).then(() => planExecution?.close()).catch(() => {}).finally(() => { allowQuit = true; app.quit(); });
   });
   app.on('window-all-closed', () => app.quit());
-  app.on('will-quit', () => { planStore?.close(); });
+  app.on('will-quit', () => { void projectAgent?.close(); planStore?.close(); });
 });

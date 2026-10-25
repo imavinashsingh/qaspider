@@ -42,7 +42,7 @@ describe('desktop consolidation persistence and approval boundary', () => {
     store.db.prepare('INSERT INTO desktop_workflow_search(workflow_id,description) VALUES(?,?)').run('old-workflow', 'Original knowledge');
     store.db.prepare('INSERT INTO desktop_knowledge_revisions VALUES(?,?,?,?,?,?,?,?)').run('old-revision', 'old-workflow', 1, 'VERIFIED', JSON.stringify([{ number: 1, kind: 'CLICK', evidenceId: 'original-evidence' }]), 'historical-report', 'S-1', '2026-10-25T00:00:00Z');
     const priorKnowledge = store.knowledge.list();
-    for (const table of ['desktop_messages','desktop_conversation_plans','desktop_conversations','desktop_projects','desktop_settings','desktop_additive_migrations']) store.db.exec(`DROP TABLE ${table}`);
+    for (const table of ['desktop_project_notes','desktop_project_profile_history','desktop_project_profiles','desktop_messages','desktop_conversation_plans','desktop_conversations','desktop_projects','desktop_settings','desktop_additive_migrations']) store.db.exec(`DROP TABLE ${table}`);
     store.close(); store = new PlanStore(path);
     try {
       expect(store.get(saved.planId)).toEqual(saved);

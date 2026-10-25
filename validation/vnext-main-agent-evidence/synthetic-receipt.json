@@ -1,0 +1,56 @@
+{
+  "mode": "Synthetic model responses; real Codex CLI isolation/transport, LangGraph, SQLite, Electron and owned browser execution",
+  "seeded": {
+    "projectA": {
+      "projectId": "1b1381ff-a503-444d-bdd4-f4fac32f1b29",
+      "conversationId": "51041123-0fdb-4bc9-9618-39537b7a1d16"
+    },
+    "projectB": {
+      "projectId": "c5d293f0-5ada-4bf7-9116-d2849aeb7955",
+      "conversationId": "41c8724b-520e-44fb-880c-d2c4e5c3bd28"
+    },
+    "planId": "62979295-63da-4d93-a824-84421480a4d4",
+    "reportId": "cfe34917-802b-467c-9e77-e07e6d1beb8d",
+    "approvalHash": "68c034f3f83c8571ba9e59dbc1522c3d438113fde1ea5b73f12a985b93152614",
+    "workflowRevisionId": "0642401f-c273-42f8-a5ef-cdc0637b26ec",
+    "browserReport": {
+      "outcome": "PASS",
+      "scenarios": [
+        {
+          "id": "S-1",
+          "outcome": "PASS",
+          "assertions": 3,
+          "evidenceIds": [
+            "272bda6d-6ea3-4609-a63d-a6ef34427f20-1",
+            "272bda6d-6ea3-4609-a63d-a6ef34427f20-2",
+            "272bda6d-6ea3-4609-a63d-a6ef34427f20-3",
+            "272bda6d-6ea3-4609-a63d-a6ef34427f20-4",
+            "272bda6d-6ea3-4609-a63d-a6ef34427f20-5"
+          ]
+        },
+        {
+          "id": "S-2",
+          "outcome": "PASS",
+          "assertions": 3,
+          "evidenceIds": [
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-1",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-2",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-3",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-4",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-5",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-6",
+            "e4063dca-273d-460b-8d00-eb99e45e35ce-7"
+          ]
+        }
+      ]
+    }
+  },
+  "threadId": "0c625ca7-f59e-47e8-a079-29cc37584de7:51041123-0fdb-4bc9-9618-39537b7a1d16",
+  "modelRequests": 6,
+  "projectIsolation": true,
+  "restartPreserved": true,
+  "readOnlyToolsReturnedStoredData": true,
+  "concurrentBrowserAndChatStatus": true,
+  "missingProviderHonest": true,
+  "credentialsRejected": true
+}

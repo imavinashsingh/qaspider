@@ -1,0 +1,16 @@
+{
+  "mode": "Real Electron UI; provider disabled; no model calls or browser test execution",
+  "projectId": "d19ea126-3b15-4383-ab9c-f8958b42c96a",
+  "agentId": "51fef81e-23ca-4edf-a025-dc449bf097f9",
+  "identityPreserved": true,
+  "profilePreserved": true,
+  "conversationsPreserved": true,
+  "skippedQuestionsPreserved": true,
+  "notesIsolated": true,
+  "unsavedComposerClearedOnSwitch": true,
+  "archiveRestore": true,
+  "screenshots": [
+    "project-profile.png",
+    "project-profile-after-restart.png"
+  ]
+}

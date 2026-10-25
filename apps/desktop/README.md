@@ -2,6 +2,10 @@
 
 Desktop opens a project-scoped chat workspace with linked plan review, separate browser authorization, execution reports and knowledge. See [M8 — Desktop consolidation](MILESTONE-8.md) for the walkthrough, architecture, migration backup/rollback procedure, live validation and remaining limitations.
 
+The [VNext project foundation checkpoint](../../docs/architecture/vnext-implementation-report.md) adds **Project profile** in the conversation workspace: rename, optional description and context notes, progressive optional questions, and reversible archive/restore. Every project receives a stable logical supervisor identity. Notes remain user-provided context. The Main Agent now retrieves a bounded sanitized selection; document intake, task scheduling and Software Graph learning remain pending. The [architecture and ordered implementation plan](../../docs/architecture/vnext-architecture.md) documents the remaining work and dependency compatibility gate.
+
+The **Main Agent** view now provides project-scoped conversational replies and read-only access to saved QA plans, report summaries and workflow knowledge, using the existing signed-in CLI. Select an existing project conversation, then choose Main Agent. Source references and history survive restart. It cannot run browser actions or alter approved plans. See the [Main Agent checkpoint and compatibility decision](../../docs/architecture/vnext-main-agent.md). Testing Subagents, document ingestion, task queues and Software Graph implementation remain pending.
+
 The historical milestone UI remains available under **Settings → Developer tools and migration fallback → Open legacy workspace**, or with `QASPIDER_DESKTOP_LEGACY_UI=1 npm run desktop`. Historical documentation below describes that fallback and its original milestones.
 
 ## Historical milestone documentation
