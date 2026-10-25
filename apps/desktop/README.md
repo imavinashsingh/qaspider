@@ -1,5 +1,7 @@
 # QASpider Desktop — Milestone 1
 
+Milestone 4.2 adds local plan revisions, editing, review decisions and exact-revision approval in the ticket workspace. See the [review and approval walkthrough](MILESTONE-4.2.md). Plan approval does not authorize browser execution.
+
 Milestone 4.1 adds review-only ticket understanding through the existing Codex provider. See the [ticket planning setup and walkthrough](MILESTONE-4.1.md).
 
 Milestone 3 adds isolated controlled login scenarios, per-step reporting and masked evidence. See the [Milestone 3 setup and learning walkthrough](MILESTONE-3.md).

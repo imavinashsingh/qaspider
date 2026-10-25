@@ -14,7 +14,8 @@
     "demo": "node demo/server.mjs",
     "verify:live": "npm run build && node scripts/verify-live.mjs",
     "verify:login": "npm run build && node scripts/verify-login.mjs",
-    "verify:ticket": "npm run build && node scripts/verify-ticket.mjs"
+    "verify:ticket": "npm run build && node scripts/verify-ticket.mjs",
+    "verify:review": "npm run build && node scripts/verify-review.mjs"
   },
   "dependencies": {
     "@browserbasehq/stagehand": "4.3.0",

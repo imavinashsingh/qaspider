@@ -20,6 +20,7 @@
     "desktop:verify-live": "npm run verify:live --workspace @qaspider/desktop",
     "desktop:verify-login": "npm run verify:login --workspace @qaspider/desktop",
     "desktop:verify-ticket": "npm run verify:ticket --workspace @qaspider/desktop",
+    "desktop:verify-review": "npm run verify:review --workspace @qaspider/desktop",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json && node scripts/build.mjs && vite build",
     "test": "vitest run",

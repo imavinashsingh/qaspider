@@ -1,5 +1,7 @@
 # QASpider — Story-driven QA
 
+**Plan review (M4.2):** [Edit, review and approve saved test-plan revisions](apps/desktop/MILESTONE-4.2.md) in the desktop ticket workspace. Original criteria and approved revisions remain auditable; planned coverage stays separate from execution evidence.
+
 **Ticket understanding (M4.1):** [Generate a reviewable test proposal](apps/desktop/MILESTONE-4.1.md) from acceptance criteria using the existing Codex provider. The desktop shows source links, assumptions and unspecified details without approving or executing the proposal.
 
 **New direction: QASpider Desktop.** Start with `npm ci` and `npm run desktop` (Node 24 and local Chrome/Chromium required). Plain navigation/capture remains model-free; [Milestone 2](apps/desktop/MILESTONE-2.md) adds Codex CLI observation, explicitly authorized clicks and browser assertions. [Milestone 3](apps/desktop/MILESTONE-3.md) adds isolated controlled login scenarios with step reports and masked screenshots; it starts its own fixture and needs no model. Run `npm run desktop:demo` for manual inspection of the controlled test application. See the [desktop setup and original capture walkthrough](apps/desktop/README.md). The desktop app does not import the engines described below. The remaining V2/V3 documentation is historical reference and does not authorize further desktop milestones.

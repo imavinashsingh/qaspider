@@ -15,3 +15,6 @@
 .ticket-planning p, .ticket-planning li { overflow-wrap: anywhere; line-height: 1.6; }
 .ticket-criterion { border-left: 3px solid #0d9c8a; padding: 4px 16px; margin: 18px 0; }
 .ticket-planning form button { margin-top: 16px; }
+.review-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0; }
+.plan-review code { overflow-wrap: anywhere; }
+.plan-review select, .plan-review textarea, .ticket-planning>label select { display: block; width: 100%; font: inherit; padding: 10px; margin: 8px 0 16px; border: 1px solid #c9d5e2; border-radius: 8px; }

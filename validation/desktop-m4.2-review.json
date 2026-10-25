@@ -1,0 +1,131 @@
+{
+  "verifiedAt": "2026-10-25T14:37:46.623Z",
+  "liveInference": true,
+  "syntheticTicketOnly": true,
+  "reviewActions": "Automated UI interaction for a synthetic walkthrough",
+  "browserExecutionRequested": false,
+  "input": {
+    "title": "Validate registration form",
+    "description": "Check registration using an email address.",
+    "acceptanceCriteria": [
+      "Email is required.",
+      "Duplicate email addresses must be rejected.",
+      "Valid registration should succeed."
+    ]
+  },
+  "privateDatabase": ".qaspider/desktop-m42-live/04c0c499-1b34-4c49-bba4-374c5c1e0f01/desktop-plans.sqlite",
+  "planId": "20db5e53-7d4c-444a-b253-d97504d9a5eb",
+  "generatedScenarios": 7,
+  "revision1": {
+    "status": "APPROVED",
+    "hash": "0af69dd10ab8ff34be42f03828eb14442305c250dd508768ed3e39c3da322001",
+    "title": "Reject registration without an email (human reviewed)",
+    "approval": {
+      "id": "47865d6f-9665-4ff2-92a1-4158ef8f63b0",
+      "revision": 1,
+      "hash": "0af69dd10ab8ff34be42f03828eb14442305c250dd508768ed3e39c3da322001",
+      "approvedAt": "2026-10-25T14:37:45.424Z",
+      "reviewer": "local-user"
+    },
+    "coverage": [
+      {
+        "criterionId": "AC-1",
+        "text": "Email is required.",
+        "scenarioIds": [
+          "S-1",
+          "S-2",
+          "S-3"
+        ],
+        "planned": "reviewed",
+        "blockingAssumptionIds": [],
+        "executed": "NOT_EXECUTED"
+      },
+      {
+        "criterionId": "AC-2",
+        "text": "Duplicate email addresses must be rejected.",
+        "scenarioIds": [
+          "S-4",
+          "S-5"
+        ],
+        "planned": "reviewed",
+        "blockingAssumptionIds": [],
+        "executed": "NOT_EXECUTED"
+      },
+      {
+        "criterionId": "AC-3",
+        "text": "Valid registration should succeed.",
+        "scenarioIds": [
+          "S-6",
+          "S-7"
+        ],
+        "planned": "reviewed",
+        "blockingAssumptionIds": [],
+        "executed": "NOT_EXECUTED"
+      }
+    ]
+  },
+  "revision2": {
+    "status": "DRAFT",
+    "hash": "ee9d173b5cd9666a80ecdb0894c6358a2ce62f0b561bf7cac915a841af376a68",
+    "title": "Reject registration without an email (human reviewed) — revised",
+    "approvalInherited": false,
+    "coverage": [
+      {
+        "criterionId": "AC-1",
+        "text": "Email is required.",
+        "scenarioIds": [
+          "S-1",
+          "S-2",
+          "S-3"
+        ],
+        "planned": "proposed",
+        "blockingAssumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3",
+          "AS-4"
+        ],
+        "executed": "NOT_EXECUTED"
+      },
+      {
+        "criterionId": "AC-2",
+        "text": "Duplicate email addresses must be rejected.",
+        "scenarioIds": [
+          "S-4",
+          "S-5"
+        ],
+        "planned": "proposed",
+        "blockingAssumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3"
+        ],
+        "executed": "NOT_EXECUTED"
+      },
+      {
+        "criterionId": "AC-3",
+        "text": "Valid registration should succeed.",
+        "scenarioIds": [
+          "S-6",
+          "S-7"
+        ],
+        "planned": "proposed",
+        "blockingAssumptionIds": [
+          "AS-1",
+          "AS-2",
+          "AS-3",
+          "AS-4"
+        ],
+        "executed": "NOT_EXECUTED"
+      }
+    ]
+  },
+  "restartVerified": true,
+  "approvedContentPreserved": true,
+  "originalCriteriaPreserved": true,
+  "screenshots": [
+    "test-results/desktop-live/m4.2-approved.png",
+    "test-results/desktop-live/m4.2-draft2.png",
+    "test-results/desktop-live/m4.2-reopened1.png"
+  ]
+}

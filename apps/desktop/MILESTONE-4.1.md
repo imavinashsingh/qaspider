@@ -1,5 +1,7 @@
 # Milestone 4.1: ticket understanding
 
+This documents the M4.1 generation milestone. [M4.2](MILESTONE-4.2.md) subsequently adds local persistence, review and plan approval; generated ticket execution remains outside scope.
+
 M4.1 converts a natural-language QA ticket into a structured **draft proposal**. It does not approve a plan, open a target browser, run scenarios or produce PASS/FAIL execution results. The existing M1 capture, M2 observation and M3 controlled login scenarios remain available separately.
 
 ## Try it

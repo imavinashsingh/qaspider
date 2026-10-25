@@ -5,6 +5,9 @@ import { CodexProvider } from './codex-provider.mjs';
 import { TestingWorkspace } from './workspace.mjs';
 import { runScenarioSuite } from './scenario-runner.mjs';
 import { TicketPlanner } from './ticket-planner.mjs';
+import { PlanStore } from './plan-store.mjs';
+import { join } from 'node:path';
+import { z } from 'zod';
 
 const uiUrl = new URL('../dist/index.html', import.meta.url).href;
 let activeRun;
@@ -14,6 +17,12 @@ const browserOptions = { executablePath: process.env.CHROME_PATH, headless: proc
 const provider = (!process.env.QASPIDER_DESKTOP_PROVIDER || process.env.QASPIDER_DESKTOP_PROVIDER === 'codex') ? new CodexProvider() : null;
 const workspace = new TestingWorkspace({ provider, options: browserOptions });
 const ticketPlanner = new TicketPlanner({ provider });
+let planStore;
+const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_DESKTOP_DATA_DIR ?? app.getPath('userData'), 'desktop-plans.sqlite'));
+const reviewReply = operation => async input => {
+  try { return { status: 'ok', value: operation(input) }; }
+  catch { return { status: 'error', message: 'Review request could not be saved or loaded. Reload the latest revision and check the review blockers.' }; }
+};
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -44,7 +53,18 @@ void app.whenReady().then(() => {
   handle('desktop:execute', input => workspace.execute(input));
   handle('desktop:close-session', async () => { await workspace.close(); return { status: 'closed' }; });
   handle('desktop:run-scenarios', async input => { await workspace.close(); return runScenarioSuite(input, browserOptions); });
-  handle('desktop:propose-ticket-plan', input => ticketPlanner.propose(input));
+  handle('desktop:propose-ticket-plan', async input => {
+    const result = await ticketPlanner.propose(input);
+    if (result.status !== 'proposed') return result;
+    try { return { ...result, review: savedPlans().create(result.plan) }; }
+    catch { return { status: 'unavailable', message: 'The proposal could not be saved locally. No reviewable revision was created.' }; }
+  });
+  handle('desktop:list-plans', reviewReply(() => savedPlans().list()));
+  handle('desktop:get-plan', reviewReply(input => {
+    const request = z.object({ planId: z.string().uuid(), revision: z.number().int().positive().optional() }).strict().parse(input);
+    return savedPlans().get(request.planId, request.revision);
+  }));
+  handle('desktop:review-plan', reviewReply(input => savedPlans().mutate(input)));
   createWindow();
   app.on('activate', () => { if (!quitting && BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Wait for the bounded capture and its finally block before allowing app exit.
@@ -56,4 +76,5 @@ void app.whenReady().then(() => {
     void Promise.resolve(activeRun).catch(() => {}).then(() => workspace.close()).catch(() => {}).finally(() => { allowQuit = true; app.quit(); });
   });
   app.on('window-all-closed', () => app.quit());
+  app.on('will-quit', () => { planStore?.close(); });
 });

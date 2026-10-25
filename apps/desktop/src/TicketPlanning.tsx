@@ -1,4 +1,6 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { PlanReview } from './PlanReview.js';
+import type { ReviewBridge, ReviewSnapshot, SavedPlan } from './review-types.js';
 export interface TicketInput { title: string; description: string; acceptanceCriteria: string[] }
 interface Coverage { applicability: 'included' | 'not_applicable' | 'unspecified'; reason: string }
 export interface TicketPlan {
@@ -15,8 +17,9 @@ export interface TicketPlan {
 export interface TicketPlanResult {
   status: 'proposed' | 'invalid-ticket' | 'unavailable' | 'invalid-output'; message: string; plan?: TicketPlan;
   provider?: { provider: string; model: string; synthetic: boolean };
+  review?: ReviewSnapshot;
 }
-export interface TicketBridge { proposeTicketPlan: (ticket: TicketInput) => Promise<TicketPlanResult> }
+export interface TicketBridge extends ReviewBridge { proposeTicketPlan: (ticket: TicketInput) => Promise<TicketPlanResult> }
 
 export function TicketPlanning() {
   const [title, setTitle] = useState('Validate registration form');
@@ -24,32 +27,66 @@ export function TicketPlanning() {
   const [criteria, setCriteria] = useState('Email is required.\nDuplicate email addresses must be rejected.\nValid registration should succeed.');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<TicketPlanResult | null>(null);
+  const [saved, setSaved] = useState<ReviewSnapshot | null>(null);
+  const [plans, setPlans] = useState<SavedPlan[]>([]);
+  const [storageMessage, setStorageMessage] = useState('');
   const plan = result?.plan;
+  async function refreshPlans() {
+    const response = await window.qaspider.listPlans();
+    if (response.status === 'ok') setPlans(response.value);
+    else setStorageMessage(response.message);
+  }
+  async function openPlan(planId: string, revision?: number) {
+    setBusy(true); setStorageMessage('');
+    try {
+      const response = await window.qaspider.getPlan(revision === undefined ? { planId } : { planId, revision });
+      if (response.status !== 'ok') { setStorageMessage(response.message); return; }
+      setSaved(response.value); setResult(null);
+      setTitle(response.value.original.ticket.title); setDescription(response.value.original.ticket.description);
+      setCriteria(response.value.original.ticket.acceptanceCriteria.map(item => item.text).join('\n'));
+    } catch { setStorageMessage('Saved plans could not be loaded.'); }
+    finally { setBusy(false); }
+  }
+  useEffect(() => {
+    let mounted = true;
+    void window.qaspider.listPlans().then(async response => {
+      if (!mounted) return;
+      if (response.status !== 'ok') { setStorageMessage(response.message); return; }
+      setPlans(response.value);
+      if (response.value[0]) await openPlan(response.value[0].id);
+    }).catch(() => { if (mounted) setStorageMessage('Saved plans could not be loaded.'); });
+    return () => { mounted = false; };
+  }, []);
   async function propose(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setResult(null);
+    event.preventDefault(); setBusy(true); setResult(null); setSaved(null);
     try {
       const response = await window.qaspider.proposeTicketPlan({ title, description, acceptanceCriteria: criteria.split('\n').map(line => line.trim()).filter(Boolean) });
       if (!response.status || !response.message) throw new Error('IPC response unavailable');
       setResult(response);
+      setSaved(response.review ?? null);
+      await refreshPlans();
     } catch { setResult({ status: 'unavailable', message: 'Could not receive a ticket plan. Another desktop operation may be running; retry when it finishes.' }); }
     finally { setBusy(false); }
   }
   return <section className="card ticket-planning" data-testid="ticket-planning" aria-busy={busy}>
-    <p className="eyebrow">TICKET UNDERSTANDING · MILESTONE 4.1</p>
+    <p className="eyebrow">TICKET PLAN REVIEW · MILESTONE 4.2</p>
     <h2>Turn acceptance criteria into a test proposal.</h2>
-    <p>Codex proposes scenarios for inspection. This workspace does not approve plans or execute tests.</p>
+    <p>Generate, edit and approve a versioned test plan. Plan approval does not authorize browser actions. No ticket tests execute here.</p>
     <form className="workspace-form" onSubmit={event => void propose(event)}>
       <label htmlFor="ticket-title">Ticket title</label>
-      <input id="ticket-title" required maxLength={200} disabled={busy} value={title} onChange={event => { setTitle(event.target.value); setResult(null); }}/>
+      <input id="ticket-title" required maxLength={200} disabled={busy} value={title} onChange={event => { setTitle(event.target.value); setResult(null); setSaved(null); }}/>
       <label htmlFor="ticket-description">Ticket description</label>
-      <textarea id="ticket-description" required maxLength={12000} rows={3} disabled={busy} value={description} onChange={event => { setDescription(event.target.value); setResult(null); }}/>
+      <textarea id="ticket-description" required maxLength={12000} rows={3} disabled={busy} value={description} onChange={event => { setDescription(event.target.value); setResult(null); setSaved(null); }}/>
       <label htmlFor="ticket-criteria">Acceptance criteria (one per line, up to 20)</label>
-      <textarea id="ticket-criteria" required maxLength={40000} rows={5} disabled={busy} value={criteria} onChange={event => { setCriteria(event.target.value); setResult(null); }}/>
-      <p className="hint">Ticket text is sent to the configured Codex provider. Use synthetic examples and leave credentials out of tickets. Nothing is saved as application memory.</p>
+      <textarea id="ticket-criteria" required maxLength={40000} rows={5} disabled={busy} value={criteria} onChange={event => { setCriteria(event.target.value); setResult(null); setSaved(null); }}/>
+      <p className="hint">Ticket text is sent to the configured Codex provider. Plans, revisions and review records are saved locally. Use synthetic examples and leave credentials out of tickets. Editing these ticket fields starts a separate proposal; it never rewrites a saved ticket.</p>
       <button disabled={busy}>{busy ? 'Proposing scenarios…' : 'Propose test plan'}</button>
     </form>
     <div role="status" aria-live="polite" data-testid="ticket-plan-status"><p>{busy ? 'Validating the provider, proposing scenarios and checking traceability…' : result?.message}</p></div>
-    {plan && <div data-testid="ticket-plan">
+    <label>Saved plans<select aria-label="Saved plans" disabled={busy} value={saved?.planId ?? ''} onChange={event => { if (event.target.value) void openPlan(event.target.value); }}><option value="">Choose a saved plan</option>{plans.map(item => <option key={item.id} value={item.id}>{item.title} · Revision {item.revision} · {item.status}</option>)}</select></label>
+    <p role="status">{storageMessage}</p>
+    {saved && <PlanReview key={`${saved.planId}-${saved.revision}`} snapshot={saved} onChange={value => { setSaved(value); setResult(null); void refreshPlans(); }} openRevision={revision => void openPlan(saved.planId, revision)}/>}
+    {!saved && plan && <div data-testid="ticket-plan">
       <h3>Draft proposal: {plan.ticket.title}</h3>
       <p>AI-generated interpretation · {plan.scenarios.length} proposed scenarios · No execution results</p>
       {result?.provider && <p className="hint">{result.provider.provider} · {result.provider.model}{result.provider.synthetic ? ' · synthetic test inference' : ''}</p>}
