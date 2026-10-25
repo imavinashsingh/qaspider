@@ -6,6 +6,8 @@ import { isOwnedFixture } from './controlled-fixture.mjs';
 import { isExecutionTarget } from './execution-target.mjs';
 import { redact } from './scenario-runner.mjs';
 import { testAccount, invalidAccount } from '../demo/credentials.mjs';
+import { maskedExecutionScreenshot } from './evidence.mjs';
+import { inspectControl, unsupportedControl } from './control-policy.mjs';
 
 const text = z.string().trim().min(1).max(1000);
 const path = text.refine(value => /^\/(?!\/)/.test(value) && !/[?#\\]/.test(value), 'Use an explicit local path without query or fragment.');
@@ -32,7 +34,7 @@ export const genericStepSchema = z.discriminatedUnion('kind', [
 export const genericPlanSchema = z.object({ id: text, name: text, steps: z.array(genericStepSchema).min(2).max(40) }).strict();
 export class SafetyError extends Error {}
 const deny = message => { throw new SafetyError(message); };
-const assertionOf = step => step.kind === 'assert' ? step.assertion : step.kind.startsWith('ASSERT_') ? genericAssertionSchema.parse({ kind: step.kind.slice(7).toLowerCase().replace('visible', 'visible'), ...Object.fromEntries(Object.entries(step).filter(([key]) => key !== 'kind')) }) : null;
+const assertionOf = step => step.kind === 'assert' ? step.assertion : step.kind.startsWith('ASSERT_') ? genericAssertionSchema.parse({ kind: step.kind.slice(7).toLowerCase(), ...Object.fromEntries(Object.entries(step).filter(([key]) => key !== 'kind')) }) : null;
 
 // Legacy data is explicit synthetic account binding, never inferred credentials.
 export function normalizePlan(input) {
@@ -98,18 +100,12 @@ async function gate(session, fixture, authorized, step, locator) {
   if (!await unique(locator) || !await locator.isEnabled()) deny('Target is missing, hidden, ambiguous or disabled.');
   const handle = await locator.elementHandle({ timeout: 2000 });
   if (!handle || !await handle.isVisible() || !await handle.isEnabled()) deny('Target disappeared before execution.');
-  const element = await handle.evaluate(node => ({ names: [node.getAttribute('aria-label'), node.textContent?.trim(), ...Array.from(node.labels ?? [], label => label.textContent?.trim())].filter(Boolean), tag: node.tagName, type: node.type, readOnly: node.readOnly,
-    href: node.getAttribute('href'), target: node.getAttribute('target') ?? node.form?.target ?? '',
-    download: node.hasAttribute('download'), override: node.hasAttribute('formaction') || node.hasAttribute('formmethod'),
-    action: node.form?.action, base: Boolean(node.ownerDocument.querySelector('base')), editable: node.isContentEditable }));
+  const element = await inspectControl(handle);
   if (step.target.label && !element.names.some(name => [step.target.label, ...step.target.alternatives].includes(name))) deny('Target meaning changed before execution.');
-  if (element.base || element.override || element.download || (element.target && element.target !== '_self') || element.editable) deny('Unsupported control destination or behavior.');
+  const unsupported = unsupportedControl(step.kind, element, isOwnedFixture(fixture));
+  if (unsupported) deny(unsupported);
   if (element.action) permittedUrl(element.action, fixture);
-  if (step.kind === 'FILL' && (!['INPUT', 'TEXTAREA'].includes(element.tag) || element.readOnly || ['file', 'hidden', 'submit', 'button', 'checkbox', 'radio'].includes(element.type))) deny('Unsupported fill control.');
-  if (step.kind === 'SELECT' && element.tag !== 'SELECT') deny('Only native select controls are supported.');
   if (step.kind === 'CLICK') {
-    if (!['BUTTON', 'A'].includes(element.tag)) deny('Only links and buttons can be clicked.');
-    if (!isOwnedFixture(fixture) && element.tag === 'BUTTON' && element.action && element.type === 'submit') deny('Form submission on user-selected applications is not supported by the current action policy.');
     if (element.tag === 'A') { if (!element.href) deny('Link has no approved destination.'); permittedUrl(element.href, fixture); }
   }
   return handle;
@@ -135,7 +131,7 @@ export async function measureAssertion(session, fixture, assertion, timeoutMs = 
 }
 
 /** Fresh browser per scenario. Never retries business actions or rewrites expectations. */
-export async function runGenericScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, checkpoint = async () => {}, assertionTimeoutMs = 1500, maxDurationMs = 90_000, memory = null } = {}) {
+export async function runGenericScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, checkpoint = async () => {}, assertionTimeoutMs = 1500, maxDurationMs = 90_000, memory = null, initialState = [] } = {}) {
   const report = { id: randomUUID(), scenarioId: input?.id, name: input?.name, outcome: 'INCONCLUSIVE', steps: [], adaptations: [], evidence: [], assertionsExecuted: 0, browserClosed: false, startedAt: new Date().toISOString() };
   const secrets = [testAccount, invalidAccount].flatMap(Object.values);
   for (const step of input?.steps ?? []) if (step.kind === 'FILL' && typeof step.value === 'string' && step.value) secrets.push(step.value);
@@ -174,9 +170,9 @@ export async function runGenericScenario(input, { fixture, authorized, options =
   const fingerprint = async locator => createHash('sha256').update(JSON.stringify(await locator.evaluate(node => ({ tag: node.tagName, type: node.type ?? '', disabled: Boolean(node.disabled), readOnly: Boolean(node.readOnly), href: node.getAttribute('href'), action: node.form?.getAttribute('action'), target: node.getAttribute('target'), override: node.getAttribute('formaction'), names: [node.getAttribute('aria-label'), ...Array.from(node.labels ?? [], label => label.textContent?.trim()), ...(['BUTTON','A'].includes(node.tagName) ? [node.textContent?.trim()] : [])].filter(Boolean) })))).digest('hex');
   async function capture(record) {
     permittedUrl(await session.page.url(), fixture);
-    const bytes = await session.controlledPage.screenshot({ type: 'png', timeout: 5000, mask: [session.controlledPage.locator('input, textarea, select')], maskColor: '#18283b' });
+    const screenshot = await maskedExecutionScreenshot(session, 5000);
     const id = `${report.id}-${record.number}`;
-    report.evidence.push({ id, stepNumber: record.number, url: await session.page.url(), screenshot: 'data:image/png;base64,' + Buffer.from(bytes).toString('base64') });
+    report.evidence.push({ id, stepNumber: record.number, url: await session.page.url(), screenshot });
     record.evidenceId = id;
     const adaptation = report.adaptations.at(-1); if (adaptation && !adaptation.evidenceId) adaptation.evidenceId = id;
   }
@@ -203,6 +199,12 @@ export async function runGenericScenario(input, { fixture, authorized, options =
           if (session.response?.status() >= 400) throw new Error('Navigation failed.');
           if ((await session.context.cookies()).length) deny('Browser session was not empty.');
           report.initialSessionEmpty = true;
+          for (const condition of initialState) {
+            const locator = session.controlledPage.locator(condition.selector);
+            if (!await unique(locator)) deny('Reviewed initial control is missing, hidden or ambiguous.');
+            const current = await inspectControl(locator);
+            if (current.empty !== condition.empty || await locator.isEnabled() !== condition.enabled || (condition.name && !current.names.includes(condition.name))) deny('Reviewed initial control state changed; revise the setup before execution.');
+          }
         } else if (assertion) {
           const measured = await measureAssertion(session, fixture, assertion, assertionTimeoutMs);
           report.assertionsExecuted++;

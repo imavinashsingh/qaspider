@@ -5,6 +5,8 @@ import { Workspace, type WorkspaceBridge } from './Workspace.js';
 import { Scenarios, type ScenarioBridge } from './Scenarios.js';
 import { TicketPlanning, type TicketBridge } from './TicketPlanning.js';
 import { Knowledge, type KnowledgeBridge } from './Knowledge.js';
+import { ChatDesktop } from './ChatDesktop.js';
+import type { ChatBridge } from './chat-types.js';
 
 export interface CaptureResult {
   status: 'success' | 'error';
@@ -14,10 +16,10 @@ export interface CaptureResult {
   screenshot?: string;
 }
 declare global {
-  interface Window { qaspider: WorkspaceBridge & ScenarioBridge & TicketBridge & KnowledgeBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
+  interface Window { qaspider: WorkspaceBridge & ScenarioBridge & TicketBridge & KnowledgeBridge & ChatBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
 }
 
-function App() {
+export function LegacyDesktop() {
   const [url, setUrl] = useState('http://localhost:3000');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<CaptureResult | null>(null);
@@ -53,4 +55,4 @@ function App() {
   </main>;
 }
 
-createRoot(document.getElementById('root')!).render(<App/>);
+createRoot(document.getElementById('root')!).render(<ChatDesktop legacy={<LegacyDesktop/>}/>);

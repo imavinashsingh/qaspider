@@ -1,4 +1,10 @@
-# QASpider Desktop — Milestone 1
+# QASpider Desktop
+
+Desktop opens a project-scoped chat workspace with linked plan review, separate browser authorization, execution reports and knowledge. See [M8 — Desktop consolidation](MILESTONE-8.md) for the walkthrough, architecture, migration backup/rollback procedure, live validation and remaining limitations.
+
+The historical milestone UI remains available under **Settings → Developer tools and migration fallback → Open legacy workspace**, or with `QASPIDER_DESKTOP_LEGACY_UI=1 npm run desktop`. Historical documentation below describes that fallback and its original milestones.
+
+## Historical milestone documentation
 
 Milestone 7.1 validates the public demo website and adds user-selected application origins to approved-plan preparation. See [MILESTONE-7.1.md](MILESTONE-7.1.md) for measured outcomes, screenshots, safety limits and unresolved integration blockers.
 

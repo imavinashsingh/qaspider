@@ -4,12 +4,19 @@ import { stepSchema, assertionSchema } from './scenario-runner.mjs';
 
 const operation = stepSchema.refine(step => step.kind !== 'assert', 'Assertions belong in expected outcomes or final assertions.');
 const parse = (schema, value) => schema.parse(JSON.parse(value));
-const supportedAssertion = assertion => assertion;
 export const fixturePreconditions = ['Owned controlled login fixture', 'Synthetic valid and invalid accounts', 'Owned synthetic QA applications'];
 
 /** Explicit approved JSON only. No prose inference, selector discovery or expectation rewriting. */
 export function checkCompatibility(snapshot, { ownedFixture = true } = {}) {
   return snapshot.content.scenarios.map(scenario => {
+    if (snapshot.content.execution) {
+      const binding = snapshot.content.execution.scenarios.find(item => item.scenarioId === scenario.id);
+      try {
+        if (!binding || binding.blockers.length || !snapshot.content.execution.note || binding.prerequisites.some(item => item.resolution === 'unresolved')) throw new Error('Incomplete binding');
+        const plan = normalizePlan(JSON.parse(binding.planJson));
+        return { scenarioId: scenario.id, criterionId: scenario.criterionId, title: scenario.title, classification: 'EXECUTABLE', checks: [{ source: 'Reviewed executable binding', classification: 'EXECUTABLE', reason: 'Commands, original assertion mappings and prerequisites are part of the approved revision.' }], plan, initialState: snapshot.content.execution.initialState ?? [] };
+      } catch { return { scenarioId: scenario.id, criterionId: scenario.criterionId, title: scenario.title, classification: 'CONFIGURATION_REQUIRED', checks: [{ source: 'Executable binding', classification: 'CONFIGURATION_REQUIRED', reason: 'Resolve preparation blockers and review the exact executable binding.' }] }; }
+    }
     const checks = [], steps = [];
     const check = (source, fn) => {
       try { fn(); checks.push({ source, classification: 'EXECUTABLE', reason: 'Explicit supported browser operation or measured assertion.' }); }
@@ -20,10 +27,10 @@ export function checkCompatibility(snapshot, { ownedFixture = true } = {}) {
       steps.push(command);
       if (['fill', 'FILL'].includes(command.kind)) {
         if (step.expectedOutcome !== '[REDACTED]') throw new Error('Declare redacted fill receipt');
-      } else steps.push({ kind: 'assert', assertion: supportedAssertion(parse(z.union([assertionSchema, genericAssertionSchema]), step.expectedOutcome)) });
+      } else steps.push({ kind: 'assert', assertion: parse(z.union([assertionSchema, genericAssertionSchema]), step.expectedOutcome) });
     });
     for (const [index, item] of scenario.assertions.entries()) check(`Assertion ${index + 1}`, () => {
-      const assertion = supportedAssertion(parse(z.union([assertionSchema, genericAssertionSchema]), item.description));
+      const assertion = parse(z.union([assertionSchema, genericAssertionSchema]), item.description);
       const kinds = { url: 'url', text: 'text', visible: 'visibility', enabled: 'behavior' };
       if (item.kind !== kinds[assertion.kind] || (item.exactValue !== null && item.exactValue !== String(assertion.expected))) throw new Error('Declared assertion conflicts with approved source value');
       steps.push({ kind: 'assert', assertion });

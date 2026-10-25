@@ -16,6 +16,11 @@ const now = () => new Date().toISOString();
 export function requireApproved(store, input) {
   const request = identity.parse(input), saved = store.get(request.planId);
   if (saved.status !== 'APPROVED' || saved.issues.length || ['revision', 'version', 'hash'].some(key => saved[key] !== request[key])) throw new Error('Reload the exact latest approved revision. Unapproved, changed and stale plans cannot execute.');
+  if (saved.content.executionRequired) {
+    const conversation = store.conversations.forPlan(saved.planId);
+    const context = saved.content.execution?.context;
+    if (!conversation || !context || conversation.projectId !== context.projectId || JSON.stringify(conversation.context) !== JSON.stringify({ mode: context.mode, url: context.url })) throw new Error('Application context changed; prepare a new reviewed draft.');
+  }
   return saved;
 }
 function consolidate(report) {
@@ -40,11 +45,13 @@ export class ApprovedExecution {
   async prepare(input) {
     const { url, ...requestedIdentity } = prepareRequest.parse(input);
     const saved = requireApproved(this.store, requestedIdentity);
+    const bound = saved.content.execution?.context;
+    if (bound && ((bound.mode === 'selected' && url !== bound.url) || (bound.mode === 'controlled' && url))) throw new Error('Execution target must match the reviewed application context.');
     await this.close();
     const compatibility = checkCompatibility(saved, { ownedFixture: !url });
     const fixture = url ? selectApplicationTarget(url) : await startControlledFixture();
     const preparationId = randomUUID();
-    const environment = url ? 'user-selected-application' : saved.content.scenarios.some(scenario => scenario.steps.some(step => /"kind"\s*:\s*"[A-Z]/.test(step.instruction))) ? 'owned-qa-fixtures' : 'owned-login-fixture';
+    const environment = url ? 'user-selected-application' : saved.content.execution || saved.content.scenarios.some(scenario => scenario.steps.some(step => /"kind"\s*:\s*"[A-Z]/.test(step.instruction))) ? 'owned-qa-fixtures' : 'owned-login-fixture';
     const expiresAt = Date.now() + 300_000;
     const timer = setTimeout(() => { void this.close().catch(() => {}); }, 300_000); timer.unref();
     this.pending = { fixture, environment, preparationId, identity: requestedIdentity, timer, expiresAt };
@@ -65,6 +72,8 @@ export class ApprovedExecution {
     report.knowledgeScope = request.environment === 'user-selected-application'
       ? { project: 'desktop-selected-applications', environment: request.environment, role: 'isolated-browser', application: createHash('sha256').update(request.origin).digest('hex') }
       : fixtureKnowledgeScope(request.environment);
+    const conversation = this.store.conversations?.forPlan(saved.planId);
+    if (conversation && conversation.projectId !== 'legacy') report.knowledgeScope = { ...report.knowledgeScope, project: conversation.projectId };
     const secrets = saved.content.scenarios.flatMap(scenario => scenario.steps.flatMap(step => {
       try { const command = JSON.parse(step.instruction); return command.kind === 'FILL' && command.value ? [command.value] : []; } catch { return []; }
     }));
@@ -93,6 +102,7 @@ export class ApprovedExecution {
           }
           try { scenario.result = await this.runner(scenario.compatibility.plan, {
             fixture: pending.fixture, authorized: true, options: browserOptions,
+            initialState: scenario.compatibility.initialState ?? [],
             memory: this.store.knowledge?.find(report.knowledgeScope, scenario.compatibility.plan),
             checkpoint: async partial => { scenario.result = partial; scenario.outcome = partial.outcome; save(); },
           });
@@ -115,6 +125,7 @@ export class ApprovedExecution {
       consolidate(report);
       if (report.interrupted) { if (report.outcome !== 'FAIL') report.outcome = 'INCONCLUSIVE'; report.gaps.push('Execution or fixture cleanup interrupted; report cannot establish PASS.'); }
       this.store.saveExecution(scrub(redact(report)));
+      this.store.conversations?.linkReport(report);
       for (const scenario of report.scenarios) if (scenario.result?.knowledge) {
         try { this.store.knowledge?.record(report.knowledgeScope, scenario.compatibility.plan, report.id, scenario.scenarioId); }
         catch { scenario.knowledgeMessage = 'Knowledge could not be recorded; execution evidence is retained.'; }

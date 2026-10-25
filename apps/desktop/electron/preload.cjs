@@ -1,6 +1,17 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('qaspider', Object.freeze({
+  operationStatus: () => ipcRenderer.invoke('desktop:operation-status'),
+  projects: () => ipcRenderer.invoke('desktop:projects'),
+  createProject: (request) => ipcRenderer.invoke('desktop:create-project', request),
+  createConversation: (request) => ipcRenderer.invoke('desktop:create-conversation', request),
+  conversation: (id) => ipcRenderer.invoke('desktop:conversation', id),
+  report: (request) => ipcRenderer.invoke('desktop:report', request),
+  setContext: (request) => ipcRenderer.invoke('desktop:set-context', request),
+  sendMessage: (request) => ipcRenderer.invoke('desktop:send-message', request),
+  prepareDraft: (request) => ipcRenderer.invoke('desktop:prepare-draft', request),
+  settings: () => ipcRenderer.invoke('desktop:settings'),
+  saveSettings: (request) => ipcRenderer.invoke('desktop:save-settings', request),
   openBrowser: (url) => ipcRenderer.invoke('desktop:open-browser', url),
   observe: (request) => ipcRenderer.invoke('desktop:observe', request),
   execute: (request) => ipcRenderer.invoke('desktop:execute', request),

@@ -9,19 +9,34 @@ import { PlanStore } from './plan-store.mjs';
 import { ApprovedExecution } from './approved-execution.mjs';
 import { join } from 'node:path';
 import { z } from 'zod';
+import { DesktopService } from './desktop-service.mjs';
+import { isAbsolute } from 'node:path';
 
-const uiUrl = new URL('../dist/index.html', import.meta.url).href;
+const uiUrl = new URL('../dist/index.html' + (process.env.QASPIDER_DESKTOP_LEGACY_UI === '1' ? '?legacy=1' : ''), import.meta.url).href;
 let activeRun;
+let operationStatus = { busy: false };
 let quitting = false;
 let allowQuit = false;
 const browserOptions = { executablePath: process.env.CHROME_PATH, headless: process.env.QASPIDER_DESKTOP_HEADLESS === '1' };
-const provider = (!process.env.QASPIDER_DESKTOP_PROVIDER || process.env.QASPIDER_DESKTOP_PROVIDER === 'codex') ? new CodexProvider() : null;
+let provider = (!process.env.QASPIDER_DESKTOP_PROVIDER || process.env.QASPIDER_DESKTOP_PROVIDER === 'codex') ? new CodexProvider() : null;
 const workspace = new TestingWorkspace({ provider, options: browserOptions });
-const ticketPlanner = new TicketPlanner({ provider });
+let ticketPlanner = new TicketPlanner({ provider });
 let planStore;
 let planExecution;
 const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_DESKTOP_DATA_DIR ?? app.getPath('userData'), 'desktop-plans.sqlite'));
 const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions, provider });
+const desktopService = () => new DesktopService(savedPlans(), { planner: ticketPlanner, provider, options: browserOptions, onProgress: phase => { operationStatus = { ...operationStatus, phase }; } });
+const settingsSchema = z.object({ provider: z.enum(['codex', 'none']), model: z.string().regex(/^[a-zA-Z0-9._:-]{1,100}$/), headless: z.boolean(), chromePath: z.string().max(4096).refine(value => !value || isAbsolute(value), 'Use an absolute browser executable path.') }).strict();
+let effectiveSettings;
+function applySettings(input) {
+  const settings = settingsSchema.parse(input);
+  effectiveSettings = settings;
+  // Explicit Node-side regression injection; renderer settings cannot configure endpoints.
+  provider = settings.provider === 'codex' ? new CodexProvider({ model: settings.model, testEndpoint: process.env.QASPIDER_DESKTOP_TEST_ENDPOINT }) : null;
+  ticketPlanner = new TicketPlanner({ provider }); workspace.provider = provider;
+  browserOptions.headless = settings.headless; browserOptions.executablePath = settings.chromePath || undefined;
+  return settings;
+}
 const executionReply = operation => async input => {
   try { return { status: 'ok', value: await operation(input) }; }
   catch { return { status: 'error', message: 'Execution request rejected. Reload the latest approved revision, prepare its application and authorize its exact origin.' }; }
@@ -45,16 +60,44 @@ function createWindow() {
 }
 
 void app.whenReady().then(() => {
+  const persistedSettings = savedPlans().db.prepare('SELECT settings_json FROM desktop_settings WHERE id=1').get();
+  applySettings({ provider: provider ? 'codex' : 'none', model: process.env.QASPIDER_CODEX_MODEL ?? 'gpt-6.1-sol', headless: browserOptions.headless, chromePath: browserOptions.executablePath ?? '', ...(persistedSettings ? JSON.parse(persistedSettings.settings_json) : {}),
+    ...(process.env.QASPIDER_DESKTOP_PROVIDER ? { provider: process.env.QASPIDER_DESKTOP_PROVIDER === 'codex' ? 'codex' : 'none' } : {}),
+    ...(process.env.QASPIDER_DESKTOP_HEADLESS ? { headless: process.env.QASPIDER_DESKTOP_HEADLESS === '1' } : {}),
+    ...(process.env.QASPIDER_CODEX_MODEL ? { model: process.env.QASPIDER_CODEX_MODEL } : {}),
+    ...(process.env.CHROME_PATH ? { chromePath: process.env.CHROME_PATH } : {}),
+  });
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
-  const handle = (channel, operation) => ipcMain.handle(channel, async (event, input) => {
+  const handle = (channel, operation, readOnly = false) => ipcMain.handle(channel, async (event, input) => {
     if (quitting || event.senderFrame !== event.sender.mainFrame || event.senderFrame.url !== uiUrl) {
       return { status: 'error', message: 'Request is not from the desktop application.' };
     }
-    if (activeRun) return { status: 'error', message: 'A browser capture is already running.' };
-    activeRun = operation(input);
+    if (readOnly) return operation(input);
+    if (activeRun) return { status: 'error', message: operationStatus.channel === 'desktop:open-browser' ? 'A browser capture is already running.' : 'Another desktop operation is already running.' };
+    operationStatus = { busy: true, channel, startedAt: new Date().toISOString() };
+    activeRun = Promise.resolve().then(() => operation(input));
     try { return await activeRun; }
-    finally { activeRun = undefined; }
+    finally { activeRun = undefined; operationStatus = { busy: false }; }
   });
+  handle('desktop:operation-status', () => ({ status: 'ok', value: operationStatus }), true);
+  handle('desktop:projects', reviewReply(() => savedPlans().conversations.list()), true);
+  handle('desktop:create-project', reviewReply(input => savedPlans().conversations.createProject(input)));
+  handle('desktop:create-conversation', reviewReply(input => savedPlans().conversations.create(input)));
+  handle('desktop:conversation', reviewReply(input => savedPlans().conversations.get(input)), true);
+  handle('desktop:report', reviewReply(input => savedPlans().executionReport(input)), true);
+  handle('desktop:set-context', reviewReply(input => savedPlans().conversations.setContext(input)));
+  handle('desktop:send-message', executionReply(input => desktopService().send(input)));
+  handle('desktop:prepare-draft', async input => {
+    try { await workspace.close(); return { status: 'ok', value: await desktopService().prepare(input) }; }
+    catch { return { status: 'error', message: `Executable preparation could not complete during ${operationStatus.phase ?? 'validation'}. Check provider availability, page access and missing expectations. No business actions were executed.` }; }
+  });
+  handle('desktop:settings', () => ({ status: 'ok', value: effectiveSettings, synthetic: Boolean(process.env.QASPIDER_DESKTOP_TEST_ENDPOINT) }), true);
+  handle('desktop:save-settings', executionReply(async input => {
+    const settings = settingsSchema.parse(input);
+    await workspace.close(); await planExecution?.close(); planExecution = undefined;
+    savedPlans().db.prepare('INSERT INTO desktop_settings VALUES(1,?) ON CONFLICT(id) DO UPDATE SET settings_json=excluded.settings_json').run(JSON.stringify(settings));
+    return applySettings(settings);
+  }));
   handle('desktop:open-browser', async input => { await workspace.close(); return captureTarget(input, browserOptions); });
   handle('desktop:observe', input => workspace.observe(input));
   handle('desktop:execute', input => workspace.execute(input));
@@ -66,19 +109,19 @@ void app.whenReady().then(() => {
     try { return { ...result, review: savedPlans().create(result.plan) }; }
     catch { return { status: 'unavailable', message: 'The proposal could not be saved locally. No reviewable revision was created.' }; }
   });
-  handle('desktop:list-plans', reviewReply(() => savedPlans().list()));
-  handle('desktop:list-knowledge', reviewReply(input => savedPlans().knowledge.list(z.string().max(500).parse(input ?? ''))));
+  handle('desktop:list-plans', reviewReply(() => savedPlans().list()), true);
+  handle('desktop:list-knowledge', reviewReply(input => savedPlans().knowledge.list(z.string().max(500).parse(input ?? ''))), true);
   handle('desktop:knowledge-evidence', reviewReply(input => {
     const request = z.object({ executionId: z.string().uuid(), scenarioId: z.string().max(100), evidenceId: z.string().max(200) }).strict().parse(input);
     const row = savedPlans().db.prepare('SELECT report_json FROM desktop_plan_executions WHERE id=?').get(request.executionId);
     const evidence = row && JSON.parse(row.report_json).scenarios.find(item => item.scenarioId === request.scenarioId)?.result?.evidence.find(item => item.id === request.evidenceId);
     if (!evidence) throw new Error('Evidence not found.');
     return evidence;
-  }));
+  }), true);
   handle('desktop:get-plan', reviewReply(input => {
     const request = z.object({ planId: z.string().uuid(), revision: z.number().int().positive().optional() }).strict().parse(input);
     return savedPlans().get(request.planId, request.revision);
-  }));
+  }), true);
   handle('desktop:review-plan', reviewReply(input => savedPlans().mutate(input)));
   handle('desktop:prepare-plan', executionReply(input => executions().prepare(input)));
   handle('desktop:execute-plan', executionReply(async input => { await workspace.close(); return executions().execute(input); }));

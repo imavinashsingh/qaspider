@@ -10,7 +10,7 @@ export interface KnowledgeBridge {
   listKnowledge: (query: string) => Promise<ReviewReply<Workflow[]>>;
   knowledgeEvidence: (request: { executionId: string; scenarioId: string; evidenceId: string }) => Promise<ReviewReply<{ screenshot: string; url: string }>>;
 }
-export function Knowledge() {
+export function Knowledge({ projectId }: { projectId?: string } = {}) {
   const [query, setQuery] = useState(''), [workflows, setWorkflows] = useState<Workflow[]>([]), [message, setMessage] = useState(''), [evidence, setEvidence] = useState<{ screenshot: string; url: string } | null>(null);
   async function load(event?: FormEvent) {
     event?.preventDefault();
@@ -26,7 +26,7 @@ export function Knowledge() {
     <div className="intro"><p className="eyebrow">APPLICATION KNOWLEDGE</p><h2>Verified workflows. Visible changes.</h2><p>Operational knowledge comes from execution evidence. Each ticket keeps its own approved expectations.</p></div>
     <form onSubmit={event => void load(event)} className="card"><label htmlFor="knowledge-search">Search workflows</label><div className="input-row"><input id="knowledge-search" value={query} maxLength={500} onChange={event => setQuery(event.target.value)} placeholder="contact, registration, CLICK…"/><button>Refresh knowledge</button></div></form>
     <p role="status">{message}</p>
-    {workflows.map(workflow => <article className="card knowledge-workflow" key={workflow.id}>
+    {workflows.filter(workflow => !projectId || projectId === 'legacy' ? !projectId || !/^[a-f0-9-]{36}$/.test(workflow.project) : workflow.project === projectId).map(workflow => <article className="card knowledge-workflow" key={workflow.id}>
       <h3>{workflow.description}</h3><strong>{workflow.revisions[0]?.status}{workflow.findings.some(item => item.revision_id === workflow.revisions[0]?.id) ? ' · REUSE SUSPENDED' : ''}</strong>
       <p>{workflow.project} · {workflow.environment} · {workflow.role} · {workflow.application}</p>
       <p>{workflow.verifications.length} verifications · {workflow.verifications.reduce((sum, item) => sum + item.reused_steps, 0)} reused steps · {workflow.verifications.reduce((sum, item) => sum + item.metrics.discoveryCalls, 0)} discovery calls</p>

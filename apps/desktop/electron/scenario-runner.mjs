@@ -5,6 +5,7 @@ import { openBrowserSession } from './browser.mjs';
 import { isOwnedFixture, startControlledFixture } from './controlled-fixture.mjs';
 import { loginScenarios } from './scenarios.mjs';
 import { testAccount, invalidAccount } from '../demo/credentials.mjs';
+import { maskedExecutionScreenshot } from './evidence.mjs';
 
 class PermissionError extends Error {}
 const accounts = { valid: testAccount, invalid: invalidAccount };
@@ -93,9 +94,9 @@ async function captureEvidence(session, fixture, report, stepNumber) {
   await checkOrigin(session, fixture);
   // Mask all form controls even after partial fills or a failed submission.
   // No raw DOM, input values, cookies or Stagehand envelopes enter reports.
-  const bytes = await session.controlledPage.screenshot({ type: 'png', timeout: 10_000, mask: [session.controlledPage.locator('input, textarea, select')], maskColor: '#18283b' });
+  const screenshot = await maskedExecutionScreenshot(session, 10_000);
   const id = `${report.id}-evidence-${report.evidence.length + 1}`;
-  report.evidence.push({ id, stepNumber, url: await session.page.url(), screenshot: 'data:image/png;base64,' + Buffer.from(bytes).toString('base64') });
+  report.evidence.push({ id, stepNumber, url: await session.page.url(), screenshot });
   return id;
 }
 

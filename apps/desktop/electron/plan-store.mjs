@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { assertNoSymlinks, privateDirectory } from '../../../packages/storage/src/filesystem.ts';
 import { ticketPlanSchema, validateTicketPlan } from '../shared/ticket-plan.mjs';
 import { initialReview, validateReviewContent, plannedCoverage, approvalIssues } from '../shared/plan-review.mjs';
+import { ConversationStore, backupBeforeConsolidation } from './conversations.mjs';
+import { normalizePlan, genericAssertionSchema } from './generic-execution.mjs';
 
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 export const revisionHash = (original, number, content) => createHash('sha256').update(JSON.stringify(canonical({ original, number, content }))).digest('hex');
@@ -19,6 +21,7 @@ const editSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('start-review') }).strict(),
   z.object({ type: z.literal('fork') }).strict(),
   z.object({ type: z.literal('approve'), hash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
+  z.object({ type: z.literal('confirm-execution'), note: z.string().trim().min(1).max(4000) }).strict(),
 ]);
 const mutationSchema = z.object({ ...identity, action: editSchema }).strict();
 
@@ -35,6 +38,7 @@ export class PlanStore {
       this.db.exec('PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;');
       const version = this.db.prepare('PRAGMA user_version').get().user_version;
       if (![0, 1, 2].includes(version)) throw new Error('Plan database version is unsupported.');
+      this.backupPath = backupBeforeConsolidation(this.db, path);
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS desktop_plans (id TEXT PRIMARY KEY, original_json TEXT NOT NULL, created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS desktop_plan_revisions (
@@ -55,6 +59,7 @@ export class PlanStore {
         CREATE TRIGGER IF NOT EXISTS freeze_original BEFORE UPDATE ON desktop_plans BEGIN SELECT RAISE(ABORT,'Original ticket is immutable'); END;
       `);
       this.knowledge = new KnowledgeStore(this);
+      this.conversations = new ConversationStore(this);
       // A new desktop process cannot resume ownership of an earlier browser run.
       for (const row of this.db.prepare('SELECT report_json FROM desktop_plan_executions').all()) {
         const report = JSON.parse(row.report_json);
@@ -64,6 +69,7 @@ export class PlanStore {
         for (const item of report.scenarios) if (item.status === 'RUNNING') { item.status = 'INTERRUPTED'; if (item.outcome !== 'FAIL') item.outcome = 'INCONCLUSIVE'; }
         this.saveExecution(report);
       }
+      for (const row of this.db.prepare('SELECT report_json FROM desktop_plan_executions').all()) this.conversations.linkReport(JSON.parse(row.report_json));
     } catch (error) { this.db.close(); throw error; }
   }
   close() { this.db.close(); }
@@ -74,6 +80,12 @@ export class PlanStore {
     z.string().uuid().parse(planId); z.number().int().positive().parse(revision);
     return this.db.prepare('SELECT report_json FROM desktop_plan_executions WHERE plan_id=? AND revision=? ORDER BY rowid DESC LIMIT 20').all(planId, revision).map(row => JSON.parse(row.report_json));
   }
+  executionReport(input) {
+    const request = z.object({ planId: z.string().uuid(), reportId: z.string().uuid() }).strict().parse(input);
+    const row = this.db.prepare('SELECT report_json FROM desktop_plan_executions WHERE id=? AND plan_id=?').get(request.reportId, request.planId);
+    if (!row) throw new Error('Linked report not found.');
+    return JSON.parse(row.report_json);
+  }
   atomic(operation) {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = operation(); this.db.exec('COMMIT'); return result; }
@@ -82,17 +94,45 @@ export class PlanStore {
   event(planId, revision, type, details) {
     this.db.prepare('INSERT INTO desktop_plan_events(plan_id,revision,type,details_json,created_at) VALUES(?,?,?,?,?)').run(planId, revision, type, JSON.stringify(details), new Date().toISOString());
   }
-  create(input) {
+  create(input, { executionRequired = false } = {}) {
     const parsed = ticketPlanSchema.parse(input);
     const { ticket, version, status, proposalSource, ...draft } = parsed;
     const original = validateTicketPlan(ticket, draft);
     const planId = randomUUID(), content = initialReview(original), now = new Date().toISOString();
+    if (executionRequired) content.executionRequired = true;
     this.atomic(() => {
       this.db.prepare('INSERT INTO desktop_plans VALUES(?,?,?)').run(planId, JSON.stringify(original), now);
       this.db.prepare('INSERT INTO desktop_plan_revisions VALUES(?,?,?,?,?,?,?,?)').run(planId, 1, 1, 'DRAFT', JSON.stringify(content), revisionHash(original, 1, content), now, now);
       this.event(planId, 1, 'generated', { source: 'ai' });
     });
     return this.get(planId);
+  }
+  bindExecution(planId, version, binding, revision) {
+    return this.atomic(() => {
+      const current = this.get(planId);
+      if (current.status === 'APPROVED' || current.version !== version || (revision !== undefined && current.revision !== revision)) throw new Error('Executable preparation requires the unchanged unapproved revision.');
+      const content = structuredClone(current.content);
+      content.execution = binding;
+      const conversation = this.conversations.forPlan(planId);
+      if (!conversation || binding.context.projectId !== conversation.projectId || binding.context.mode !== conversation.context.mode || binding.context.url !== conversation.context.url) throw new Error('Executable context does not match its conversation.');
+      for (const item of binding.scenarios) {
+        const plan = normalizePlan(JSON.parse(item.planJson));
+        const scenario = content.scenarios.find(scenario => scenario.id === item.scenarioId);
+        if (!scenario || plan.id !== scenario.id) throw new Error('Executable scenario identity changed.');
+        const final = plan.steps.slice(-scenario.assertions.length);
+        for (const [index, source] of scenario.assertions.entries()) {
+          const assertion = genericAssertionSchema.parse(JSON.parse(item.assertionSources[index]?.assertionJson ?? 'null'));
+          const kind = { url: 'url', text: 'text', visibility: 'visible', behavior: 'enabled' }[source.kind];
+          if (kind !== assertion.kind || (source.exactValue !== null && source.exactValue !== String(assertion.expected)) || final[index]?.kind !== 'assert' || JSON.stringify(final[index].assertion) !== JSON.stringify(assertion)) throw new Error('Executable binding changed an original assertion.');
+        }
+      }
+      content.criteria.forEach(item => { item.confirmed = false; item.note = ''; });
+      validateReviewContent(current.original, content);
+      const hash = revisionHash(current.original, current.revision, content);
+      this.db.prepare("UPDATE desktop_plan_revisions SET version=version+1,status='DRAFT',content_json=?,hash=?,updated_at=? WHERE plan_id=? AND number=?").run(JSON.stringify(content), hash, new Date().toISOString(), planId, current.revision);
+      this.event(planId, current.revision, 'prepared-executable-draft', { previousHash: current.hash, hash });
+      return this.get(planId);
+    });
   }
   list() {
     return this.db.prepare(`SELECT p.id,p.original_json,r.number,r.status FROM desktop_plans p JOIN desktop_plan_revisions r ON r.plan_id=p.id
@@ -128,6 +168,7 @@ export class PlanStore {
         if (current.status !== 'APPROVED') throw new Error('Only an approved revision needs a new revision.');
         const number = current.revision + 1, content = initialReview(current.original), now = new Date().toISOString();
         content.scenarios = structuredClone(current.content.scenarios);
+        if (current.content.executionRequired) content.executionRequired = true;
         this.db.prepare('INSERT INTO desktop_plan_revisions VALUES(?,?,?,?,?,?,?,?)').run(current.planId, number, 1, 'DRAFT', JSON.stringify(content), revisionHash(current.original, number, content), now, now);
         this.event(current.planId, number, 'forked', { fromRevision: current.revision, approvalInherited: false });
         return this.get(current.planId);
@@ -149,6 +190,11 @@ export class PlanStore {
         const coverage = current.coverage.find(item => item.criterionId === action.criterionId);
         if (action.confirmed && (!coverage.scenarioIds.length || coverage.blockingAssumptionIds.length)) throw new Error('Coverage needs a retained scenario and confirmed assumptions.');
         Object.assign(item, { confirmed: action.confirmed, note: action.note });
+      } else if (action.type === 'confirm-execution') {
+        if (!content.execution) throw new Error('Prepare commands first.');
+        content.execution.note = action.note;
+        content.criteria.forEach(item => { item.confirmed = false; item.note = ''; });
+        status = 'DRAFT';
       } else {
         let affected;
         if (action.type === 'assumption') {
@@ -169,6 +215,7 @@ export class PlanStore {
         }
         content.criteria.filter(item => affected.includes(item.criterionId)).forEach(item => { item.confirmed = false; item.note = ''; });
         status = 'DRAFT';
+        delete content.execution;
       }
       validateReviewContent(current.original, content);
       const hash = revisionHash(current.original, current.revision, content), now = new Date().toISOString();

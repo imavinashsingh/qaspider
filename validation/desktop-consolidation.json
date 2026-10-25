@@ -1,0 +1,345 @@
+{
+  "milestone": "M8 Desktop consolidation",
+  "verifiedDateIndia": "2026-10-26",
+  "baseCommit": "2ce1c3db6e9ee9985abeb6707d8936f5e172d458",
+  "committed": false,
+  "dependenciesInstalled": false,
+  "publicLoginExecuted": false,
+  "liveDesktopDemonstration": {
+    "verifiedAt": "2026-10-25T19:52:59.815Z",
+    "liveInference": true,
+    "provider": "codex-cli",
+    "controlledApplicationOnly": true,
+    "publicLoginExecuted": false,
+    "task": "On /registration, leave the Your name and Email address inputs empty and keep Account type at its initial default. Click Create account and verify the exact visible status text \"Name and email are required\" (no trailing period). Scope is this required-fields message check only; successful registration and other data combinations are out of scope.",
+    "projectId": "0afe7a19-5de7-4fa1-82e6-37726512c2ca",
+    "conversationId": "8c1d6a74-7e1d-4c27-b3fa-b0d8107ccd69",
+    "planId": "43a31466-b601-4632-889a-1ca2640a8266",
+    "durationMs": 49962.925013,
+    "first": {
+      "id": "7c532a43-1d60-476f-8922-412e261cc5d4",
+      "hash": "3b1f534476b5b9709dee18d8a0b5a8754a5e8ce39d7033fc961d43b018e233d5",
+      "outcome": "PASS",
+      "origin": "http://127.0.0.1:36057",
+      "scope": {
+        "project": "0afe7a19-5de7-4fa1-82e6-37726512c2ca",
+        "environment": "owned-qa-fixtures",
+        "role": "synthetic-tester",
+        "application": "owned-qa-apps-v1"
+      },
+      "startedAt": "2026-10-25T19:52:54.524Z",
+      "completedAt": "2026-10-25T19:52:56.555Z",
+      "scenarios": [
+        {
+          "id": "S-1",
+          "outcome": "PASS",
+          "metrics": {
+            "reusedSteps": 0,
+            "discoveryCalls": 0,
+            "aiCalls": 0,
+            "totalTokens": 0,
+            "tokenUsageComplete": true,
+            "discoveryMs": 0,
+            "durationMs": 1895.6068630000009
+          },
+          "assertions": 4,
+          "evidenceIds": [
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-1",
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-2",
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-3",
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-4",
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-5",
+            "5df6f0b1-955a-49b2-bc5c-37d72c576b59-6"
+          ]
+        }
+      ]
+    },
+    "reusedAfterRestart": {
+      "id": "1fb631a0-ffe8-48e9-a88d-c6e5462ba749",
+      "hash": "3b1f534476b5b9709dee18d8a0b5a8754a5e8ce39d7033fc961d43b018e233d5",
+      "outcome": "PASS",
+      "origin": "http://127.0.0.1:35619",
+      "scope": {
+        "project": "0afe7a19-5de7-4fa1-82e6-37726512c2ca",
+        "environment": "owned-qa-fixtures",
+        "role": "synthetic-tester",
+        "application": "owned-qa-apps-v1"
+      },
+      "startedAt": "2026-10-25T19:52:57.808Z",
+      "completedAt": "2026-10-25T19:52:59.560Z",
+      "scenarios": [
+        {
+          "id": "S-1",
+          "outcome": "PASS",
+          "metrics": {
+            "reusedSteps": 1,
+            "discoveryCalls": 0,
+            "aiCalls": 0,
+            "totalTokens": 0,
+            "tokenUsageComplete": true,
+            "discoveryMs": 0,
+            "durationMs": 1622.090536
+          },
+          "assertions": 4,
+          "evidenceIds": [
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-1",
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-2",
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-3",
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-4",
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-5",
+            "dd86bb74-f233-40ad-a3b3-e240af086fbd-6"
+          ]
+        }
+      ]
+    },
+    "originalPlanUnchanged": true,
+    "screenshotFiles": [
+      "live-reviewed-plan.png",
+      "live-first-report.png",
+      "live-browser-evidence.png",
+      "live-knowledge.png"
+    ]
+  },
+  "deterministicDesktopRegression": {
+    "mode": "Real Electron, Chromium, Stagehand and Codex CLI transport; explicitly synthetic model responses",
+    "publicLoginExecuted": false,
+    "task": "On /registration, click Create account with empty fields; the visible status must be exactly Name and email are required.",
+    "projectId": "8e65add1-d181-4008-8711-a9ffd13bd1d5",
+    "conversationId": "8ff1f527-3a4e-462c-967c-90f64e853856",
+    "planId": "9a3881fb-9f37-48fb-b7fe-0023e822bc4a",
+    "durationMs": 9483.712954999999,
+    "inferenceRequests": 3,
+    "first": {
+      "id": "90b21b95-472a-45dc-887a-33562db07bd4",
+      "outcome": "PASS",
+      "hash": "57c60ca5a7c08de13ec49ceb38b41fb495941ca2d3ff24601ae719489f1e703f",
+      "origin": "http://127.0.0.1:33575",
+      "startedAt": "2026-10-25T20:05:50.348Z",
+      "completedAt": "2026-10-25T20:05:51.183Z",
+      "scope": {
+        "project": "8e65add1-d181-4008-8711-a9ffd13bd1d5",
+        "environment": "owned-qa-fixtures",
+        "role": "synthetic-tester",
+        "application": "owned-qa-apps-v1"
+      },
+      "metrics": {
+        "reusedSteps": 0,
+        "discoveryCalls": 0,
+        "aiCalls": 0,
+        "totalTokens": 0,
+        "tokenUsageComplete": true,
+        "discoveryMs": 0,
+        "durationMs": 826.4320290000005
+      },
+      "assertions": 3,
+      "evidenceIds": [
+        "a20542b9-04f1-459a-ad1f-ca46ca742e2f-1",
+        "a20542b9-04f1-459a-ad1f-ca46ca742e2f-2",
+        "a20542b9-04f1-459a-ad1f-ca46ca742e2f-3",
+        "a20542b9-04f1-459a-ad1f-ca46ca742e2f-4",
+        "a20542b9-04f1-459a-ad1f-ca46ca742e2f-5"
+      ]
+    },
+    "reusedAfterRestart": {
+      "id": "d6c67635-b59c-4075-8142-4155778d0d83",
+      "outcome": "PASS",
+      "hash": "57c60ca5a7c08de13ec49ceb38b41fb495941ca2d3ff24601ae719489f1e703f",
+      "origin": "http://127.0.0.1:35313",
+      "startedAt": "2026-10-25T20:05:52.490Z",
+      "completedAt": "2026-10-25T20:05:53.418Z",
+      "scope": {
+        "project": "8e65add1-d181-4008-8711-a9ffd13bd1d5",
+        "environment": "owned-qa-fixtures",
+        "role": "synthetic-tester",
+        "application": "owned-qa-apps-v1"
+      },
+      "metrics": {
+        "reusedSteps": 1,
+        "discoveryCalls": 0,
+        "aiCalls": 0,
+        "totalTokens": 0,
+        "tokenUsageComplete": true,
+        "discoveryMs": 0,
+        "durationMs": 920.0151619999999
+      },
+      "assertions": 3,
+      "evidenceIds": [
+        "c814ba5e-edf2-448c-b5c4-5392849703d3-1",
+        "c814ba5e-edf2-448c-b5c4-5392849703d3-2",
+        "c814ba5e-edf2-448c-b5c4-5392849703d3-3",
+        "c814ba5e-edf2-448c-b5c4-5392849703d3-4",
+        "c814ba5e-edf2-448c-b5c4-5392849703d3-5"
+      ]
+    },
+    "screenshots": [
+      "chat-start.png",
+      "reviewed-plan.png",
+      "separate-authorization.png",
+      "first-report.png",
+      "knowledge-evidence.png",
+      "settings.png",
+      "legacy-fallback.png"
+    ]
+  },
+  "regressions": {
+    "desktopUnit": {
+      "outcome": "PASS",
+      "tests": 104
+    },
+    "desktopBrowserElectron": {
+      "outcome": "PASS",
+      "tests": 53,
+      "additionalFinalFocusedRerun": {
+        "outcome": "PASS",
+        "tests": 3
+      }
+    },
+    "rootUnit": {
+      "outcome": "PASS",
+      "tests": 76
+    },
+    "desktopTypecheck": "PASS",
+    "rootTypecheck": "PASS",
+    "desktopBuild": "PASS",
+    "rootBuild": "PASS",
+    "providerIsolation": {
+      "before": "PASS",
+      "after": "PASS",
+      "syntheticOnly": true,
+      "toolCount": 0,
+      "timeoutProcessExited": true,
+      "cancellationProcessExited": true,
+      "contextSanitizationVerified": true,
+      "manifest": "validation/m2-isolation-recheck.json"
+    },
+    "legacyRootBrowser": {
+      "outcome": "FAIL",
+      "configuration": "Installed Google Chrome via temporary channel override; original downloaded Playwright browser absent",
+      "passed": 13,
+      "failed": 6,
+      "failedFiles": [
+        "tests/smoke/engine.spec.ts",
+        "tests/smoke/learning.spec.ts",
+        "tests/smoke/navigation.spec.ts",
+        "tests/smoke/readiness.spec.ts",
+        "tests/smoke/studio-v3.spec.ts",
+        "tests/smoke/workspace.spec.ts"
+      ],
+      "unchangedHeadReproduction": {
+        "sameFailures": true,
+        "passed": 3,
+        "failed": 6,
+        "selectedFilesPlusMatchingLearningSuite": true
+      },
+      "legacyApplicationSourcesChanged": false
+    }
+  },
+  "preservation": {
+    "migration": "Additive tables and associations on existing PlanStore connection",
+    "backup": "Online SQLite snapshot before extending an existing database; private directory, 0600 file, independent integrity_check",
+    "historicalApprovalHashesUnchanged": true,
+    "historicalReportsAndKnowledgePreservedInMigrationTest": true,
+    "historicalM43M5ValidationSnapshotsRestoredAfterRegressionSideEffects": true,
+    "newReportsAccessibleByIdBeyondRecentListLimit": true
+  },
+  "limitations": [
+    "Public form submission and uploads remain unsupported.",
+    "Password input in grounded drafts is blocked; no secret-reference workflow was added.",
+    "Grounding uses the initial page and standard inspected output regions; multi-page and query/fragment command binding remain unsupported.",
+    "Initial state checks record empty/enabled booleans and names, not field values.",
+    "Follow-up requests create independent proposals; approved plans require explicit review and revision.",
+    "Normal run cancellation and aggregate planning/grounding token accounting remain unavailable.",
+    "Input masking does not cover secrets printed elsewhere on a page.",
+    "Legacy root browser smoke has six baseline failures reproduced at unchanged HEAD."
+  ],
+  "evidence": [
+    {
+      "path": "validation/desktop-consolidation-evidence/live-reviewed-plan.png",
+      "sha256": "3e6e5460b294f67859fa35a77533554fa19ffc70d3e9a8e2d1cdcf351d3b8d40",
+      "bytes": 149717,
+      "modelMode": "live Codex CLI inference"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/live-first-report.png",
+      "sha256": "84420745765a251e111dcc82376e3f356e1176139d135b121313414a41057768",
+      "bytes": 138513,
+      "modelMode": "live Codex CLI inference"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/live-browser-evidence.png",
+      "sha256": "062884a00ac27a082875f0169a952685367158642261050aedfd7a121464a905",
+      "bytes": 24676,
+      "modelMode": "live Codex CLI inference"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/live-knowledge.png",
+      "sha256": "59f0ae999e10c76fdad6abc3aac1ee5a8a2c8b1ba212e7a440c92024c1dbad7d",
+      "bytes": 106666,
+      "modelMode": "live Codex CLI inference"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/synthetic-chat-start.png",
+      "sha256": "5967268e333a11f9cdf6b072f8f22b381423a5dd14ab9bdffd06f7e95b7a0906",
+      "bytes": 110030,
+      "modelMode": "explicit synthetic inference; real desktop and browser"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/synthetic-separate-authorization.png",
+      "sha256": "b29531dabab60da6cf6da85266d08ed973b92adb4eb42f7e7aa301c1def6d907",
+      "bytes": 143309,
+      "modelMode": "explicit synthetic inference; real desktop and browser"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/synthetic-settings.png",
+      "sha256": "b87e39f46558f10060521a2644e13e07e2f3e808fc1037162671ddecec398743",
+      "bytes": 107126,
+      "modelMode": "explicit synthetic inference; real desktop and browser"
+    },
+    {
+      "path": "validation/desktop-consolidation-evidence/synthetic-legacy-fallback.png",
+      "sha256": "d71e6f5d8d135bca4efd5d7de898adcb7dc9f1af650a76b999c0037c2480d348",
+      "bytes": 72177,
+      "modelMode": "explicit synthetic inference; real desktop and browser"
+    }
+  ],
+  "filesModified": [
+    "apps/desktop/MILESTONE-8.md",
+    "apps/desktop/README.md",
+    "apps/desktop/electron/approved-execution.mjs",
+    "apps/desktop/electron/control-policy.mjs",
+    "apps/desktop/electron/conversations.mjs",
+    "apps/desktop/electron/desktop-service.mjs",
+    "apps/desktop/electron/evidence.mjs",
+    "apps/desktop/electron/executable-draft.mjs",
+    "apps/desktop/electron/generic-execution.mjs",
+    "apps/desktop/electron/main.mjs",
+    "apps/desktop/electron/plan-compatibility.mjs",
+    "apps/desktop/electron/plan-store.mjs",
+    "apps/desktop/electron/preload.cjs",
+    "apps/desktop/electron/scenario-runner.mjs",
+    "apps/desktop/playwright.config.ts",
+    "apps/desktop/scripts/verify-consolidation-live.mjs",
+    "apps/desktop/shared/plan-review.mjs",
+    "apps/desktop/src/ApprovedExecution.tsx",
+    "apps/desktop/src/ChatDesktop.tsx",
+    "apps/desktop/src/Knowledge.tsx",
+    "apps/desktop/src/PlanReview.tsx",
+    "apps/desktop/src/chat-types.ts",
+    "apps/desktop/src/execution-types.ts",
+    "apps/desktop/src/main.tsx",
+    "apps/desktop/src/review-types.ts",
+    "apps/desktop/src/style.css",
+    "apps/desktop/tests/consolidation.spec.mjs",
+    "apps/desktop/tests/consolidation.test.mjs",
+    "validation/desktop-consolidation-evidence/live-browser-evidence.png",
+    "validation/desktop-consolidation-evidence/live-first-report.png",
+    "validation/desktop-consolidation-evidence/live-knowledge.png",
+    "validation/desktop-consolidation-evidence/live-reviewed-plan.png",
+    "validation/desktop-consolidation-evidence/synthetic-chat-start.png",
+    "validation/desktop-consolidation-evidence/synthetic-legacy-fallback.png",
+    "validation/desktop-consolidation-evidence/synthetic-separate-authorization.png",
+    "validation/desktop-consolidation-evidence/synthetic-settings.png",
+    "validation/desktop-consolidation.json",
+    "validation/m2-isolation-recheck.json"
+  ]
+}

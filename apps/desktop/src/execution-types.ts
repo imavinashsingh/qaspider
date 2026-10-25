@@ -13,7 +13,7 @@ export interface TicketReport {
   environment: string; origin: string; startedAt: string; completedAt?: string; gaps: string[];
   coverage: { criterionId: string; text: string; planned: string; executed: string; verified: boolean }[];
   scenarios: { scenarioId: string; title: string; status: string; outcome: string; message?: string; startedAt?: string; completedAt?: string;
-    result?: { adaptations?: { requested: string; actualNames: string[]; resolvedSelector: string; evidenceId?: string }[]; assertionsExecuted: number; browserClosed: boolean; steps: { number: number; kind: string; resolvedTarget?: string; outcome: string; expected?: unknown; actual?: unknown; message: string; evidenceId?: string }[]; evidence: { id: string; stepNumber: number; screenshot: string; url: string }[] };
+    result?: { knowledge?: { metrics: { reusedSteps: number; aiCalls: number; discoveryCalls: number; durationMs: number; totalTokens: number | null } }; adaptations?: { requested: string; actualNames: string[]; resolvedSelector: string; evidenceId?: string }[]; assertionsExecuted: number; browserClosed: boolean; steps: { number: number; kind: string; resolvedTarget?: string; outcome: string; expected?: unknown; actual?: unknown; message: string; evidenceId?: string }[]; evidence: { id: string; stepNumber: number; screenshot: string; url: string }[] };
   }[];
 }
 export interface ExecutionBridge {
