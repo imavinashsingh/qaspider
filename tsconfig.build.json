@@ -6,7 +6,8 @@
   },
   "include": [
     "packages/*/src/**/*.ts",
-    "apps/**/*.ts"
+    "apps/**/*.ts",
+    "apps/**/*.tsx"
   ],
   "exclude": [
     "tests",

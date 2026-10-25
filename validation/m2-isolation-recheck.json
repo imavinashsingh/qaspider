@@ -1,7 +1,7 @@
 {
-  "verifiedAt": "2026-10-25T07:47:55.860Z",
+  "verifiedAt": "2026-10-25T15:04:36.846Z",
   "isolation": {
-    "id": "33a87142-ecf6-4a04-8da6-88d9bceab1fe",
+    "id": "1a1d031f-5591-4ce9-9b54-b49215d048f0",
     "version": "codex-cli 0.164.0",
     "binarySha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
     "model": "gpt-6.1-sol",
@@ -10,53 +10,53 @@
     "schemaValidated": true,
     "timeoutValidated": true,
     "cancellationValidated": true,
-    "validatedAt": 1792914475808,
+    "validatedAt": 1792940676812,
     "evidence": {
-      "directory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/33a87142-ecf6-4a04-8da6-88d9bceab1fe",
+      "directory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/1a1d031f-5591-4ce9-9b54-b49215d048f0",
       "receipts": [
         {
           "name": "process-version.json",
-          "sha256": "f7e829f7bf2756d91a3432d9a660889ee30d991ab6a1250f908956a8f108c66a",
+          "sha256": "0695b118711ecd388e6c38ceb366a07ff50c959b02474d0ecb1d5eef65ac6deb",
           "bytes": 565
         },
         {
           "name": "process-help.json",
-          "sha256": "9f0ce8ee7eb398273c8485d39a06d3d07c7e25814e6bca936d5f5215ccc199b7",
+          "sha256": "e1acba88090f9c93a5529e5dd0a18d412001f50b9e22b4fab03af31ad9f2f9fb",
           "bytes": 5008
         },
         {
           "name": "wire-1.json",
-          "sha256": "8c789e3405ae4d827be3023401ac18ea30b9c0bad2784adfa994983037932e1c",
+          "sha256": "89a8e9424de027f901d5a6ec185624303fe3985c1717cb4c9d1d05a69e22a6e3",
           "bytes": 60478
         },
         {
           "name": "process-structured-output.json",
-          "sha256": "d0f23adf282ab807b4f57236339e5a1d4b92d60493ea07e338d6f77235d79fbd",
+          "sha256": "a2acf70c4175fecbf2103e78c1a5c01fa6a5099099113b6a9a984f7c32a3230c",
           "bytes": 2489
         },
         {
           "name": "wire-2.json",
-          "sha256": "0d9feb71d2ebd0dbb3d1837f1242e04c08cb1df5e0cb6b2e3cefd61eecedd468",
+          "sha256": "89383ce4e5362e34c105354e4bf2e15d187a58e0a9aeb1cd96d423dc3161d15e",
           "bytes": 60442
         },
         {
           "name": "process-timeout.json",
-          "sha256": "d2c957222603593c083841531867f411ae35f150302d12aa2afd297f6ba4d35f",
+          "sha256": "99f69d3913192d190cb642a1a0bf9a8b9b9e07979c040e58b7fbe5c60c81cbbd",
           "bytes": 2232
         },
         {
           "name": "wire-3.json",
-          "sha256": "0fe70b81624b681c45a3b9ab67e10052337657ebadf159166516333a19b6cc8b",
+          "sha256": "b2aeb0ac448961d41fe5876341b7392308123d366c6e21cea006d1622b4cbfd1",
           "bytes": 60447
         },
         {
           "name": "process-cancellation.json",
-          "sha256": "503c9623fbfc547fe7ec3f413e77502df64c4d61d5217994be106fa0e9ca859c",
+          "sha256": "75d8d44f42f712932994dff9ba4bfaddc0310d91a650ae3aa9aafb4104b693ca",
           "bytes": 2232
         },
         {
           "name": "validation.json",
-          "sha256": "04285bb37805c340ca0a7ef09600bd63e4a008abebd9406da473977bc263e9f5",
+          "sha256": "37fc47caddd6feaf9d03804753d3d0948e72ba58dfe29bb08edc513bb5e5433c",
           "bytes": 365
         }
       ]
@@ -72,17 +72,17 @@
   "realAiInvoked": false,
   "disabledToolWireRequests": 3,
   "timeout": {
-    "pid": 145342,
+    "pid": 248092,
     "signal": "SIGKILL",
     "reason": "Codex planning timed out",
     "durationMs": 514,
     "processExited": true
   },
   "cancellation": {
-    "pid": 145431,
+    "pid": 248214,
     "signal": "SIGKILL",
     "reason": "Codex planning cancelled",
-    "durationMs": 509,
+    "durationMs": 511,
     "processExited": true
   },
   "sanitizedContext": {
@@ -90,58 +90,58 @@
     "rawArtifactAbsent": true,
     "receipt": "context-sanitization.json"
   },
-  "privateEvidenceDirectory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/33a87142-ecf6-4a04-8da6-88d9bceab1fe",
+  "privateEvidenceDirectory": "/home/avi/Opensource/qaspider/.qaspider/provider-validation/1a1d031f-5591-4ce9-9b54-b49215d048f0",
   "receipts": [
     {
       "name": "process-version.json",
-      "sha256": "f7e829f7bf2756d91a3432d9a660889ee30d991ab6a1250f908956a8f108c66a",
+      "sha256": "0695b118711ecd388e6c38ceb366a07ff50c959b02474d0ecb1d5eef65ac6deb",
       "bytes": 565
     },
     {
       "name": "process-help.json",
-      "sha256": "9f0ce8ee7eb398273c8485d39a06d3d07c7e25814e6bca936d5f5215ccc199b7",
+      "sha256": "e1acba88090f9c93a5529e5dd0a18d412001f50b9e22b4fab03af31ad9f2f9fb",
       "bytes": 5008
     },
     {
       "name": "wire-1.json",
-      "sha256": "8c789e3405ae4d827be3023401ac18ea30b9c0bad2784adfa994983037932e1c",
+      "sha256": "89a8e9424de027f901d5a6ec185624303fe3985c1717cb4c9d1d05a69e22a6e3",
       "bytes": 60478
     },
     {
       "name": "process-structured-output.json",
-      "sha256": "d0f23adf282ab807b4f57236339e5a1d4b92d60493ea07e338d6f77235d79fbd",
+      "sha256": "a2acf70c4175fecbf2103e78c1a5c01fa6a5099099113b6a9a984f7c32a3230c",
       "bytes": 2489
     },
     {
       "name": "wire-2.json",
-      "sha256": "0d9feb71d2ebd0dbb3d1837f1242e04c08cb1df5e0cb6b2e3cefd61eecedd468",
+      "sha256": "89383ce4e5362e34c105354e4bf2e15d187a58e0a9aeb1cd96d423dc3161d15e",
       "bytes": 60442
     },
     {
       "name": "process-timeout.json",
-      "sha256": "d2c957222603593c083841531867f411ae35f150302d12aa2afd297f6ba4d35f",
+      "sha256": "99f69d3913192d190cb642a1a0bf9a8b9b9e07979c040e58b7fbe5c60c81cbbd",
       "bytes": 2232
     },
     {
       "name": "wire-3.json",
-      "sha256": "0fe70b81624b681c45a3b9ab67e10052337657ebadf159166516333a19b6cc8b",
+      "sha256": "b2aeb0ac448961d41fe5876341b7392308123d366c6e21cea006d1622b4cbfd1",
       "bytes": 60447
     },
     {
       "name": "process-cancellation.json",
-      "sha256": "503c9623fbfc547fe7ec3f413e77502df64c4d61d5217994be106fa0e9ca859c",
+      "sha256": "75d8d44f42f712932994dff9ba4bfaddc0310d91a650ae3aa9aafb4104b693ca",
       "bytes": 2232
     },
     {
       "name": "validation.json",
-      "sha256": "04285bb37805c340ca0a7ef09600bd63e4a008abebd9406da473977bc263e9f5",
+      "sha256": "37fc47caddd6feaf9d03804753d3d0948e72ba58dfe29bb08edc513bb5e5433c",
       "bytes": 365
     },
     {
       "name": "context-sanitization.json",
-      "sha256": "cfb04c0000fa83620a348d9c7777add0250c20d10e82fd21f69ada2628e6979d",
+      "sha256": "753de31a38d81fd2911a91ad97c43ce248591d2502d7724325103bd84da3471d",
       "bytes": 4700
     }
   ],
-  "manifestSha256": "021a97bb440698eceff8189b4adf585a7e87da4f441193b3df6d3e8ebfbd1376"
+  "manifestSha256": "4d118f38cc2b86a5fba6728fd563e80a90c028cbdfff85863b1cb8d3b36ad2c0"
 }

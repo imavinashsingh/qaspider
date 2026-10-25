@@ -6,6 +6,7 @@ import { TestingWorkspace } from './workspace.mjs';
 import { runScenarioSuite } from './scenario-runner.mjs';
 import { TicketPlanner } from './ticket-planner.mjs';
 import { PlanStore } from './plan-store.mjs';
+import { ApprovedExecution } from './approved-execution.mjs';
 import { join } from 'node:path';
 import { z } from 'zod';
 
@@ -18,7 +19,13 @@ const provider = (!process.env.QASPIDER_DESKTOP_PROVIDER || process.env.QASPIDER
 const workspace = new TestingWorkspace({ provider, options: browserOptions });
 const ticketPlanner = new TicketPlanner({ provider });
 let planStore;
+let planExecution;
 const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_DESKTOP_DATA_DIR ?? app.getPath('userData'), 'desktop-plans.sqlite'));
+const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions });
+const executionReply = operation => async input => {
+  try { return { status: 'ok', value: await operation(input) }; }
+  catch { return { status: 'error', message: 'Execution request rejected. Reload the latest approved revision, prepare its owned fixture and authorize its exact origin.' }; }
+};
 const reviewReply = operation => async input => {
   try { return { status: 'ok', value: operation(input) }; }
   catch { return { status: 'error', message: 'Review request could not be saved or loaded. Reload the latest revision and check the review blockers.' }; }
@@ -65,15 +72,25 @@ void app.whenReady().then(() => {
     return savedPlans().get(request.planId, request.revision);
   }));
   handle('desktop:review-plan', reviewReply(input => savedPlans().mutate(input)));
+  handle('desktop:prepare-plan', executionReply(input => executions().prepare(input)));
+  handle('desktop:execute-plan', executionReply(async input => { await workspace.close(); return executions().execute(input); }));
+  // Read-only progress remains available while the serialized execution is active.
+  ipcMain.handle('desktop:plan-reports', async (event, input) => {
+    if (quitting || event.senderFrame !== event.sender.mainFrame || event.senderFrame.url !== uiUrl) return { status: 'error', message: 'Invalid desktop frame.' };
+    return executionReply(value => {
+      const request = z.object({ planId: z.string().uuid(), revision: z.number().int().positive() }).strict().parse(value);
+      return savedPlans().executions(request.planId, request.revision);
+    })(input);
+  });
   createWindow();
   app.on('activate', () => { if (!quitting && BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Wait for the bounded capture and its finally block before allowing app exit.
   app.on('before-quit', (event) => {
-    if (allowQuit || (!activeRun && !workspace.hasSession)) return;
+    if (allowQuit || (!activeRun && !workspace.hasSession && !planExecution?.pending)) return;
     event.preventDefault();
     if (quitting) return;
     quitting = true;
-    void Promise.resolve(activeRun).catch(() => {}).then(() => workspace.close()).catch(() => {}).finally(() => { allowQuit = true; app.quit(); });
+    void Promise.resolve(activeRun).catch(() => {}).then(() => workspace.close()).then(() => planExecution?.close()).catch(() => {}).finally(() => { allowQuit = true; app.quit(); });
   });
   app.on('window-all-closed', () => app.quit());
   app.on('will-quit', () => { planStore?.close(); });

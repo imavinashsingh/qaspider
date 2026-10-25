@@ -9,18 +9,18 @@ import { testAccount, invalidAccount } from '../demo/credentials.mjs';
 class PermissionError extends Error {}
 const accounts = { valid: testAccount, invalid: invalidAccount };
 const requestSchema = z.object({ authorized: z.boolean(), scenarioIds: z.array(z.enum(['valid-login', 'invalid-login', 'deliberate-failure'])).min(1).max(3).refine(ids => new Set(ids).size === ids.length) }).strict();
-const assertionSchema = z.discriminatedUnion('kind', [
+export const assertionSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('url'), expected: z.string().startsWith('/').max(100) }).strict(),
   z.object({ kind: z.literal('visible'), selector: z.string().max(100), expected: z.boolean() }).strict(),
   z.object({ kind: z.literal('text'), selector: z.string().max(100), expected: z.string().max(500) }).strict(),
 ]);
-const stepSchema = z.discriminatedUnion('kind', [
+export const stepSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('navigate'), path: z.literal('/login') }).strict(),
   z.object({ kind: z.literal('fill'), selector: z.enum(['#username', '#password']), account: z.enum(['valid', 'invalid']), field: z.enum(['username', 'password']) }).strict(),
   z.object({ kind: z.literal('click'), selector: z.literal('#sign-in') }).strict(),
   z.object({ kind: z.literal('assert'), assertion: assertionSchema }).strict(),
 ]);
-const planSchema = z.object({ id: z.string().max(100), name: z.string().max(150), steps: z.array(stepSchema).min(2).max(20) }).strict();
+export const planSchema = z.object({ id: z.string().max(100), name: z.string().max(200), steps: z.array(stepSchema).min(2).max(40) }).strict();
 const assertionSelectors = new Set(['#dashboard', '#login-status', '#login-error']);
 
 export function summarize(results) {
@@ -100,8 +100,8 @@ async function captureEvidence(session, fixture, report, stepNumber) {
 }
 
 /** One bounded, sequential plan; every call gets a new browser process/profile. */
-export async function runScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, assertionTimeoutMs = 2000 } = {}) {
-  const report = { id: randomUUID(), scenarioId: '', name: 'Scenario', outcome: 'INCONCLUSIVE', steps: [], evidence: [], browserClosed: false, assertionsExecuted: 0 };
+export async function runScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, assertionTimeoutMs = 2000, checkpoint = async () => {} } = {}) {
+  const report = { id: randomUUID(), scenarioId: '', name: 'Scenario', outcome: 'INCONCLUSIVE', startedAt: new Date().toISOString(), steps: [], evidence: [], browserClosed: false, assertionsExecuted: 0 };
   let session, plan;
   try {
     plan = planSchema.parse(input);
@@ -143,24 +143,28 @@ export async function runScenario(input, { fixture, authorized, options = {}, op
           record.evidenceId = await captureEvidence(session, fixture, report, index + 1);
         }
       } catch (error) {
-        record.outcome = error instanceof PermissionError ? 'BLOCKED' : 'INCONCLUSIVE';
+        // Evidence failure must never erase an already observed assertion failure.
+        if (record.outcome !== 'FAIL') record.outcome = error instanceof PermissionError ? 'BLOCKED' : 'INCONCLUSIVE';
         record.message = error instanceof PermissionError ? error.message : 'Browser operation, assertion, or screenshot could not be verified.';
         if (session && !captureAttempted) {
           try { record.evidenceId = await captureEvidence(session, fixture, report, index + 1); }
           catch { record.message += ' Failure screenshot unavailable.'; }
         }
       }
+      if (record.outcome === 'FAIL') report.outcome = 'FAIL';
+      await checkpoint(redact(report));
       if (record.outcome !== 'PASS') break;
     }
     const executed = report.steps.length === plan.steps.length;
     report.outcome = report.steps.some(step => step.outcome === 'FAIL') ? 'FAIL' : report.steps.some(step => step.outcome === 'BLOCKED') ? 'BLOCKED' : executed && report.assertionsExecuted > 0 && report.steps.every(step => step.outcome === 'PASS') ? 'PASS' : 'INCONCLUSIVE';
-    for (let index = report.steps.length; index < plan.steps.length; index++) report.steps.push({ number: index + 1, kind: plan.steps[index].kind, outcome: 'INCONCLUSIVE', message: 'Not executed because an earlier step stopped the scenario.' });
+    for (let index = report.steps.length; index < plan.steps.length; index++) report.steps.push({ number: index + 1, kind: plan.steps[index].kind, outcome: 'NOT RUN', message: 'Not executed because an earlier step stopped the scenario.' });
   } catch (error) {
-    report.outcome = error instanceof PermissionError || error instanceof z.ZodError ? 'BLOCKED' : 'INCONCLUSIVE';
+    if (report.outcome !== 'FAIL') report.outcome = error instanceof PermissionError || error instanceof z.ZodError ? 'BLOCKED' : 'INCONCLUSIVE';
     report.message = error instanceof PermissionError ? error.message : 'Scenario could not be validated or started.';
   } finally {
     try { if (session) { await session.close(); report.browserClosed = true; } }
-    catch { report.outcome = 'INCONCLUSIVE'; report.message = 'Browser cleanup failed.'; }
+    catch { if (report.outcome !== 'FAIL') report.outcome = 'INCONCLUSIVE'; report.message = 'Browser cleanup failed.'; }
+    report.completedAt = new Date().toISOString();
   }
   return redact(report);
 }

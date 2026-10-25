@@ -10,4 +10,7 @@ contextBridge.exposeInMainWorld('qaspider', Object.freeze({
   listPlans: () => ipcRenderer.invoke('desktop:list-plans'),
   getPlan: (request) => ipcRenderer.invoke('desktop:get-plan', request),
   reviewPlan: (request) => ipcRenderer.invoke('desktop:review-plan', request),
+  preparePlan: (request) => ipcRenderer.invoke('desktop:prepare-plan', request),
+  executePlan: (request) => ipcRenderer.invoke('desktop:execute-plan', request),
+  planReports: (request) => ipcRenderer.invoke('desktop:plan-reports', request),
 }));

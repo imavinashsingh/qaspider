@@ -1,0 +1,1248 @@
+{
+  "verifiedAt": "2026-10-25T15:08:16.660Z",
+  "synthetic": true,
+  "inferenceInvoked": false,
+  "privateDatabase": "/home/avi/Opensource/qaspider/.qaspider/desktop-m43-live/1cd28686-4bf8-4fed-a0f9-e341c1a3197e/desktop-plans.sqlite",
+  "id": "ce1f40c9-2887-475e-b90f-9022e308283f",
+  "planId": "450f6f4b-4988-4675-b8ca-d8ccc7344c96",
+  "ticketIdentifier": "450f6f4b-4988-4675-b8ca-d8ccc7344c96",
+  "title": "QA-43: Controlled login verification",
+  "revision": 1,
+  "hash": "688b3ec08b3552117f521b8bf118b8920538992e77171b8ca11a4422e292d4fe",
+  "approvedRevision": {
+    "original": {
+      "assumptions": [],
+      "criteria": [
+        {
+          "criterionId": "AC-1",
+          "interpretation": "testable",
+          "explanation": "Explicit synthetic fixture verification.",
+          "negativeTests": {
+            "applicability": "unspecified",
+            "reason": "Separate criterion for invalid credentials."
+          },
+          "boundaryTests": {
+            "applicability": "unspecified",
+            "reason": "No boundary requirement."
+          }
+        },
+        {
+          "criterionId": "AC-2",
+          "interpretation": "testable",
+          "explanation": "Explicit synthetic fixture verification.",
+          "negativeTests": {
+            "applicability": "unspecified",
+            "reason": "Separate criterion for invalid credentials."
+          },
+          "boundaryTests": {
+            "applicability": "unspecified",
+            "reason": "No boundary requirement."
+          }
+        },
+        {
+          "criterionId": "AC-3",
+          "interpretation": "testable",
+          "explanation": "Explicit synthetic fixture verification.",
+          "negativeTests": {
+            "applicability": "unspecified",
+            "reason": "Separate criterion for invalid credentials."
+          },
+          "boundaryTests": {
+            "applicability": "unspecified",
+            "reason": "No boundary requirement."
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "S-1",
+          "criterionId": "AC-1",
+          "category": "positive",
+          "title": "A: Valid credentials",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"valid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"valid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "visibility",
+              "description": "{\"kind\":\"visible\",\"selector\":\"#dashboard\",\"expected\":true}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "text",
+              "description": "{\"kind\":\"text\",\"selector\":\"#login-status\",\"expected\":\"Signed in successfully\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        },
+        {
+          "id": "S-2",
+          "criterionId": "AC-2",
+          "category": "positive",
+          "title": "B: Invalid credentials",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"invalid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"invalid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "text",
+              "description": "{\"kind\":\"text\",\"selector\":\"#login-error\",\"expected\":\"Invalid username or password.\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "visibility",
+              "description": "{\"kind\":\"visible\",\"selector\":\"#dashboard\",\"expected\":false}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        },
+        {
+          "id": "S-3",
+          "criterionId": "AC-3",
+          "category": "positive",
+          "title": "Deliberate failure: invalid login expects dashboard",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"invalid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"invalid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        }
+      ],
+      "version": 1,
+      "status": "draft",
+      "proposalSource": "ai",
+      "ticket": {
+        "title": "QA-43: Controlled login verification",
+        "description": "Synthetic test of the owned login fixture. Verify successful login and rejection of invalid credentials. The optional deliberate wrong dashboard assertion must fail.",
+        "acceptanceCriteria": [
+          {
+            "id": "AC-1",
+            "text": "A: Valid credentials"
+          },
+          {
+            "id": "AC-2",
+            "text": "B: Invalid credentials"
+          },
+          {
+            "id": "AC-3",
+            "text": "Deliberate failure: invalid login expects dashboard"
+          }
+        ]
+      }
+    },
+    "content": {
+      "scenarios": [
+        {
+          "id": "S-1",
+          "criterionId": "AC-1",
+          "category": "positive",
+          "title": "A: Valid credentials",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"valid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"valid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "visibility",
+              "description": "{\"kind\":\"visible\",\"selector\":\"#dashboard\",\"expected\":true}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "text",
+              "description": "{\"kind\":\"text\",\"selector\":\"#login-status\",\"expected\":\"Signed in successfully\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        },
+        {
+          "id": "S-2",
+          "criterionId": "AC-2",
+          "category": "positive",
+          "title": "B: Invalid credentials",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"invalid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"invalid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "text",
+              "description": "{\"kind\":\"text\",\"selector\":\"#login-error\",\"expected\":\"Invalid username or password.\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            },
+            {
+              "kind": "visibility",
+              "description": "{\"kind\":\"visible\",\"selector\":\"#dashboard\",\"expected\":false}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        },
+        {
+          "id": "S-3",
+          "criterionId": "AC-3",
+          "category": "positive",
+          "title": "Deliberate failure: invalid login expects dashboard",
+          "assumptionIds": [],
+          "preconditions": [
+            "Owned controlled login fixture",
+            "Synthetic valid and invalid accounts"
+          ],
+          "steps": [
+            {
+              "instruction": "{\"kind\":\"navigate\",\"path\":\"/login\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login\"}"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#username\",\"account\":\"invalid\",\"field\":\"username\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"fill\",\"selector\":\"#password\",\"account\":\"invalid\",\"field\":\"password\"}",
+              "expectedOutcome": "[REDACTED]"
+            },
+            {
+              "instruction": "{\"kind\":\"click\",\"selector\":\"#sign-in\"}",
+              "expectedOutcome": "{\"kind\":\"url\",\"expected\":\"/login?error=invalid\"}"
+            }
+          ],
+          "assertions": [
+            {
+              "kind": "url",
+              "description": "{\"kind\":\"url\",\"expected\":\"/dashboard\"}",
+              "exactValue": null,
+              "sourceQuote": null
+            }
+          ]
+        }
+      ],
+      "assumptions": [],
+      "criteria": [
+        {
+          "criterionId": "AC-1",
+          "confirmed": true,
+          "note": "Synthetic fixture expectations explicitly reviewed."
+        },
+        {
+          "criterionId": "AC-2",
+          "confirmed": true,
+          "note": "Synthetic fixture expectations explicitly reviewed."
+        },
+        {
+          "criterionId": "AC-3",
+          "confirmed": true,
+          "note": "Synthetic fixture expectations explicitly reviewed."
+        }
+      ]
+    },
+    "approval": {
+      "id": "4341420b-c408-4e20-9ce4-3737851d5cf8",
+      "revision": 1,
+      "hash": "688b3ec08b3552117f521b8bf118b8920538992e77171b8ca11a4422e292d4fe",
+      "approvedAt": "2026-10-25T15:08:09.265Z",
+      "reviewer": "local-user"
+    }
+  },
+  "environment": "owned-login-fixture",
+  "origin": "http://127.0.0.1:46323",
+  "startedAt": "2026-10-25T15:08:10.618Z",
+  "status": "COMPLETED",
+  "outcome": "FAIL",
+  "plannedCoverage": [
+    {
+      "criterionId": "AC-1",
+      "text": "A: Valid credentials",
+      "scenarioIds": [
+        "S-1"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "NOT_EXECUTED"
+    },
+    {
+      "criterionId": "AC-2",
+      "text": "B: Invalid credentials",
+      "scenarioIds": [
+        "S-2"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "NOT_EXECUTED"
+    },
+    {
+      "criterionId": "AC-3",
+      "text": "Deliberate failure: invalid login expects dashboard",
+      "scenarioIds": [
+        "S-3"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "NOT_EXECUTED"
+    }
+  ],
+  "scenarios": [
+    {
+      "scenarioId": "S-1",
+      "criterionId": "AC-1",
+      "title": "A: Valid credentials",
+      "compatibility": {
+        "scenarioId": "S-1",
+        "criterionId": "AC-1",
+        "title": "A: Valid credentials",
+        "classification": "EXECUTABLE",
+        "checks": [
+          {
+            "source": "Step 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 2",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 3",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 4",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 2",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 3",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Precondition 1",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Precondition 2",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Scenario structure",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          }
+        ],
+        "plan": {
+          "id": "S-1",
+          "name": "A: Valid credentials",
+          "steps": [
+            {
+              "kind": "navigate",
+              "path": "/login"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login"
+              }
+            },
+            {
+              "kind": "fill",
+              "selector": "#username",
+              "account": "valid",
+              "field": "username"
+            },
+            {
+              "kind": "fill",
+              "selector": "#password",
+              "account": "valid",
+              "field": "password"
+            },
+            {
+              "kind": "click",
+              "selector": "#sign-in"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/dashboard"
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/dashboard"
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "visible",
+                "selector": "#dashboard",
+                "expected": true
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "text",
+                "selector": "#login-status",
+                "expected": "Signed in successfully"
+              }
+            }
+          ]
+        }
+      },
+      "status": "COMPLETED",
+      "outcome": "PASS",
+      "startedAt": "2026-10-25T15:08:10.621Z",
+      "result": {
+        "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb",
+        "scenarioId": "S-1",
+        "name": "A: Valid credentials",
+        "outcome": "PASS",
+        "startedAt": "2026-10-25T15:08:10.623Z",
+        "steps": [
+          {
+            "number": 1,
+            "kind": "navigate",
+            "target": "/login",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "http://127.0.0.1:46323/login",
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-1"
+          },
+          {
+            "number": 2,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-2"
+          },
+          {
+            "number": 3,
+            "kind": "fill",
+            "target": "#username",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 4,
+            "kind": "fill",
+            "target": "#password",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 5,
+            "kind": "click",
+            "target": "#sign-in",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "Approved button clicked",
+            "actual": "Approved button clicked",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-3"
+          },
+          {
+            "number": 6,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/dashboard",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/dashboard",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-4"
+          },
+          {
+            "number": 7,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/dashboard",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/dashboard",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-5"
+          },
+          {
+            "number": 8,
+            "kind": "assert",
+            "target": "#dashboard",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": true,
+            "matched": true,
+            "actual": true,
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-6"
+          },
+          {
+            "number": 9,
+            "kind": "assert",
+            "target": "#login-status",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "Signed in successfully",
+            "matched": true,
+            "actual": "Signed in successfully",
+            "evidenceId": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-7"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-1",
+            "stepNumber": 1,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-1.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-2",
+            "stepNumber": 2,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-2.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-3",
+            "stepNumber": 5,
+            "url": "http://127.0.0.1:46323/dashboard",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-5.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-4",
+            "stepNumber": 6,
+            "url": "http://127.0.0.1:46323/dashboard",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-6.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-5",
+            "stepNumber": 7,
+            "url": "http://127.0.0.1:46323/dashboard",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-7.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-6",
+            "stepNumber": 8,
+            "url": "http://127.0.0.1:46323/dashboard",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-8.png"
+          },
+          {
+            "id": "cb126a99-a1f0-458d-a04c-df4e2b3090cb-evidence-7",
+            "stepNumber": 9,
+            "url": "http://127.0.0.1:46323/dashboard",
+            "screenshot": "test-results/desktop-live/m4.3/S-1-step-9.png"
+          }
+        ],
+        "browserClosed": true,
+        "assertionsExecuted": 5,
+        "initialSessionEmpty": true,
+        "completedAt": "2026-10-25T15:08:11.870Z"
+      },
+      "completedAt": "2026-10-25T15:08:11.870Z"
+    },
+    {
+      "scenarioId": "S-2",
+      "criterionId": "AC-2",
+      "title": "B: Invalid credentials",
+      "compatibility": {
+        "scenarioId": "S-2",
+        "criterionId": "AC-2",
+        "title": "B: Invalid credentials",
+        "classification": "EXECUTABLE",
+        "checks": [
+          {
+            "source": "Step 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 2",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 3",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 4",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 2",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 3",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Precondition 1",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Precondition 2",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Scenario structure",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          }
+        ],
+        "plan": {
+          "id": "S-2",
+          "name": "B: Invalid credentials",
+          "steps": [
+            {
+              "kind": "navigate",
+              "path": "/login"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login"
+              }
+            },
+            {
+              "kind": "fill",
+              "selector": "#username",
+              "account": "invalid",
+              "field": "username"
+            },
+            {
+              "kind": "fill",
+              "selector": "#password",
+              "account": "invalid",
+              "field": "password"
+            },
+            {
+              "kind": "click",
+              "selector": "#sign-in"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login?error=invalid"
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login?error=invalid"
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "text",
+                "selector": "#login-error",
+                "expected": "Invalid username or password."
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "visible",
+                "selector": "#dashboard",
+                "expected": false
+              }
+            }
+          ]
+        }
+      },
+      "status": "COMPLETED",
+      "outcome": "PASS",
+      "startedAt": "2026-10-25T15:08:11.873Z",
+      "result": {
+        "id": "aa76f722-d852-4774-8f28-552c6625ff2c",
+        "scenarioId": "S-2",
+        "name": "B: Invalid credentials",
+        "outcome": "PASS",
+        "startedAt": "2026-10-25T15:08:11.876Z",
+        "steps": [
+          {
+            "number": 1,
+            "kind": "navigate",
+            "target": "/login",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "http://127.0.0.1:46323/login",
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-1"
+          },
+          {
+            "number": 2,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-2"
+          },
+          {
+            "number": 3,
+            "kind": "fill",
+            "target": "#username",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 4,
+            "kind": "fill",
+            "target": "#password",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 5,
+            "kind": "click",
+            "target": "#sign-in",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "Approved button clicked",
+            "actual": "Approved button clicked",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-3"
+          },
+          {
+            "number": 6,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login?error=invalid",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login?error=invalid",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-4"
+          },
+          {
+            "number": 7,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login?error=invalid",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login?error=invalid",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-5"
+          },
+          {
+            "number": 8,
+            "kind": "assert",
+            "target": "#login-error",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "Invalid username or password.",
+            "matched": true,
+            "actual": "Invalid username or password.",
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-6"
+          },
+          {
+            "number": 9,
+            "kind": "assert",
+            "target": "#dashboard",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": false,
+            "matched": true,
+            "actual": false,
+            "evidenceId": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-7"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-1",
+            "stepNumber": 1,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-1.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-2",
+            "stepNumber": 2,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-2.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-3",
+            "stepNumber": 5,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-5.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-4",
+            "stepNumber": 6,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-6.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-5",
+            "stepNumber": 7,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-7.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-6",
+            "stepNumber": 8,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-8.png"
+          },
+          {
+            "id": "aa76f722-d852-4774-8f28-552c6625ff2c-evidence-7",
+            "stepNumber": 9,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-2-step-9.png"
+          }
+        ],
+        "browserClosed": true,
+        "assertionsExecuted": 5,
+        "initialSessionEmpty": true,
+        "completedAt": "2026-10-25T15:08:13.024Z"
+      },
+      "completedAt": "2026-10-25T15:08:13.024Z"
+    },
+    {
+      "scenarioId": "S-3",
+      "criterionId": "AC-3",
+      "title": "Deliberate failure: invalid login expects dashboard",
+      "compatibility": {
+        "scenarioId": "S-3",
+        "criterionId": "AC-3",
+        "title": "Deliberate failure: invalid login expects dashboard",
+        "classification": "EXECUTABLE",
+        "checks": [
+          {
+            "source": "Step 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 2",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 3",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Step 4",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Assertion 1",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          },
+          {
+            "source": "Precondition 1",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Precondition 2",
+            "classification": "EXECUTABLE",
+            "reason": "Provided by the owned fixture."
+          },
+          {
+            "source": "Scenario structure",
+            "classification": "EXECUTABLE",
+            "reason": "Explicit supported M3 operation."
+          }
+        ],
+        "plan": {
+          "id": "S-3",
+          "name": "Deliberate failure: invalid login expects dashboard",
+          "steps": [
+            {
+              "kind": "navigate",
+              "path": "/login"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login"
+              }
+            },
+            {
+              "kind": "fill",
+              "selector": "#username",
+              "account": "invalid",
+              "field": "username"
+            },
+            {
+              "kind": "fill",
+              "selector": "#password",
+              "account": "invalid",
+              "field": "password"
+            },
+            {
+              "kind": "click",
+              "selector": "#sign-in"
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/login?error=invalid"
+              }
+            },
+            {
+              "kind": "assert",
+              "assertion": {
+                "kind": "url",
+                "expected": "/dashboard"
+              }
+            }
+          ]
+        }
+      },
+      "status": "COMPLETED",
+      "outcome": "FAIL",
+      "startedAt": "2026-10-25T15:08:13.030Z",
+      "result": {
+        "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749",
+        "scenarioId": "S-3",
+        "name": "Deliberate failure: invalid login expects dashboard",
+        "outcome": "FAIL",
+        "startedAt": "2026-10-25T15:08:13.035Z",
+        "steps": [
+          {
+            "number": 1,
+            "kind": "navigate",
+            "target": "/login",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "http://127.0.0.1:46323/login",
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-1"
+          },
+          {
+            "number": 2,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login",
+            "evidenceId": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-2"
+          },
+          {
+            "number": 3,
+            "kind": "fill",
+            "target": "#username",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 4,
+            "kind": "fill",
+            "target": "#password",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "[REDACTED]",
+            "actual": "[REDACTED]"
+          },
+          {
+            "number": 5,
+            "kind": "click",
+            "target": "#sign-in",
+            "outcome": "PASS",
+            "message": "Approved browser operation completed.",
+            "expected": "Approved button clicked",
+            "actual": "Approved button clicked",
+            "evidenceId": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-3"
+          },
+          {
+            "number": 6,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "PASS",
+            "message": "Expected result verified.",
+            "expected": "http://127.0.0.1:46323/login?error=invalid",
+            "matched": true,
+            "actual": "http://127.0.0.1:46323/login?error=invalid",
+            "evidenceId": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-4"
+          },
+          {
+            "number": 7,
+            "kind": "assert",
+            "target": "URL",
+            "outcome": "FAIL",
+            "message": "Expected result was not observed before the deadline.",
+            "expected": "http://127.0.0.1:46323/dashboard",
+            "matched": false,
+            "actual": "http://127.0.0.1:46323/login?error=invalid",
+            "evidenceId": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-5"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-1",
+            "stepNumber": 1,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-3-step-1.png"
+          },
+          {
+            "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-2",
+            "stepNumber": 2,
+            "url": "http://127.0.0.1:46323/login",
+            "screenshot": "test-results/desktop-live/m4.3/S-3-step-2.png"
+          },
+          {
+            "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-3",
+            "stepNumber": 5,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-3-step-5.png"
+          },
+          {
+            "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-4",
+            "stepNumber": 6,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-3-step-6.png"
+          },
+          {
+            "id": "f9aa0a69-99a9-424b-abc9-dcf8fb8e7749-evidence-5",
+            "stepNumber": 7,
+            "url": "http://127.0.0.1:46323/login?error=invalid",
+            "screenshot": "test-results/desktop-live/m4.3/S-3-step-7.png"
+          }
+        ],
+        "browserClosed": true,
+        "assertionsExecuted": 3,
+        "initialSessionEmpty": true,
+        "completedAt": "2026-10-25T15:08:16.197Z"
+      },
+      "completedAt": "2026-10-25T15:08:16.197Z"
+    }
+  ],
+  "coverage": [
+    {
+      "criterionId": "AC-1",
+      "text": "A: Valid credentials",
+      "scenarioIds": [
+        "S-1"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "PASS",
+      "executedScenarioIds": [
+        "S-1"
+      ],
+      "verified": true
+    },
+    {
+      "criterionId": "AC-2",
+      "text": "B: Invalid credentials",
+      "scenarioIds": [
+        "S-2"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "PASS",
+      "executedScenarioIds": [
+        "S-2"
+      ],
+      "verified": true
+    },
+    {
+      "criterionId": "AC-3",
+      "text": "Deliberate failure: invalid login expects dashboard",
+      "scenarioIds": [
+        "S-3"
+      ],
+      "planned": "reviewed",
+      "blockingAssumptionIds": [],
+      "executed": "PARTIAL",
+      "executedScenarioIds": [
+        "S-3"
+      ],
+      "verified": false
+    }
+  ],
+  "gaps": [
+    "S-3: FAIL — See step evidence.",
+    "AC-3: required coverage remains unverified."
+  ],
+  "completedAt": "2026-10-25T15:08:16.206Z"
+}

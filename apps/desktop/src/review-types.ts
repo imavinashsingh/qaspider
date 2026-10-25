@@ -1,4 +1,5 @@
 import type { TicketPlan } from './TicketPlanning.js';
+import type { ExecutionBridge } from './execution-types.js';
 export interface ReviewContent {
   scenarios: TicketPlan['scenarios'];
   assumptions: { id: string; decision: 'unresolved' | 'confirmed' | 'rejected'; note: string }[];
@@ -21,7 +22,7 @@ export type ReviewAction =
   | { type: 'start-review' } | { type: 'fork' } | { type: 'approve'; hash: string };
 export type ReviewReply<T> = { status: 'ok'; value: T } | { status: 'error'; message: string };
 export interface SavedPlan { id: string; title: string; revision: number; status: string }
-export interface ReviewBridge {
+export interface ReviewBridge extends ExecutionBridge {
   listPlans: () => Promise<ReviewReply<SavedPlan[]>>;
   getPlan: (input: { planId: string; revision?: number }) => Promise<ReviewReply<ReviewSnapshot>>;
   reviewPlan: (input: { planId: string; revision: number; version: number; action: ReviewAction }) => Promise<ReviewReply<ReviewSnapshot>>;

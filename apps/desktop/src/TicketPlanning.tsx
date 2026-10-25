@@ -69,9 +69,9 @@ export function TicketPlanning() {
     finally { setBusy(false); }
   }
   return <section className="card ticket-planning" data-testid="ticket-planning" aria-busy={busy}>
-    <p className="eyebrow">TICKET PLAN REVIEW · MILESTONE 4.2</p>
+    <p className="eyebrow">TICKET PLAN REVIEW AND EXECUTION · MILESTONE 4.3</p>
     <h2>Turn acceptance criteria into a test proposal.</h2>
-    <p>Generate, edit and approve a versioned test plan. Plan approval does not authorize browser actions. No ticket tests execute here.</p>
+    <p>Generate, edit and approve a versioned test plan, then prepare supported scenarios for authorized execution. Plan approval does not authorize browser actions.</p>
     <form className="workspace-form" onSubmit={event => void propose(event)}>
       <label htmlFor="ticket-title">Ticket title</label>
       <input id="ticket-title" required maxLength={200} disabled={busy} value={title} onChange={event => { setTitle(event.target.value); setResult(null); setSaved(null); }}/>

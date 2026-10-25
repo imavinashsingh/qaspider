@@ -59,6 +59,6 @@ test('real desktop reviews, approves, forks and retrieves both revisions after r
     expect(response.status).toBe('ok');
     expect(response.value.approvals[0].hash).toBe(response.value.hash);
     expect(response.value.coverage.every(item => item.executed === 'NOT_EXECUTED')).toBe(true);
-    await expect(section.getByRole('button', { name: /execute|run tests/i })).toHaveCount(0);
+    await expect(section.getByRole('button', { name: 'Execute Approved Plan', exact: true })).toBeDisabled();
   } finally { await app?.close(); rmSync(folder, { recursive: true, force: true }); }
 });

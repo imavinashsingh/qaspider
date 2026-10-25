@@ -46,14 +46,33 @@ export class PlanStore {
         CREATE TABLE IF NOT EXISTS desktop_plan_events (
           id INTEGER PRIMARY KEY, plan_id TEXT NOT NULL, revision INTEGER NOT NULL, type TEXT NOT NULL,
           details_json TEXT NOT NULL, created_at TEXT NOT NULL, FOREIGN KEY(plan_id,revision) REFERENCES desktop_plan_revisions(plan_id,number));
+        CREATE TABLE IF NOT EXISTS desktop_plan_executions (
+          id TEXT PRIMARY KEY, plan_id TEXT NOT NULL, revision INTEGER NOT NULL, report_json TEXT NOT NULL,
+          FOREIGN KEY(plan_id,revision) REFERENCES desktop_plan_revisions(plan_id,number));
         CREATE TRIGGER IF NOT EXISTS freeze_approved_update BEFORE UPDATE ON desktop_plan_revisions WHEN OLD.status='APPROVED' BEGIN SELECT RAISE(ABORT,'Approved revisions are immutable'); END;
         CREATE TRIGGER IF NOT EXISTS freeze_approved_delete BEFORE DELETE ON desktop_plan_revisions WHEN OLD.status='APPROVED' BEGIN SELECT RAISE(ABORT,'Approved revisions are immutable'); END;
         CREATE TRIGGER IF NOT EXISTS freeze_original BEFORE UPDATE ON desktop_plans BEGIN SELECT RAISE(ABORT,'Original ticket is immutable'); END;
         PRAGMA user_version=1;
       `);
+      // A new desktop process cannot resume ownership of an earlier browser run.
+      for (const row of this.db.prepare('SELECT report_json FROM desktop_plan_executions').all()) {
+        const report = JSON.parse(row.report_json);
+        if (report.status !== 'RUNNING') continue;
+        report.status = 'COMPLETED'; report.outcome = report.scenarios.some(item => item.outcome === 'FAIL') ? 'FAIL' : 'INCONCLUSIVE';
+        report.completedAt = new Date().toISOString(); report.gaps.push('Execution interrupted before completion; remaining scenarios were not run.');
+        for (const item of report.scenarios) if (item.status === 'RUNNING') { item.status = 'INTERRUPTED'; if (item.outcome !== 'FAIL') item.outcome = 'INCONCLUSIVE'; }
+        this.saveExecution(report);
+      }
     } catch (error) { this.db.close(); throw error; }
   }
   close() { this.db.close(); }
+  saveExecution(report) {
+    this.db.prepare(`INSERT INTO desktop_plan_executions VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET report_json=excluded.report_json`).run(report.id, report.planId, report.revision, JSON.stringify(report));
+  }
+  executions(planId, revision) {
+    z.string().uuid().parse(planId); z.number().int().positive().parse(revision);
+    return this.db.prepare('SELECT report_json FROM desktop_plan_executions WHERE plan_id=? AND revision=? ORDER BY rowid DESC LIMIT 20').all(planId, revision).map(row => JSON.parse(row.report_json));
+  }
   atomic(operation) {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = operation(); this.db.exec('COMMIT'); return result; }

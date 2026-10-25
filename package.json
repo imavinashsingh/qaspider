@@ -40,7 +40,8 @@
     "start:studio-client": "node dist/packages/studio/src/client-main.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "desktop:verify-execution": "npm run verify:execution --workspace @qaspider/desktop"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.4.0",

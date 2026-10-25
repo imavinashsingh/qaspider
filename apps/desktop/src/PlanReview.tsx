@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ApprovedExecution } from './ApprovedExecution.js';
 import type { TicketPlan } from './TicketPlanning.js';
 import type { ReviewAction, ReviewSnapshot } from './review-types.js';
 
@@ -60,8 +61,8 @@ export function PlanReview({ snapshot, onChange, openRevision }: { snapshot: Rev
   return <div className="plan-review workspace-form" data-testid="ticket-plan">
     <h3>{original.ticket.title}</h3>
     <p data-testid="revision-status"><strong>Revision {snapshot.revision} · {snapshot.status}</strong>{!latest ? ' · Historical revision, read-only' : ''}</p>
-    <p>Saved locally · Approval is plan review only · No browser authorization · Executed coverage: Not executed</p>
-    <p>Criteria with proposals: {snapshot.coverage.filter(item => item.scenarioIds.length > 0).length}/{snapshot.coverage.length} · Reviewed planned coverage: {snapshot.coverage.filter(item => item.planned === 'reviewed').length}/{snapshot.coverage.length} · Executed: 0/{snapshot.coverage.length} (Not executed)</p>
+    <p>Saved locally · Approval is plan review only · Browser authorization is required separately.</p>
+    <p>Criteria with proposals: {snapshot.coverage.filter(item => item.scenarioIds.length > 0).length}/{snapshot.coverage.length} · Reviewed planned coverage: {snapshot.coverage.filter(item => item.planned === 'reviewed').length}/{snapshot.coverage.length}. Execution coverage appears in the revision’s ticket reports below.</p>
     <small>Validated revision hash: <code>{snapshot.hash}</code></small>
     <div className="review-actions">
       {latest && snapshot.status === 'DRAFT' && <button disabled={busy || editing !== null} onClick={() => void mutate({ type: 'start-review' })}>Start review</button>}
@@ -77,7 +78,7 @@ export function PlanReview({ snapshot, onChange, openRevision }: { snapshot: Rev
     {snapshot.coverage.map(item => <article key={item.criterionId} id={`ticket-${item.criterionId}`} className="ticket-criterion" data-testid="planned-coverage">
       <strong>{item.criterionId}: {item.text}</strong>
       <p>Planned coverage: <strong>{item.planned === 'gap' ? 'Gap' : item.planned === 'reviewed' ? 'Reviewed planned coverage' : 'Proposed only'}</strong> · Scenarios: {item.scenarioIds.join(', ') || 'None'}</p>
-      <p>Executed coverage: Not executed</p>
+      <p>Review approval supplies planned coverage. See ticket reports below for executed coverage.</p>
       {item.blockingAssumptionIds.length > 0 && <p>Blocking assumptions: {item.blockingAssumptionIds.join(', ')}</p>}
       {(() => {
         const decision = snapshot.content.criteria.find(entry => entry.criterionId === item.criterionId)!;
@@ -107,6 +108,7 @@ export function PlanReview({ snapshot, onChange, openRevision }: { snapshot: Rev
     })}
     <p>Removed scenarios: {original.scenarios.filter(item => !snapshot.content.scenarios.some(scenario => scenario.id === item.id)).map(item => item.id).join(', ') || 'None'}</p>
     <h3>Approval history</h3>
+    <ApprovedExecution snapshot={snapshot}/>
     {!snapshot.approvals.length && <p>No approved revisions.</p>}
     {snapshot.approvals.map(item => <p key={item.id}>Revision {item.revision} approved at {item.approvedAt} by {item.reviewer}<br/><code>{item.hash}</code></p>)}
     <details><summary>Review audit history</summary><pre>{JSON.stringify(snapshot.events, null, 2)}</pre></details>
