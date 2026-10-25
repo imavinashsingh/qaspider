@@ -24,7 +24,7 @@ const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_D
 const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions, provider });
 const executionReply = operation => async input => {
   try { return { status: 'ok', value: await operation(input) }; }
-  catch { return { status: 'error', message: 'Execution request rejected. Reload the latest approved revision, prepare its owned fixture and authorize its exact origin.' }; }
+  catch { return { status: 'error', message: 'Execution request rejected. Reload the latest approved revision, prepare its application and authorize its exact origin.' }; }
 };
 const reviewReply = operation => async input => {
   try { return { status: 'ok', value: operation(input) }; }

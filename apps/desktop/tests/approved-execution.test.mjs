@@ -19,6 +19,25 @@ function setup(runner) {
 // Synthetic runner receipts for adapter unit tests; real browser receipts are tested separately.
 const passing = async plan => ({ scenarioId: plan.id, outcome: 'PASS', assertionsExecuted: 1, steps: plan.steps.map(() => ({ outcome: 'PASS' })), evidence: [{ id: 'synthetic-evidence' }], browserClosed: true });
 describe('exact approved ticket execution', () => {
+  it('prepares arbitrary application origins without borrowing owned fixture preconditions', async () => {
+    const { store, saved, service } = setup(passing);
+    try {
+      const preparation = await service.prepare({ ...executionIdentity(saved), url: 'https://unfamiliar.example/path' });
+      expect(preparation.origin).toBe('https://unfamiliar.example');
+      expect(preparation.environment).toBe('user-selected-application');
+      expect(preparation.compatibility.every(item => item.classification === 'CONFIGURATION_REQUIRED')).toBe(true);
+      await expect(service.execute({ ...executionRequest(saved, preparation), origin: 'https://another.example' })).rejects.toThrow();
+      const report = await service.execute(executionRequest(saved, preparation));
+      expect(report.outcome).toBe('BLOCKED');
+      expect(report.knowledgeScope.application).toMatch(/^[a-f0-9]{64}$/);
+      expect(report.knowledgeScope.application).not.toBe('owned-qa-apps-v1');
+      for (const [url, sameScope] of [['https://unfamiliar.example/another/path', true], ['https://other.example/path', false], ['http://unfamiliar.example/path', false], ['https://unfamiliar.example:8443/path', false]]) {
+        const next = await service.prepare({ ...executionIdentity(saved), url });
+        const result = await service.execute(executionRequest(saved, next));
+        expect(result.knowledgeScope.application === report.knowledgeScope.application).toBe(sameScope);
+      }
+    } finally { await service.close(); store.close(); }
+  });
   it('rejects drafts, stale hashes, new revisions and modified SQLite records', () => {
     const { store, saved } = setup();
     try {

@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { z } from 'zod';
 import { startControlledFixture } from './controlled-fixture.mjs';
 import { redact } from './scenario-runner.mjs';
@@ -6,9 +6,11 @@ import { checkCompatibility } from './plan-compatibility.mjs';
 import { runGenericScenario } from './generic-execution.mjs';
 import { testAccount, invalidAccount } from '../demo/credentials.mjs';
 import { fixtureKnowledgeScope } from './knowledge.mjs';
+import { selectApplicationTarget } from './execution-target.mjs';
 
 const identity = z.object({ planId: z.string().uuid(), revision: z.number().int().positive(), version: z.number().int().positive(), hash: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
-const executeRequest = identity.extend({ preparationId: z.string().uuid(), origin: z.string(), environment: z.enum(['owned-login-fixture', 'owned-qa-fixtures']), authorized: z.literal(true) }).strict();
+const prepareRequest = identity.extend({ url: z.string().trim().min(1).max(4096).optional() }).strict();
+const executeRequest = identity.extend({ preparationId: z.string().uuid(), origin: z.string(), environment: z.enum(['owned-login-fixture', 'owned-qa-fixtures', 'user-selected-application']), authorized: z.literal(true) }).strict();
 const now = () => new Date().toISOString();
 
 export function requireApproved(store, input) {
@@ -36,16 +38,17 @@ export class ApprovedExecution {
     if (pending) { clearTimeout(pending.timer); await pending.fixture.close(); }
   }
   async prepare(input) {
-    const saved = requireApproved(this.store, input);
+    const { url, ...requestedIdentity } = prepareRequest.parse(input);
+    const saved = requireApproved(this.store, requestedIdentity);
     await this.close();
-    const compatibility = checkCompatibility(saved);
-    const fixture = await startControlledFixture();
+    const compatibility = checkCompatibility(saved, { ownedFixture: !url });
+    const fixture = url ? selectApplicationTarget(url) : await startControlledFixture();
     const preparationId = randomUUID();
-    const environment = saved.content.scenarios.some(scenario => scenario.steps.some(step => /"kind"\s*:\s*"[A-Z]/.test(step.instruction))) ? 'owned-qa-fixtures' : 'owned-login-fixture';
+    const environment = url ? 'user-selected-application' : saved.content.scenarios.some(scenario => scenario.steps.some(step => /"kind"\s*:\s*"[A-Z]/.test(step.instruction))) ? 'owned-qa-fixtures' : 'owned-login-fixture';
     const expiresAt = Date.now() + 300_000;
     const timer = setTimeout(() => { void this.close().catch(() => {}); }, 300_000); timer.unref();
-    this.pending = { fixture, environment, preparationId, identity: identity.parse(input), timer, expiresAt };
-    return { preparationId, environment, origin: fixture.origin, expiresAt: new Date(expiresAt).toISOString(), compatibility, fixturesReady: [testAccount, invalidAccount].every(account => Boolean(account.username && account.password)) };
+    this.pending = { fixture, environment, preparationId, identity: requestedIdentity, timer, expiresAt };
+    return { preparationId, environment, origin: fixture.origin, expiresAt: new Date(expiresAt).toISOString(), compatibility, fixturesReady: Boolean(url) || [testAccount, invalidAccount].every(account => Boolean(account.username && account.password)) };
   }
   async execute(input) {
     const request = executeRequest.parse(input);
@@ -57,9 +60,11 @@ export class ApprovedExecution {
       id: randomUUID(), planId: saved.planId, ticketIdentifier: saved.planId, title: saved.original.ticket.title,
       revision: saved.revision, hash: saved.hash, approvedRevision: { original: saved.original, content: saved.content, approval: saved.approvals.find(item => item.revision === saved.revision) },
       environment: request.environment, origin: pending.fixture.origin, startedAt: now(), status: 'RUNNING', outcome: 'INCONCLUSIVE', plannedCoverage: saved.coverage,
-      scenarios: checkCompatibility(saved).map(item => ({ scenarioId: item.scenarioId, criterionId: item.criterionId, title: item.title, compatibility: item, status: 'NOT RUN', outcome: 'NOT RUN' })), coverage: [], gaps: [],
+      scenarios: checkCompatibility(saved, { ownedFixture: request.environment !== 'user-selected-application' }).map(item => ({ scenarioId: item.scenarioId, criterionId: item.criterionId, title: item.title, compatibility: item, status: 'NOT RUN', outcome: 'NOT RUN' })), coverage: [], gaps: [],
     };
-    report.knowledgeScope = fixtureKnowledgeScope(request.environment);
+    report.knowledgeScope = request.environment === 'user-selected-application'
+      ? { project: 'desktop-selected-applications', environment: request.environment, role: 'isolated-browser', application: createHash('sha256').update(request.origin).digest('hex') }
+      : fixtureKnowledgeScope(request.environment);
     const secrets = saved.content.scenarios.flatMap(scenario => scenario.steps.flatMap(step => {
       try { const command = JSON.parse(step.instruction); return command.kind === 'FILL' && command.value ? [command.value] : []; } catch { return []; }
     }));
@@ -75,7 +80,7 @@ export class ApprovedExecution {
         scenario.startedAt = now(); scenario.status = 'RUNNING'; save();
         if (scenario.compatibility.classification !== 'EXECUTABLE') {
           scenario.outcome = 'BLOCKED'; scenario.message = 'Unsupported steps or unverified preconditions; no browser operations attempted.';
-        } else if (![testAccount, invalidAccount].every(account => Boolean(account.username && account.password))) {
+        } else if (request.environment !== 'user-selected-application' && ![testAccount, invalidAccount].every(account => Boolean(account.username && account.password))) {
           scenario.outcome = 'BLOCKED'; scenario.message = 'Required synthetic credentials are unavailable.';
         } else {
           let browserOptions = this.options;

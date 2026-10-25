@@ -5,7 +5,7 @@ export interface Compatibility {
   checks: { source: string; classification: string; reason: string }[];
 }
 export interface Preparation {
-  preparationId: string; environment: 'owned-login-fixture' | 'owned-qa-fixtures'; origin: string; expiresAt: string;
+  preparationId: string; environment: 'owned-login-fixture' | 'owned-qa-fixtures' | 'user-selected-application'; origin: string; expiresAt: string;
   fixturesReady: boolean; compatibility: Compatibility[];
 }
 export interface TicketReport {
@@ -17,7 +17,7 @@ export interface TicketReport {
   }[];
 }
 export interface ExecutionBridge {
-  preparePlan: (input: ExecutionIdentity) => Promise<ReviewReply<Preparation>>;
-  executePlan: (input: ExecutionIdentity & { preparationId: string; environment: 'owned-login-fixture' | 'owned-qa-fixtures'; origin: string; authorized: true }) => Promise<ReviewReply<TicketReport>>;
+  preparePlan: (input: ExecutionIdentity & { url?: string }) => Promise<ReviewReply<Preparation>>;
+  executePlan: (input: ExecutionIdentity & { preparationId: string; environment: Preparation['environment']; origin: string; authorized: true }) => Promise<ReviewReply<TicketReport>>;
   planReports: (input: { planId: string; revision: number }) => Promise<ReviewReply<TicketReport[]>>;
 }

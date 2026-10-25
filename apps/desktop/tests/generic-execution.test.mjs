@@ -3,8 +3,21 @@ import { genericStepSchema, normalizePlan, permittedUrl, runGenericScenario, res
 import { checkCompatibility } from '../electron/plan-compatibility.mjs';
 import { genericProposal, plan, navigate, check } from './fixtures/generic-plan.mjs';
 import { loginScenarios } from '../electron/scenarios.mjs';
+import { selectApplicationTarget, isExecutionTarget } from '../electron/execution-target.mjs';
 
 describe('generic QA contracts and fail-closed authorization', () => {
+  it('accepts any selected HTTP(S) origin while rejecting cross-origin destinations and expired capabilities', async () => {
+    for (const input of ['https://unfamiliar.example:8443/start', 'http://localhost:4321/start']) {
+      const selected = selectApplicationTarget(input);
+      expect(isExecutionTarget(selected)).toBe(true);
+      expect(permittedUrl('/another/path', selected).origin).toBe(new URL(input).origin);
+      expect(() => permittedUrl('https://elsewhere.example/path', selected)).toThrow();
+      expect(isExecutionTarget({ ...selected })).toBe(false);
+      await selected.close();
+      expect(isExecutionTarget(selected)).toBe(false);
+    }
+    for (const input of ['file:///tmp/app', 'https://user:password@example.com']) expect(() => selectApplicationTarget(input)).toThrow();
+  });
   it('keeps login inputs and expectations explicit when translating old commands', () => {
     const converted = normalizePlan(loginScenarios()[0]);
     expect(converted.steps[0]).toEqual({ kind: 'NAVIGATE', path: '/login' });

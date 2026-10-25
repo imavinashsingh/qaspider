@@ -1,0 +1,3726 @@
+{
+  "measuredAt": "2026-10-25T16:26:37.072Z",
+  "origin": "https://the-internet.herokuapp.com",
+  "safetyEnabled": true,
+  "submissions": 0,
+  "fileSelections": 0,
+  "observations": [
+    {
+      "status": "observed",
+      "message": "Discovered 2 action(s). Select one and declare an expected result.",
+      "observationId": "3f5027bb-839a-43b6-8e69-91b3dbdaeb8e",
+      "actions": [
+        {
+          "id": "feb1b761-ac11-4961-bf96-01d8bbc84976",
+          "selector": "xpath=/html[1]/body[1]/div[2]/div[1]/div[1]/form[1]/button[1]",
+          "description": "Remove checkbox button",
+          "method": "click",
+          "arguments": [],
+          "details": "Remove",
+          "allowed": false,
+          "requiresAuthorization": false,
+          "reason": "Hidden, disabled, form, download and new-window actions cannot be validated in M2."
+        },
+        {
+          "id": "921f78c6-5f2e-4e2c-94a5-44bf7a01efba",
+          "selector": "xpath=/html[1]/body[1]/div[2]/div[1]/div[1]/form[2]/button[1]",
+          "description": "Enable input button",
+          "method": "click",
+          "arguments": [],
+          "details": "Enable",
+          "allowed": false,
+          "requiresAuthorization": false,
+          "reason": "Hidden, disabled, form, download and new-window actions cannot be validated in M2."
+        }
+      ],
+      "provider": {
+        "provider": "codex-cli",
+        "model": "gpt-6.1-sol",
+        "synthetic": false
+      },
+      "visitedUrl": "https://the-internet.herokuapp.com/dynamic_controls",
+      "screenshot": "test-results/desktop-live/m7.1/stagehand-dynamic.png",
+      "durationMs": 9257.201132000017
+    }
+  ],
+  "captures": [
+    {
+      "path": "/",
+      "httpStatus": 200,
+      "visitedUrl": "https://the-internet.herokuapp.com/",
+      "controls": [],
+      "screenshot": "test-results/desktop-live/m7.1/home.png",
+      "durationMs": 2787.8968619999996
+    },
+    {
+      "path": "/login",
+      "outcome": "INCONCLUSIVE",
+      "message": "locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Login', exact: true })\u001b[22m\n",
+      "durationMs": 33383.383110999996
+    },
+    {
+      "path": "/dynamic_controls",
+      "httpStatus": 200,
+      "visitedUrl": "https://the-internet.herokuapp.com/dynamic_controls",
+      "controls": [
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "text": "",
+          "enabled": true
+        },
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "text": "Remove",
+          "enabled": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "text": "",
+          "enabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "text": "Enable",
+          "enabled": true
+        }
+      ],
+      "screenshot": "test-results/desktop-live/m7.1/dynamic-controls.png",
+      "durationMs": 2685.1128400000016
+    },
+    {
+      "path": "/upload",
+      "httpStatus": 200,
+      "visitedUrl": "https://the-internet.herokuapp.com/upload",
+      "controls": [
+        {
+          "tag": "INPUT",
+          "type": "file",
+          "text": "",
+          "enabled": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "submit",
+          "text": "",
+          "enabled": true
+        },
+        {
+          "tag": "INPUT",
+          "type": "file",
+          "text": "",
+          "enabled": true
+        }
+      ],
+      "screenshot": "test-results/desktop-live/m7.1/upload-preflight.png",
+      "durationMs": 3105.312457
+    },
+    {
+      "path": "/login",
+      "httpStatus": 200,
+      "screenshot": "test-results/desktop-live/m7.1/login-masked.png",
+      "durationMs": 3041.4955470000004,
+      "purpose": "Evidence retry; no control activated"
+    },
+    {
+      "path": "/upload",
+      "httpStatus": 200,
+      "screenshot": "test-results/desktop-live/m7.1/upload-preflight.png",
+      "durationMs": 2954.984743,
+      "purpose": "Evidence retry; no control activated",
+      "fileControlVisible": true,
+      "uploadActionVisible": true
+    }
+  ],
+  "tickets": [
+    {
+      "title": "M7.1 A \u2014 Public demo login",
+      "durationMs": 66243.797451,
+      "status": "proposed",
+      "message": "Draft proposal only. Review requirements, assumptions and coverage gaps. Nothing has been executed.",
+      "review": {
+        "planId": "85e4d759-21d1-4352-881a-bb098bfccc37",
+        "revision": 1,
+        "version": 10,
+        "status": "APPROVED",
+        "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+        "original": {
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "description": "The documented valid demo account and one invalid synthetic account are available for future authorized testing. Their literal credentials are omitted from this plan."
+            },
+            {
+              "id": "AS-2",
+              "description": "A reviewer can identify successful secure-area access and distinguish it from the login page without requiring a specified URL or exact message."
+            },
+            {
+              "id": "AS-3",
+              "description": "Each scenario starts with an unauthenticated browser session and no error left over from a previous attempt."
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "interpretation": "testable",
+              "explanation": "Successful access using the documented valid account is conceptually verifiable. Exact credentials, destination and success text need not be reproduced or specified.",
+              "negativeTests": {
+                "applicability": "included",
+                "reason": "S-2 checks that the single invalid synthetic account cannot obtain secure-area access."
+              },
+              "boundaryTests": {
+                "applicability": "unspecified",
+                "reason": "No credential limits or other boundary rules are supplied."
+              }
+            },
+            {
+              "criterionId": "AC-2",
+              "interpretation": "testable",
+              "explanation": "Rejection of the permitted invalid synthetic account is observable. Coverage is limited to that account and does not establish rejection of every possible invalid input.",
+              "negativeTests": {
+                "applicability": "included",
+                "reason": "S-4 checks for forbidden secure-area access following an invalid login."
+              },
+              "boundaryTests": {
+                "applicability": "unspecified",
+                "reason": "No input-length, retry or lockout boundaries are specified."
+              }
+            },
+            {
+              "criterionId": "AC-3",
+              "interpretation": "testable",
+              "explanation": "A visible error after an incorrect login is verifiable without requiring exact error wording.",
+              "negativeTests": {
+                "applicability": "included",
+                "reason": "S-6 checks that an incorrect login does not produce only hidden error feedback."
+              },
+              "boundaryTests": {
+                "applicability": "unspecified",
+                "reason": "No error timing, duration or display boundaries are supplied."
+              }
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Documented valid demo account reaches the secure area",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits login submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the demo login page at the authorized origin and locate its documented account information.",
+                  "expectedOutcome": "The login form and documented credentials are available without reproducing credential values in test artifacts."
+                },
+                {
+                  "instruction": "Enter and submit only the documented valid demo credentials.",
+                  "expectedOutcome": "The login succeeds and the secure area becomes accessible."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The documented valid demo account obtains secure-area access.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-1",
+              "category": "negative",
+              "title": "Invalid synthetic account does not obtain secure-area access",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the single permitted invalid synthetic account through the login form.",
+                  "expectedOutcome": "The attempt does not establish secure-area access."
+                },
+                {
+                  "instruction": "Inspect the resulting application state.",
+                  "expectedOutcome": "The secure area has not been granted to the invalid account."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Invalid credentials do not receive the access intended for the documented valid account.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-3",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Invalid synthetic credentials are rejected",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Enter the single permitted invalid synthetic account and submit the login form.",
+                  "expectedOutcome": "The application rejects the login attempt."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Authentication with the invalid synthetic credentials is rejected.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-4",
+              "criterionId": "AC-2",
+              "category": "negative",
+              "title": "Rejected login does not also establish authenticated access",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the same permitted invalid synthetic account.",
+                  "expectedOutcome": "The login attempt is rejected."
+                },
+                {
+                  "instruction": "Inspect whether the resulting application state nevertheless grants authenticated secure-area access.",
+                  "expectedOutcome": "No authenticated secure-area access is established."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Rejection is effective rather than merely a displayed response accompanying successful authentication.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-5",
+              "criterionId": "AC-3",
+              "category": "positive",
+              "title": "Incorrect login displays a visible error",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated and has no existing login error."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the single permitted invalid synthetic account.",
+                  "expectedOutcome": "The application processes the incorrect login."
+                },
+                {
+                  "instruction": "Observe the resulting login interface.",
+                  "expectedOutcome": "An error indicating the unsuccessful login is visible."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "A login error is visibly presented after the incorrect attempt; exact wording is unspecified.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-6",
+              "criterionId": "AC-3",
+              "category": "negative",
+              "title": "Incorrect login does not provide only hidden error feedback",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated and has no existing login error."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the same permitted invalid synthetic account.",
+                  "expectedOutcome": "The incorrect login is processed."
+                },
+                {
+                  "instruction": "Review the rendered interface for user-visible error feedback.",
+                  "expectedOutcome": "The error is visible to the user rather than being available solely in an internal response or hidden interface state."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "Hidden or internal error information alone does not satisfy the visible-error requirement.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "version": 1,
+          "status": "draft",
+          "proposalSource": "ai",
+          "ticket": {
+            "title": "M7.1 A \u2014 Public demo login",
+            "description": "Validate the documented public demo login. Documented credentials exist on the page; never reproduce their literal values. Use only the documented valid account and one invalid synthetic account. The execution precondition is User-authorized application origin. Form submission may be blocked by current safety policy; do not bypass it.",
+            "acceptanceCriteria": [
+              {
+                "id": "AC-1",
+                "text": "Valid documented demo credentials allow access to the secure area."
+              },
+              {
+                "id": "AC-2",
+                "text": "Invalid credentials are rejected."
+              },
+              {
+                "id": "AC-3",
+                "text": "Incorrect login shows a visible error."
+              }
+            ]
+          }
+        },
+        "content": {
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Documented valid demo account reaches the secure area",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits login submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the demo login page at the authorized origin and locate its documented account information.",
+                  "expectedOutcome": "The login form and documented credentials are available without reproducing credential values in test artifacts."
+                },
+                {
+                  "instruction": "Enter and submit only the documented valid demo credentials.",
+                  "expectedOutcome": "The login succeeds and the secure area becomes accessible."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The documented valid demo account obtains secure-area access.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-1",
+              "category": "negative",
+              "title": "Invalid synthetic account does not obtain secure-area access",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the single permitted invalid synthetic account through the login form.",
+                  "expectedOutcome": "The attempt does not establish secure-area access."
+                },
+                {
+                  "instruction": "Inspect the resulting application state.",
+                  "expectedOutcome": "The secure area has not been granted to the invalid account."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Invalid credentials do not receive the access intended for the documented valid account.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-3",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Invalid synthetic credentials are rejected",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Enter the single permitted invalid synthetic account and submit the login form.",
+                  "expectedOutcome": "The application rejects the login attempt."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Authentication with the invalid synthetic credentials is rejected.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-4",
+              "criterionId": "AC-2",
+              "category": "negative",
+              "title": "Rejected login does not also establish authenticated access",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the same permitted invalid synthetic account.",
+                  "expectedOutcome": "The login attempt is rejected."
+                },
+                {
+                  "instruction": "Inspect whether the resulting application state nevertheless grants authenticated secure-area access.",
+                  "expectedOutcome": "No authenticated secure-area access is established."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Rejection is effective rather than merely a displayed response accompanying successful authentication.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-5",
+              "criterionId": "AC-3",
+              "category": "positive",
+              "title": "Incorrect login displays a visible error",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated and has no existing login error."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the single permitted invalid synthetic account.",
+                  "expectedOutcome": "The application processes the incorrect login."
+                },
+                {
+                  "instruction": "Observe the resulting login interface.",
+                  "expectedOutcome": "An error indicating the unsuccessful login is visible."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "A login error is visibly presented after the incorrect attempt; exact wording is unspecified.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-6",
+              "criterionId": "AC-3",
+              "category": "negative",
+              "title": "Incorrect login does not provide only hidden error feedback",
+              "assumptionIds": [
+                "AS-1",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                "The browser is unauthenticated and has no existing login error."
+              ],
+              "steps": [
+                {
+                  "instruction": "Submit the same permitted invalid synthetic account.",
+                  "expectedOutcome": "The incorrect login is processed."
+                },
+                {
+                  "instruction": "Review the rendered interface for user-visible error feedback.",
+                  "expectedOutcome": "The error is visible to the user rather than being available solely in an internal response or hidden interface state."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "Hidden or internal error information alone does not satisfy the visible-error requirement.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "decision": "confirmed",
+              "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+            },
+            {
+              "id": "AS-2",
+              "decision": "confirmed",
+              "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+            },
+            {
+              "id": "AS-3",
+              "decision": "confirmed",
+              "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "confirmed": true,
+              "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+            },
+            {
+              "criterionId": "AC-2",
+              "confirmed": true,
+              "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+            },
+            {
+              "criterionId": "AC-3",
+              "confirmed": true,
+              "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+            }
+          ]
+        },
+        "coverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "Valid documented demo credentials allow access to the secure area.",
+            "scenarioIds": [
+              "S-1",
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "Invalid credentials are rejected.",
+            "scenarioIds": [
+              "S-3",
+              "S-4"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-3",
+            "text": "Incorrect login shows a visible error.",
+            "scenarioIds": [
+              "S-5",
+              "S-6"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          }
+        ],
+        "issues": [],
+        "approvals": [
+          {
+            "id": "3c61a180-bd59-4cd0-9121-70e0638c2c51",
+            "revision": 1,
+            "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+            "approvedAt": "2026-10-25T16:31:52.159Z",
+            "reviewer": "local-user"
+          }
+        ],
+        "revisions": [
+          {
+            "number": 1,
+            "status": "APPROVED"
+          }
+        ],
+        "events": [
+          {
+            "revision": 1,
+            "type": "generated",
+            "details": {
+              "source": "ai"
+            },
+            "createdAt": "2026-10-25T16:28:26.073Z"
+          },
+          {
+            "revision": 1,
+            "type": "start-review",
+            "details": {
+              "action": {
+                "type": "start-review"
+              },
+              "previousHash": "ff704013bbcfe1bb9a77050f8a4f8b92a7c945b25359704e0edfe985f01e6f83",
+              "hash": "ff704013bbcfe1bb9a77050f8a4f8b92a7c945b25359704e0edfe985f01e6f83",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:08.761Z"
+          },
+          {
+            "revision": 1,
+            "type": "assumption",
+            "details": {
+              "action": {
+                "type": "assumption",
+                "id": "AS-1",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              },
+              "previousHash": "ff704013bbcfe1bb9a77050f8a4f8b92a7c945b25359704e0edfe985f01e6f83",
+              "hash": "7b09072062050a0769b2dc8393c0153d55f30f34c66eb2cdf235eebdfb02480c",
+              "status": "DRAFT"
+            },
+            "createdAt": "2026-10-25T16:31:08.782Z"
+          },
+          {
+            "revision": 1,
+            "type": "assumption",
+            "details": {
+              "action": {
+                "type": "assumption",
+                "id": "AS-2",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              },
+              "previousHash": "7b09072062050a0769b2dc8393c0153d55f30f34c66eb2cdf235eebdfb02480c",
+              "hash": "2577f4053e143a0b5a512c8f1059fc1c08f66d06079a41e108f0900ca3b3d51f",
+              "status": "DRAFT"
+            },
+            "createdAt": "2026-10-25T16:31:08.791Z"
+          },
+          {
+            "revision": 1,
+            "type": "assumption",
+            "details": {
+              "action": {
+                "type": "assumption",
+                "id": "AS-3",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              },
+              "previousHash": "2577f4053e143a0b5a512c8f1059fc1c08f66d06079a41e108f0900ca3b3d51f",
+              "hash": "e2fc6a3d4c15c70135b03e8ccbaf622f71348d3ea88b33c0a99d6102ebf651f3",
+              "status": "DRAFT"
+            },
+            "createdAt": "2026-10-25T16:31:08.799Z"
+          },
+          {
+            "revision": 1,
+            "type": "start-review",
+            "details": {
+              "action": {
+                "type": "start-review"
+              },
+              "previousHash": "e2fc6a3d4c15c70135b03e8ccbaf622f71348d3ea88b33c0a99d6102ebf651f3",
+              "hash": "e2fc6a3d4c15c70135b03e8ccbaf622f71348d3ea88b33c0a99d6102ebf651f3",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.112Z"
+          },
+          {
+            "revision": 1,
+            "type": "criterion",
+            "details": {
+              "action": {
+                "type": "criterion",
+                "criterionId": "AC-1",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              "previousHash": "e2fc6a3d4c15c70135b03e8ccbaf622f71348d3ea88b33c0a99d6102ebf651f3",
+              "hash": "abfcf48e6214f0a64cb9fe7cdd5088bb0c056f6e4ef340596be7cabd84591660",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.130Z"
+          },
+          {
+            "revision": 1,
+            "type": "criterion",
+            "details": {
+              "action": {
+                "type": "criterion",
+                "criterionId": "AC-2",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              "previousHash": "abfcf48e6214f0a64cb9fe7cdd5088bb0c056f6e4ef340596be7cabd84591660",
+              "hash": "c38eae0e882d6575032c27c91da20d4eb60dd40d6701a8fa1a614d37b4cde15d",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.142Z"
+          },
+          {
+            "revision": 1,
+            "type": "criterion",
+            "details": {
+              "action": {
+                "type": "criterion",
+                "criterionId": "AC-3",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              "previousHash": "c38eae0e882d6575032c27c91da20d4eb60dd40d6701a8fa1a614d37b4cde15d",
+              "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.151Z"
+          },
+          {
+            "revision": 1,
+            "type": "approve",
+            "details": {
+              "action": {
+                "type": "approve",
+                "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a"
+              },
+              "previousHash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+              "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+              "status": "APPROVED"
+            },
+            "createdAt": "2026-10-25T16:31:52.159Z"
+          }
+        ]
+      },
+      "preparation": {
+        "preparationId": "4a3357fd-6dab-4991-a3f3-b5f6060894a4",
+        "environment": "user-selected-application",
+        "origin": "https://the-internet.herokuapp.com",
+        "expiresAt": "2026-10-25T16:36:52.171Z",
+        "compatibility": [
+          {
+            "scenarioId": "S-1",
+            "criterionId": "AC-1",
+            "title": "Documented valid demo account reaches the secure area",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-2",
+            "criterionId": "AC-1",
+            "title": "Invalid synthetic account does not obtain secure-area access",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-3",
+            "criterionId": "AC-2",
+            "title": "Invalid synthetic credentials are rejected",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-4",
+            "criterionId": "AC-2",
+            "title": "Rejected login does not also establish authenticated access",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-5",
+            "criterionId": "AC-3",
+            "title": "Incorrect login displays a visible error",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-6",
+            "criterionId": "AC-3",
+            "title": "Incorrect login does not provide only hidden error feedback",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 3",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          }
+        ],
+        "fixturesReady": true
+      },
+      "execution": {
+        "id": "084cb633-2078-4d58-b58e-3748e9fb2da8",
+        "planId": "85e4d759-21d1-4352-881a-bb098bfccc37",
+        "ticketIdentifier": "85e4d759-21d1-4352-881a-bb098bfccc37",
+        "title": "M7.1 A \u2014 Public demo login",
+        "revision": 1,
+        "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+        "approvedRevision": {
+          "original": {
+            "assumptions": [
+              {
+                "id": "AS-1",
+                "description": "The documented valid demo account and one invalid synthetic account are available for future authorized testing. Their literal credentials are omitted from this plan."
+              },
+              {
+                "id": "AS-2",
+                "description": "A reviewer can identify successful secure-area access and distinguish it from the login page without requiring a specified URL or exact message."
+              },
+              {
+                "id": "AS-3",
+                "description": "Each scenario starts with an unauthenticated browser session and no error left over from a previous attempt."
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "AC-1",
+                "interpretation": "testable",
+                "explanation": "Successful access using the documented valid account is conceptually verifiable. Exact credentials, destination and success text need not be reproduced or specified.",
+                "negativeTests": {
+                  "applicability": "included",
+                  "reason": "S-2 checks that the single invalid synthetic account cannot obtain secure-area access."
+                },
+                "boundaryTests": {
+                  "applicability": "unspecified",
+                  "reason": "No credential limits or other boundary rules are supplied."
+                }
+              },
+              {
+                "criterionId": "AC-2",
+                "interpretation": "testable",
+                "explanation": "Rejection of the permitted invalid synthetic account is observable. Coverage is limited to that account and does not establish rejection of every possible invalid input.",
+                "negativeTests": {
+                  "applicability": "included",
+                  "reason": "S-4 checks for forbidden secure-area access following an invalid login."
+                },
+                "boundaryTests": {
+                  "applicability": "unspecified",
+                  "reason": "No input-length, retry or lockout boundaries are specified."
+                }
+              },
+              {
+                "criterionId": "AC-3",
+                "interpretation": "testable",
+                "explanation": "A visible error after an incorrect login is verifiable without requiring exact error wording.",
+                "negativeTests": {
+                  "applicability": "included",
+                  "reason": "S-6 checks that an incorrect login does not produce only hidden error feedback."
+                },
+                "boundaryTests": {
+                  "applicability": "unspecified",
+                  "reason": "No error timing, duration or display boundaries are supplied."
+                }
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "S-1",
+                "criterionId": "AC-1",
+                "category": "positive",
+                "title": "Documented valid demo account reaches the secure area",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits login submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the demo login page at the authorized origin and locate its documented account information.",
+                    "expectedOutcome": "The login form and documented credentials are available without reproducing credential values in test artifacts."
+                  },
+                  {
+                    "instruction": "Enter and submit only the documented valid demo credentials.",
+                    "expectedOutcome": "The login succeeds and the secure area becomes accessible."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "The documented valid demo account obtains secure-area access.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-2",
+                "criterionId": "AC-1",
+                "category": "negative",
+                "title": "Invalid synthetic account does not obtain secure-area access",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the single permitted invalid synthetic account through the login form.",
+                    "expectedOutcome": "The attempt does not establish secure-area access."
+                  },
+                  {
+                    "instruction": "Inspect the resulting application state.",
+                    "expectedOutcome": "The secure area has not been granted to the invalid account."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Invalid credentials do not receive the access intended for the documented valid account.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-3",
+                "criterionId": "AC-2",
+                "category": "positive",
+                "title": "Invalid synthetic credentials are rejected",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Enter the single permitted invalid synthetic account and submit the login form.",
+                    "expectedOutcome": "The application rejects the login attempt."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Authentication with the invalid synthetic credentials is rejected.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-4",
+                "criterionId": "AC-2",
+                "category": "negative",
+                "title": "Rejected login does not also establish authenticated access",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the same permitted invalid synthetic account.",
+                    "expectedOutcome": "The login attempt is rejected."
+                  },
+                  {
+                    "instruction": "Inspect whether the resulting application state nevertheless grants authenticated secure-area access.",
+                    "expectedOutcome": "No authenticated secure-area access is established."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Rejection is effective rather than merely a displayed response accompanying successful authentication.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-5",
+                "criterionId": "AC-3",
+                "category": "positive",
+                "title": "Incorrect login displays a visible error",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated and has no existing login error."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the single permitted invalid synthetic account.",
+                    "expectedOutcome": "The application processes the incorrect login."
+                  },
+                  {
+                    "instruction": "Observe the resulting login interface.",
+                    "expectedOutcome": "An error indicating the unsuccessful login is visible."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "A login error is visibly presented after the incorrect attempt; exact wording is unspecified.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-6",
+                "criterionId": "AC-3",
+                "category": "negative",
+                "title": "Incorrect login does not provide only hidden error feedback",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated and has no existing login error."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the same permitted invalid synthetic account.",
+                    "expectedOutcome": "The incorrect login is processed."
+                  },
+                  {
+                    "instruction": "Review the rendered interface for user-visible error feedback.",
+                    "expectedOutcome": "The error is visible to the user rather than being available solely in an internal response or hidden interface state."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "Hidden or internal error information alone does not satisfy the visible-error requirement.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              }
+            ],
+            "version": 1,
+            "status": "draft",
+            "proposalSource": "ai",
+            "ticket": {
+              "title": "M7.1 A \u2014 Public demo login",
+              "description": "Validate the documented public demo login. Documented credentials exist on the page; never reproduce their literal values. Use only the documented valid account and one invalid synthetic account. The execution precondition is User-authorized application origin. Form submission may be blocked by current safety policy; do not bypass it.",
+              "acceptanceCriteria": [
+                {
+                  "id": "AC-1",
+                  "text": "Valid documented demo credentials allow access to the secure area."
+                },
+                {
+                  "id": "AC-2",
+                  "text": "Invalid credentials are rejected."
+                },
+                {
+                  "id": "AC-3",
+                  "text": "Incorrect login shows a visible error."
+                }
+              ]
+            }
+          },
+          "content": {
+            "scenarios": [
+              {
+                "id": "S-1",
+                "criterionId": "AC-1",
+                "category": "positive",
+                "title": "Documented valid demo account reaches the secure area",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits login submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the demo login page at the authorized origin and locate its documented account information.",
+                    "expectedOutcome": "The login form and documented credentials are available without reproducing credential values in test artifacts."
+                  },
+                  {
+                    "instruction": "Enter and submit only the documented valid demo credentials.",
+                    "expectedOutcome": "The login succeeds and the secure area becomes accessible."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "The documented valid demo account obtains secure-area access.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-2",
+                "criterionId": "AC-1",
+                "category": "negative",
+                "title": "Invalid synthetic account does not obtain secure-area access",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the single permitted invalid synthetic account through the login form.",
+                    "expectedOutcome": "The attempt does not establish secure-area access."
+                  },
+                  {
+                    "instruction": "Inspect the resulting application state.",
+                    "expectedOutcome": "The secure area has not been granted to the invalid account."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Invalid credentials do not receive the access intended for the documented valid account.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-3",
+                "criterionId": "AC-2",
+                "category": "positive",
+                "title": "Invalid synthetic credentials are rejected",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Enter the single permitted invalid synthetic account and submit the login form.",
+                    "expectedOutcome": "The application rejects the login attempt."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Authentication with the invalid synthetic credentials is rejected.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-4",
+                "criterionId": "AC-2",
+                "category": "negative",
+                "title": "Rejected login does not also establish authenticated access",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-2",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the same permitted invalid synthetic account.",
+                    "expectedOutcome": "The login attempt is rejected."
+                  },
+                  {
+                    "instruction": "Inspect whether the resulting application state nevertheless grants authenticated secure-area access.",
+                    "expectedOutcome": "No authenticated secure-area access is established."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "behavior",
+                    "description": "Rejection is effective rather than merely a displayed response accompanying successful authentication.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-5",
+                "criterionId": "AC-3",
+                "category": "positive",
+                "title": "Incorrect login displays a visible error",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated and has no existing login error."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the single permitted invalid synthetic account.",
+                    "expectedOutcome": "The application processes the incorrect login."
+                  },
+                  {
+                    "instruction": "Observe the resulting login interface.",
+                    "expectedOutcome": "An error indicating the unsuccessful login is visible."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "A login error is visibly presented after the incorrect attempt; exact wording is unspecified.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-6",
+                "criterionId": "AC-3",
+                "category": "negative",
+                "title": "Incorrect login does not provide only hidden error feedback",
+                "assumptionIds": [
+                  "AS-1",
+                  "AS-3"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Current safety policy permits submission; otherwise record the scenario as blocked without bypassing the restriction.",
+                  "The browser is unauthenticated and has no existing login error."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Submit the same permitted invalid synthetic account.",
+                    "expectedOutcome": "The incorrect login is processed."
+                  },
+                  {
+                    "instruction": "Review the rendered interface for user-visible error feedback.",
+                    "expectedOutcome": "The error is visible to the user rather than being available solely in an internal response or hidden interface state."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "Hidden or internal error information alone does not satisfy the visible-error requirement.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              }
+            ],
+            "assumptions": [
+              {
+                "id": "AS-1",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              },
+              {
+                "id": "AS-2",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              },
+              {
+                "id": "AS-3",
+                "decision": "confirmed",
+                "note": "Reviewed test setup: public demo credentials are documented without copying them; success means visibly reaching the secure area; each future run requires a fresh unauthenticated profile. Submission remains blocked by policy and no runtime behavior is claimed."
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "AC-1",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              {
+                "criterionId": "AC-2",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              {
+                "criterionId": "AC-3",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              }
+            ]
+          },
+          "approval": {
+            "id": "3c61a180-bd59-4cd0-9121-70e0638c2c51",
+            "revision": 1,
+            "hash": "d177e46819e80b3dff5bae774eed37e2e2e9a68a42759e0f7dc8d3e66533637a",
+            "approvedAt": "2026-10-25T16:31:52.159Z",
+            "reviewer": "local-user"
+          }
+        },
+        "environment": "user-selected-application",
+        "origin": "https://the-internet.herokuapp.com",
+        "startedAt": "2026-10-25T16:31:52.176Z",
+        "status": "COMPLETED",
+        "outcome": "BLOCKED",
+        "plannedCoverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "Valid documented demo credentials allow access to the secure area.",
+            "scenarioIds": [
+              "S-1",
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "Invalid credentials are rejected.",
+            "scenarioIds": [
+              "S-3",
+              "S-4"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-3",
+            "text": "Incorrect login shows a visible error.",
+            "scenarioIds": [
+              "S-5",
+              "S-6"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          }
+        ],
+        "scenarios": [
+          {
+            "scenarioId": "S-1",
+            "criterionId": "AC-1",
+            "title": "Documented valid demo account reaches the secure area",
+            "compatibility": {
+              "scenarioId": "S-1",
+              "criterionId": "AC-1",
+              "title": "Documented valid demo account reaches the secure area",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.179Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.181Z"
+          },
+          {
+            "scenarioId": "S-2",
+            "criterionId": "AC-1",
+            "title": "Invalid synthetic account does not obtain secure-area access",
+            "compatibility": {
+              "scenarioId": "S-2",
+              "criterionId": "AC-1",
+              "title": "Invalid synthetic account does not obtain secure-area access",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.183Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.185Z"
+          },
+          {
+            "scenarioId": "S-3",
+            "criterionId": "AC-2",
+            "title": "Invalid synthetic credentials are rejected",
+            "compatibility": {
+              "scenarioId": "S-3",
+              "criterionId": "AC-2",
+              "title": "Invalid synthetic credentials are rejected",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.188Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.190Z"
+          },
+          {
+            "scenarioId": "S-4",
+            "criterionId": "AC-2",
+            "title": "Rejected login does not also establish authenticated access",
+            "compatibility": {
+              "scenarioId": "S-4",
+              "criterionId": "AC-2",
+              "title": "Rejected login does not also establish authenticated access",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.191Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.193Z"
+          },
+          {
+            "scenarioId": "S-5",
+            "criterionId": "AC-3",
+            "title": "Incorrect login displays a visible error",
+            "compatibility": {
+              "scenarioId": "S-5",
+              "criterionId": "AC-3",
+              "title": "Incorrect login displays a visible error",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.195Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.197Z"
+          },
+          {
+            "scenarioId": "S-6",
+            "criterionId": "AC-3",
+            "title": "Incorrect login does not provide only hidden error feedback",
+            "compatibility": {
+              "scenarioId": "S-6",
+              "criterionId": "AC-3",
+              "title": "Incorrect login does not provide only hidden error feedback",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 3",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.199Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.200Z"
+          }
+        ],
+        "coverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "Valid documented demo credentials allow access to the secure area.",
+            "scenarioIds": [
+              "S-1",
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED",
+            "executedScenarioIds": [],
+            "verified": false
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "Invalid credentials are rejected.",
+            "scenarioIds": [
+              "S-3",
+              "S-4"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED",
+            "executedScenarioIds": [],
+            "verified": false
+          },
+          {
+            "criterionId": "AC-3",
+            "text": "Incorrect login shows a visible error.",
+            "scenarioIds": [
+              "S-5",
+              "S-6"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED",
+            "executedScenarioIds": [],
+            "verified": false
+          }
+        ],
+        "gaps": [
+          "S-1: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-2: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-3: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-4: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-5: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-6: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "AC-1: required coverage remains unverified.",
+          "AC-2: required coverage remains unverified.",
+          "AC-3: required coverage remains unverified."
+        ],
+        "knowledgeScope": {
+          "project": "desktop-selected-applications",
+          "environment": "user-selected-application",
+          "role": "isolated-browser",
+          "application": "b7c6c7b1e9cc677ae9a341ddeb0d32dd764ae3b6587c70288a2dc5430cbfe938"
+        },
+        "completedAt": "2026-10-25T16:31:52.202Z"
+      },
+      "executionDurationMs": 44.48353799999995
+    },
+    {
+      "title": "M7.1 B \u2014 Dynamic controls",
+      "durationMs": 47964.123567999995,
+      "status": "proposed",
+      "message": "Draft proposal only. Review requirements, assumptions and coverage gaps. Nothing has been executed.",
+      "review": {
+        "planId": "af395c35-b8f9-4480-ac69-bc1e08756ead",
+        "revision": 1,
+        "version": 2,
+        "status": "IN_REVIEW",
+        "hash": "e802b35dc6ef8cb0babd1635ea28611e8e78d89d399bfb7575a113f54bdf6137",
+        "original": {
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "description": "Before any future execution, a user-authorized application origin and access to the intended dynamic controls page will be supplied."
+            },
+            {
+              "id": "AS-2",
+              "description": "The page provides identifiable controls for removing and adding the checkbox and enabling and disabling the input. Each scenario can begin in its specified initial state."
+            },
+            {
+              "id": "AS-3",
+              "description": "A future execution plan will define a bounded polling timeout and interval. Operations will be sequential and low volume, with controls discovered through Stagehand and actual visibility and enabled state checked without fixed sleeps."
+            },
+            {
+              "id": "AS-4",
+              "description": "A short, non-sensitive text sample will be available for input-entry checks; its exact content is not a requirement."
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "interpretation": "testable",
+              "explanation": "Removing the checkbox has a clear observable outcome: it becomes unavailable for user interaction. DOM removal versus hiding is not specified.",
+              "negativeTests": {
+                "applicability": "included",
+                "reason": "A scenario checks that checkbox interaction is unavailable after removal."
+              },
+              "boundaryTests": {
+                "applicability": "not_applicable",
+                "reason": "No separate limits or edge conditions are specified beyond the availability transition covered by the positive scenario."
+              }
+            },
+            {
+              "criterionId": "AC-2",
+              "interpretation": "testable",
+              "explanation": "Adding a previously removed checkbox should restore its availability. Its selected state is unspecified and will not be asserted.",
+              "negativeTests": {
+                "applicability": "unspecified",
+                "reason": "The criterion defines no invalid addition request or expected handling of adding an already present checkbox."
+              },
+              "boundaryTests": {
+                "applicability": "not_applicable",
+                "reason": "No separate limits or edge conditions are specified beyond restoration from absence."
+              }
+            },
+            {
+              "criterionId": "AC-3",
+              "interpretation": "testable",
+              "explanation": "Enabling the input should make it enabled and permit text entry. Exact input content and validation rules are unnecessary for this conceptual check.",
+              "negativeTests": {
+                "applicability": "unspecified",
+                "reason": "No invalid text, prohibited content, or validation behavior is defined for the enabled input."
+              },
+              "boundaryTests": {
+                "applicability": "unspecified",
+                "reason": "No input-length limits or other data boundaries are supplied."
+              }
+            },
+            {
+              "criterionId": "AC-4",
+              "interpretation": "testable",
+              "explanation": "Disabling the input should make it disabled and prevent user text entry. Correct rejection is the positive behavior.",
+              "negativeTests": {
+                "applicability": "included",
+                "reason": "A scenario attempts an alternative user entry method while the input is disabled."
+              },
+              "boundaryTests": {
+                "applicability": "unspecified",
+                "reason": "No timing threshold, input-length limit, or other distinct boundary is supplied."
+              }
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Remove the available checkbox",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The checkbox is present and available."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover the checkbox and its removal control.",
+                  "expectedOutcome": "The checkbox's initial visibility and enabled state can be established."
+                },
+                {
+                  "instruction": "Activate removal and use bounded polling to observe the resulting state.",
+                  "expectedOutcome": "The checkbox becomes unavailable and is no longer a visible, enabled interaction target."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Removal makes the checkbox unavailable to the user; DOM absence is not required.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-1",
+              "category": "negative",
+              "title": "Prevent checkbox interaction after removal",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The checkbox has been removed on the authorized page.",
+                "The removal transition has completed."
+              ],
+              "steps": [
+                {
+                  "instruction": "Check whether the removed checkbox can be reached through ordinary pointer or keyboard interaction.",
+                  "expectedOutcome": "No visible, enabled checkbox target is available."
+                },
+                {
+                  "instruction": "Attempt checkbox activation only if a remaining user-accessible target is found.",
+                  "expectedOutcome": "The removed checkbox cannot be toggled through that target."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "A removed checkbox cannot still be activated by the user.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-3",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Restore a removed checkbox",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The checkbox has been removed and is unavailable."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover and activate the control for adding the checkbox.",
+                  "expectedOutcome": "The restoration operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to inspect the restored checkbox's actual visibility and enabled state.",
+                  "expectedOutcome": "The checkbox becomes visible and available for interaction."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Adding restores the checkbox's availability without imposing an unspecified selected state.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-4",
+              "criterionId": "AC-3",
+              "category": "positive",
+              "title": "Enter text after enabling the input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The input is visible and disabled."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover the input and activate its enabling control.",
+                  "expectedOutcome": "The enabling operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to verify that the input is visible and enabled.",
+                  "expectedOutcome": "The input becomes available for text entry."
+                },
+                {
+                  "instruction": "Focus the input and type the prepared text sample.",
+                  "expectedOutcome": "The entered text appears in the input."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The enabled input accepts user text entry.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-5",
+              "criterionId": "AC-4",
+              "category": "positive",
+              "title": "Reject typing after disabling the input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The input is visible and enabled."
+              ],
+              "steps": [
+                {
+                  "instruction": "Record the input's current value and activate its disabling control.",
+                  "expectedOutcome": "The disabling operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to inspect the input's visibility and enabled state.",
+                  "expectedOutcome": "The input reaches a disabled state."
+                },
+                {
+                  "instruction": "Observe the value after disabling, then attempt to focus the input and type the prepared text sample.",
+                  "expectedOutcome": "The typing attempt does not insert text or change the value observed after disabling."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The disabled input prevents keyboard text entry.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-6",
+              "criterionId": "AC-4",
+              "category": "negative",
+              "title": "Prevent paste entry into the disabled input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The input is disabled on the authorized page.",
+                "The prepared text sample is available for ordinary browser paste."
+              ],
+              "steps": [
+                {
+                  "instruction": "Verify the disabled state and observe the input's current value.",
+                  "expectedOutcome": "The disabled state and comparison value are established."
+                },
+                {
+                  "instruction": "Attempt to focus the input and paste the prepared text through ordinary browser interaction.",
+                  "expectedOutcome": "The paste attempt does not insert text or change the observed input value."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "User paste interaction cannot bypass the input's disabled state.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "version": 1,
+          "status": "draft",
+          "proposalSource": "ai",
+          "ticket": {
+            "title": "M7.1 B \u2014 Dynamic controls",
+            "description": "Validate the public dynamic controls page with sequential low-volume operations. Discover controls with Stagehand. Assert actual visibility and enabled state with bounded polling, never fixed sleeps. The execution precondition is User-authorized application origin.",
+            "acceptanceCriteria": [
+              {
+                "id": "AC-1",
+                "text": "Removing the checkbox makes it unavailable."
+              },
+              {
+                "id": "AC-2",
+                "text": "Adding the checkbox restores it."
+              },
+              {
+                "id": "AC-3",
+                "text": "Enabling the input allows entry."
+              },
+              {
+                "id": "AC-4",
+                "text": "Disabling the input prevents entry."
+              }
+            ]
+          }
+        },
+        "content": {
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Remove the available checkbox",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The checkbox is present and available."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover the checkbox and its removal control.",
+                  "expectedOutcome": "The checkbox's initial visibility and enabled state can be established."
+                },
+                {
+                  "instruction": "Activate removal and use bounded polling to observe the resulting state.",
+                  "expectedOutcome": "The checkbox becomes unavailable and is no longer a visible, enabled interaction target."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Removal makes the checkbox unavailable to the user; DOM absence is not required.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-1",
+              "category": "negative",
+              "title": "Prevent checkbox interaction after removal",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The checkbox has been removed on the authorized page.",
+                "The removal transition has completed."
+              ],
+              "steps": [
+                {
+                  "instruction": "Check whether the removed checkbox can be reached through ordinary pointer or keyboard interaction.",
+                  "expectedOutcome": "No visible, enabled checkbox target is available."
+                },
+                {
+                  "instruction": "Attempt checkbox activation only if a remaining user-accessible target is found.",
+                  "expectedOutcome": "The removed checkbox cannot be toggled through that target."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "A removed checkbox cannot still be activated by the user.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-3",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Restore a removed checkbox",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The checkbox has been removed and is unavailable."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover and activate the control for adding the checkbox.",
+                  "expectedOutcome": "The restoration operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to inspect the restored checkbox's actual visibility and enabled state.",
+                  "expectedOutcome": "The checkbox becomes visible and available for interaction."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "Adding restores the checkbox's availability without imposing an unspecified selected state.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-4",
+              "criterionId": "AC-3",
+              "category": "positive",
+              "title": "Enter text after enabling the input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The input is visible and disabled."
+              ],
+              "steps": [
+                {
+                  "instruction": "Discover the input and activate its enabling control.",
+                  "expectedOutcome": "The enabling operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to verify that the input is visible and enabled.",
+                  "expectedOutcome": "The input becomes available for text entry."
+                },
+                {
+                  "instruction": "Focus the input and type the prepared text sample.",
+                  "expectedOutcome": "The entered text appears in the input."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The enabled input accepts user text entry.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-5",
+              "criterionId": "AC-4",
+              "category": "positive",
+              "title": "Reject typing after disabling the input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The authorized dynamic controls page is open.",
+                "The input is visible and enabled."
+              ],
+              "steps": [
+                {
+                  "instruction": "Record the input's current value and activate its disabling control.",
+                  "expectedOutcome": "The disabling operation begins."
+                },
+                {
+                  "instruction": "Use bounded polling to inspect the input's visibility and enabled state.",
+                  "expectedOutcome": "The input reaches a disabled state."
+                },
+                {
+                  "instruction": "Observe the value after disabling, then attempt to focus the input and type the prepared text sample.",
+                  "expectedOutcome": "The typing attempt does not insert text or change the value observed after disabling."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "The disabled input prevents keyboard text entry.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-6",
+              "criterionId": "AC-4",
+              "category": "negative",
+              "title": "Prevent paste entry into the disabled input",
+              "assumptionIds": [
+                "AS-1",
+                "AS-2",
+                "AS-3",
+                "AS-4"
+              ],
+              "preconditions": [
+                "The input is disabled on the authorized page.",
+                "The prepared text sample is available for ordinary browser paste."
+              ],
+              "steps": [
+                {
+                  "instruction": "Verify the disabled state and observe the input's current value.",
+                  "expectedOutcome": "The disabled state and comparison value are established."
+                },
+                {
+                  "instruction": "Attempt to focus the input and paste the prepared text through ordinary browser interaction.",
+                  "expectedOutcome": "The paste attempt does not insert text or change the observed input value."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "behavior",
+                  "description": "User paste interaction cannot bypass the input's disabled state.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "decision": "unresolved",
+              "note": ""
+            },
+            {
+              "id": "AS-2",
+              "decision": "unresolved",
+              "note": ""
+            },
+            {
+              "id": "AS-3",
+              "decision": "unresolved",
+              "note": ""
+            },
+            {
+              "id": "AS-4",
+              "decision": "unresolved",
+              "note": ""
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "confirmed": false,
+              "note": ""
+            },
+            {
+              "criterionId": "AC-2",
+              "confirmed": false,
+              "note": ""
+            },
+            {
+              "criterionId": "AC-3",
+              "confirmed": false,
+              "note": ""
+            },
+            {
+              "criterionId": "AC-4",
+              "confirmed": false,
+              "note": ""
+            }
+          ]
+        },
+        "coverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "Removing the checkbox makes it unavailable.",
+            "scenarioIds": [
+              "S-1",
+              "S-2"
+            ],
+            "planned": "proposed",
+            "blockingAssumptionIds": [
+              "AS-1",
+              "AS-2",
+              "AS-3"
+            ],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "Adding the checkbox restores it.",
+            "scenarioIds": [
+              "S-3"
+            ],
+            "planned": "proposed",
+            "blockingAssumptionIds": [
+              "AS-1",
+              "AS-2",
+              "AS-3"
+            ],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-3",
+            "text": "Enabling the input allows entry.",
+            "scenarioIds": [
+              "S-4"
+            ],
+            "planned": "proposed",
+            "blockingAssumptionIds": [
+              "AS-1",
+              "AS-2",
+              "AS-3",
+              "AS-4"
+            ],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-4",
+            "text": "Disabling the input prevents entry.",
+            "scenarioIds": [
+              "S-5",
+              "S-6"
+            ],
+            "planned": "proposed",
+            "blockingAssumptionIds": [
+              "AS-1",
+              "AS-2",
+              "AS-3",
+              "AS-4"
+            ],
+            "executed": "NOT_EXECUTED"
+          }
+        ],
+        "issues": [
+          "AC-1: confirm planned coverage with a review note.",
+          "AC-1: AS-1 is unresolved or rejected.",
+          "AC-1: AS-2 is unresolved or rejected.",
+          "AC-1: AS-3 is unresolved or rejected.",
+          "AC-2: confirm planned coverage with a review note.",
+          "AC-2: AS-1 is unresolved or rejected.",
+          "AC-2: AS-2 is unresolved or rejected.",
+          "AC-2: AS-3 is unresolved or rejected.",
+          "AC-3: confirm planned coverage with a review note.",
+          "AC-3: AS-1 is unresolved or rejected.",
+          "AC-3: AS-2 is unresolved or rejected.",
+          "AC-3: AS-3 is unresolved or rejected.",
+          "AC-3: AS-4 is unresolved or rejected.",
+          "AC-4: confirm planned coverage with a review note.",
+          "AC-4: AS-1 is unresolved or rejected.",
+          "AC-4: AS-2 is unresolved or rejected.",
+          "AC-4: AS-3 is unresolved or rejected.",
+          "AC-4: AS-4 is unresolved or rejected."
+        ],
+        "approvals": [],
+        "revisions": [
+          {
+            "number": 1,
+            "status": "IN_REVIEW"
+          }
+        ],
+        "events": [
+          {
+            "revision": 1,
+            "type": "generated",
+            "details": {
+              "source": "ai"
+            },
+            "createdAt": "2026-10-25T16:29:14.038Z"
+          },
+          {
+            "revision": 1,
+            "type": "start-review",
+            "details": {
+              "action": {
+                "type": "start-review"
+              },
+              "previousHash": "e802b35dc6ef8cb0babd1635ea28611e8e78d89d399bfb7575a113f54bdf6137",
+              "hash": "e802b35dc6ef8cb0babd1635ea28611e8e78d89d399bfb7575a113f54bdf6137",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.231Z"
+          }
+        ]
+      },
+      "reviewOutcome": "BLOCKED",
+      "reviewReason": "Initial controls were discovered, but scenario-specific initial states and complete polling/input-entry setup remain unverified. Do not confirm unresolved assumptions merely to approve."
+    },
+    {
+      "title": "M7.1 C \u2014 Upload preflight",
+      "durationMs": 20446.036213999992,
+      "status": "proposed",
+      "message": "Draft proposal only. Review requirements, assumptions and coverage gaps. Nothing has been executed.",
+      "review": {
+        "planId": "d16c0e78-5c4b-41da-9905-66e414fb7026",
+        "revision": 1,
+        "version": 6,
+        "status": "APPROVED",
+        "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+        "original": {
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "description": "The user-authorized application origin and the location of its public upload page will be available to the reviewer."
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "interpretation": "testable",
+              "explanation": "The presence of a file selection control can be assessed through desktop browser inspection without selecting or submitting a file.",
+              "negativeTests": {
+                "applicability": "not_applicable",
+                "reason": "This criterion requires control presence only. Invalid-file interaction is outside the supplied inspection scope."
+              },
+              "boundaryTests": {
+                "applicability": "not_applicable",
+                "reason": "No boundary is specified for control presence; file limits are outside scope."
+              }
+            },
+            {
+              "criterionId": "AC-2",
+              "interpretation": "testable",
+              "explanation": "The presence of an upload action can be assessed without activating it. Enabled state and upload execution are not specified.",
+              "negativeTests": {
+                "applicability": "not_applicable",
+                "reason": "This criterion requires action presence only. Submission and invalid-input handling are outside the supplied inspection scope."
+              },
+              "boundaryTests": {
+                "applicability": "not_applicable",
+                "reason": "No boundary is specified for action presence."
+              }
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Inspect the public upload page for a file selection control",
+              "assumptionIds": [
+                "AS-1"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Inspection is limited to the public upload page without selecting or submitting any file."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                  "expectedOutcome": "The public upload page is available for inspection."
+                },
+                {
+                  "instruction": "Inspect the page for a file selection control without activating file selection.",
+                  "expectedOutcome": "The page exposes a recognizable file selection control."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "A file selection control is exposed on the page.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                },
+                {
+                  "kind": "behavior",
+                  "description": "Inspection completes without selecting or submitting any file.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Inspect the public upload page for an upload action",
+              "assumptionIds": [
+                "AS-1"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Inspection is limited to the public upload page without selecting or submitting any file."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                  "expectedOutcome": "The public upload page is available for inspection."
+                },
+                {
+                  "instruction": "Inspect the page for an upload action without activating it.",
+                  "expectedOutcome": "The page exposes a recognizable upload action."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "An upload action is exposed on the page; its enabled state and execution are not assessed.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                },
+                {
+                  "kind": "behavior",
+                  "description": "Inspection completes without selecting or submitting any file.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "version": 1,
+          "status": "draft",
+          "proposalSource": "ai",
+          "ticket": {
+            "title": "M7.1 C \u2014 Upload preflight",
+            "description": "Inspect the public upload page without selecting or submitting any file. The execution precondition is User-authorized application origin.",
+            "acceptanceCriteria": [
+              {
+                "id": "AC-1",
+                "text": "The page exposes a file selection control."
+              },
+              {
+                "id": "AC-2",
+                "text": "The page exposes an upload action."
+              }
+            ]
+          }
+        },
+        "content": {
+          "scenarios": [
+            {
+              "id": "S-1",
+              "criterionId": "AC-1",
+              "category": "positive",
+              "title": "Inspect the public upload page for a file selection control",
+              "assumptionIds": [
+                "AS-1"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Inspection is limited to the public upload page without selecting or submitting any file."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                  "expectedOutcome": "The public upload page is available for inspection."
+                },
+                {
+                  "instruction": "Inspect the page for a file selection control without activating file selection.",
+                  "expectedOutcome": "The page exposes a recognizable file selection control."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "A file selection control is exposed on the page.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                },
+                {
+                  "kind": "behavior",
+                  "description": "Inspection completes without selecting or submitting any file.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            },
+            {
+              "id": "S-2",
+              "criterionId": "AC-2",
+              "category": "positive",
+              "title": "Inspect the public upload page for an upload action",
+              "assumptionIds": [
+                "AS-1"
+              ],
+              "preconditions": [
+                "The application origin is user-authorized.",
+                "Inspection is limited to the public upload page without selecting or submitting any file."
+              ],
+              "steps": [
+                {
+                  "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                  "expectedOutcome": "The public upload page is available for inspection."
+                },
+                {
+                  "instruction": "Inspect the page for an upload action without activating it.",
+                  "expectedOutcome": "The page exposes a recognizable upload action."
+                }
+              ],
+              "assertions": [
+                {
+                  "kind": "visibility",
+                  "description": "An upload action is exposed on the page; its enabled state and execution are not assessed.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                },
+                {
+                  "kind": "behavior",
+                  "description": "Inspection completes without selecting or submitting any file.",
+                  "exactValue": null,
+                  "sourceQuote": null
+                }
+              ]
+            }
+          ],
+          "assumptions": [
+            {
+              "id": "AS-1",
+              "decision": "confirmed",
+              "note": "Confirmed the supplied public upload URL loads and exposes file-selection and upload controls. Only inspection is authorized; no file selection or submission."
+            }
+          ],
+          "criteria": [
+            {
+              "criterionId": "AC-1",
+              "confirmed": true,
+              "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+            },
+            {
+              "criterionId": "AC-2",
+              "confirmed": true,
+              "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+            }
+          ]
+        },
+        "coverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "The page exposes a file selection control.",
+            "scenarioIds": [
+              "S-1"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "The page exposes an upload action.",
+            "scenarioIds": [
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          }
+        ],
+        "issues": [],
+        "approvals": [
+          {
+            "id": "8609fcdf-4904-4481-8ffa-74289d884c72",
+            "revision": 1,
+            "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+            "approvedAt": "2026-10-25T16:31:52.266Z",
+            "reviewer": "local-user"
+          }
+        ],
+        "revisions": [
+          {
+            "number": 1,
+            "status": "APPROVED"
+          }
+        ],
+        "events": [
+          {
+            "revision": 1,
+            "type": "generated",
+            "details": {
+              "source": "ai"
+            },
+            "createdAt": "2026-10-25T16:29:34.494Z"
+          },
+          {
+            "revision": 1,
+            "type": "assumption",
+            "details": {
+              "action": {
+                "type": "assumption",
+                "id": "AS-1",
+                "decision": "confirmed",
+                "note": "Confirmed the supplied public upload URL loads and exposes file-selection and upload controls. Only inspection is authorized; no file selection or submission."
+              },
+              "previousHash": "67496e0987a3c88a1ae9d5982f00e34f6036bef1f9bacc7c9558c34265b160ed",
+              "hash": "84a368d6717896d5b1d59908362183aa8c9921ccb860907bb1d965e1bf3d83a4",
+              "status": "DRAFT"
+            },
+            "createdAt": "2026-10-25T16:31:52.243Z"
+          },
+          {
+            "revision": 1,
+            "type": "start-review",
+            "details": {
+              "action": {
+                "type": "start-review"
+              },
+              "previousHash": "84a368d6717896d5b1d59908362183aa8c9921ccb860907bb1d965e1bf3d83a4",
+              "hash": "84a368d6717896d5b1d59908362183aa8c9921ccb860907bb1d965e1bf3d83a4",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.249Z"
+          },
+          {
+            "revision": 1,
+            "type": "criterion",
+            "details": {
+              "action": {
+                "type": "criterion",
+                "criterionId": "AC-1",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              "previousHash": "84a368d6717896d5b1d59908362183aa8c9921ccb860907bb1d965e1bf3d83a4",
+              "hash": "ac727c7145593489c99081f77007b7fd46896501267e70d9defa8cd74bfcb892",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.255Z"
+          },
+          {
+            "revision": 1,
+            "type": "criterion",
+            "details": {
+              "action": {
+                "type": "criterion",
+                "criterionId": "AC-2",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              "previousHash": "ac727c7145593489c99081f77007b7fd46896501267e70d9defa8cd74bfcb892",
+              "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+              "status": "IN_REVIEW"
+            },
+            "createdAt": "2026-10-25T16:31:52.261Z"
+          },
+          {
+            "revision": 1,
+            "type": "approve",
+            "details": {
+              "action": {
+                "type": "approve",
+                "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1"
+              },
+              "previousHash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+              "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+              "status": "APPROVED"
+            },
+            "createdAt": "2026-10-25T16:31:52.266Z"
+          }
+        ]
+      },
+      "preparation": {
+        "preparationId": "af130fe4-529a-49d9-ad61-634065e1da8f",
+        "environment": "user-selected-application",
+        "origin": "https://the-internet.herokuapp.com",
+        "expiresAt": "2026-10-25T16:36:52.271Z",
+        "compatibility": [
+          {
+            "scenarioId": "S-1",
+            "criterionId": "AC-1",
+            "title": "Inspect the public upload page for a file selection control",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          },
+          {
+            "scenarioId": "S-2",
+            "criterionId": "AC-2",
+            "title": "Inspect the public upload page for an upload action",
+            "classification": "UNSUPPORTED",
+            "checks": [
+              {
+                "source": "Step 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Step 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 1",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Assertion 2",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              },
+              {
+                "source": "Precondition 1",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Precondition 2",
+                "classification": "CONFIGURATION_REQUIRED",
+                "reason": "This precondition has no verified target/configuration binding."
+              },
+              {
+                "source": "Scenario structure",
+                "classification": "UNSUPPORTED",
+                "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+              }
+            ]
+          }
+        ],
+        "fixturesReady": true
+      },
+      "execution": {
+        "id": "c51bfbe5-8ca5-4270-a1b9-aeba9fbb1155",
+        "planId": "d16c0e78-5c4b-41da-9905-66e414fb7026",
+        "ticketIdentifier": "d16c0e78-5c4b-41da-9905-66e414fb7026",
+        "title": "M7.1 C \u2014 Upload preflight",
+        "revision": 1,
+        "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+        "approvedRevision": {
+          "original": {
+            "assumptions": [
+              {
+                "id": "AS-1",
+                "description": "The user-authorized application origin and the location of its public upload page will be available to the reviewer."
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "AC-1",
+                "interpretation": "testable",
+                "explanation": "The presence of a file selection control can be assessed through desktop browser inspection without selecting or submitting a file.",
+                "negativeTests": {
+                  "applicability": "not_applicable",
+                  "reason": "This criterion requires control presence only. Invalid-file interaction is outside the supplied inspection scope."
+                },
+                "boundaryTests": {
+                  "applicability": "not_applicable",
+                  "reason": "No boundary is specified for control presence; file limits are outside scope."
+                }
+              },
+              {
+                "criterionId": "AC-2",
+                "interpretation": "testable",
+                "explanation": "The presence of an upload action can be assessed without activating it. Enabled state and upload execution are not specified.",
+                "negativeTests": {
+                  "applicability": "not_applicable",
+                  "reason": "This criterion requires action presence only. Submission and invalid-input handling are outside the supplied inspection scope."
+                },
+                "boundaryTests": {
+                  "applicability": "not_applicable",
+                  "reason": "No boundary is specified for action presence."
+                }
+              }
+            ],
+            "scenarios": [
+              {
+                "id": "S-1",
+                "criterionId": "AC-1",
+                "category": "positive",
+                "title": "Inspect the public upload page for a file selection control",
+                "assumptionIds": [
+                  "AS-1"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Inspection is limited to the public upload page without selecting or submitting any file."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                    "expectedOutcome": "The public upload page is available for inspection."
+                  },
+                  {
+                    "instruction": "Inspect the page for a file selection control without activating file selection.",
+                    "expectedOutcome": "The page exposes a recognizable file selection control."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "A file selection control is exposed on the page.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  },
+                  {
+                    "kind": "behavior",
+                    "description": "Inspection completes without selecting or submitting any file.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-2",
+                "criterionId": "AC-2",
+                "category": "positive",
+                "title": "Inspect the public upload page for an upload action",
+                "assumptionIds": [
+                  "AS-1"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Inspection is limited to the public upload page without selecting or submitting any file."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                    "expectedOutcome": "The public upload page is available for inspection."
+                  },
+                  {
+                    "instruction": "Inspect the page for an upload action without activating it.",
+                    "expectedOutcome": "The page exposes a recognizable upload action."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "An upload action is exposed on the page; its enabled state and execution are not assessed.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  },
+                  {
+                    "kind": "behavior",
+                    "description": "Inspection completes without selecting or submitting any file.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              }
+            ],
+            "version": 1,
+            "status": "draft",
+            "proposalSource": "ai",
+            "ticket": {
+              "title": "M7.1 C \u2014 Upload preflight",
+              "description": "Inspect the public upload page without selecting or submitting any file. The execution precondition is User-authorized application origin.",
+              "acceptanceCriteria": [
+                {
+                  "id": "AC-1",
+                  "text": "The page exposes a file selection control."
+                },
+                {
+                  "id": "AC-2",
+                  "text": "The page exposes an upload action."
+                }
+              ]
+            }
+          },
+          "content": {
+            "scenarios": [
+              {
+                "id": "S-1",
+                "criterionId": "AC-1",
+                "category": "positive",
+                "title": "Inspect the public upload page for a file selection control",
+                "assumptionIds": [
+                  "AS-1"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Inspection is limited to the public upload page without selecting or submitting any file."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                    "expectedOutcome": "The public upload page is available for inspection."
+                  },
+                  {
+                    "instruction": "Inspect the page for a file selection control without activating file selection.",
+                    "expectedOutcome": "The page exposes a recognizable file selection control."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "A file selection control is exposed on the page.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  },
+                  {
+                    "kind": "behavior",
+                    "description": "Inspection completes without selecting or submitting any file.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              },
+              {
+                "id": "S-2",
+                "criterionId": "AC-2",
+                "category": "positive",
+                "title": "Inspect the public upload page for an upload action",
+                "assumptionIds": [
+                  "AS-1"
+                ],
+                "preconditions": [
+                  "The application origin is user-authorized.",
+                  "Inspection is limited to the public upload page without selecting or submitting any file."
+                ],
+                "steps": [
+                  {
+                    "instruction": "Open the public upload page at the user-authorized application origin in a desktop browser.",
+                    "expectedOutcome": "The public upload page is available for inspection."
+                  },
+                  {
+                    "instruction": "Inspect the page for an upload action without activating it.",
+                    "expectedOutcome": "The page exposes a recognizable upload action."
+                  }
+                ],
+                "assertions": [
+                  {
+                    "kind": "visibility",
+                    "description": "An upload action is exposed on the page; its enabled state and execution are not assessed.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  },
+                  {
+                    "kind": "behavior",
+                    "description": "Inspection completes without selecting or submitting any file.",
+                    "exactValue": null,
+                    "sourceQuote": null
+                  }
+                ]
+              }
+            ],
+            "assumptions": [
+              {
+                "id": "AS-1",
+                "decision": "confirmed",
+                "note": "Confirmed the supplied public upload URL loads and exposes file-selection and upload controls. Only inspection is authorized; no file selection or submission."
+              }
+            ],
+            "criteria": [
+              {
+                "criterionId": "AC-1",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              },
+              {
+                "criterionId": "AC-2",
+                "confirmed": true,
+                "note": "Reviewed the linked conceptual expectations against the supplied criterion. Coverage approval does not claim execution or override compatibility and safety checks."
+              }
+            ]
+          },
+          "approval": {
+            "id": "8609fcdf-4904-4481-8ffa-74289d884c72",
+            "revision": 1,
+            "hash": "68343b3426363b8fd63464ff2818eb909980fe0b0188c21f3b0afe7035baf3c1",
+            "approvedAt": "2026-10-25T16:31:52.266Z",
+            "reviewer": "local-user"
+          }
+        },
+        "environment": "user-selected-application",
+        "origin": "https://the-internet.herokuapp.com",
+        "startedAt": "2026-10-25T16:31:52.274Z",
+        "status": "COMPLETED",
+        "outcome": "BLOCKED",
+        "plannedCoverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "The page exposes a file selection control.",
+            "scenarioIds": [
+              "S-1"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "The page exposes an upload action.",
+            "scenarioIds": [
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED"
+          }
+        ],
+        "scenarios": [
+          {
+            "scenarioId": "S-1",
+            "criterionId": "AC-1",
+            "title": "Inspect the public upload page for a file selection control",
+            "compatibility": {
+              "scenarioId": "S-1",
+              "criterionId": "AC-1",
+              "title": "Inspect the public upload page for a file selection control",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.276Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.277Z"
+          },
+          {
+            "scenarioId": "S-2",
+            "criterionId": "AC-2",
+            "title": "Inspect the public upload page for an upload action",
+            "compatibility": {
+              "scenarioId": "S-2",
+              "criterionId": "AC-2",
+              "title": "Inspect the public upload page for an upload action",
+              "classification": "UNSUPPORTED",
+              "checks": [
+                {
+                  "source": "Step 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Step 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 1",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Assertion 2",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                },
+                {
+                  "source": "Precondition 1",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Precondition 2",
+                  "classification": "CONFIGURATION_REQUIRED",
+                  "reason": "This precondition has no verified target/configuration binding."
+                },
+                {
+                  "source": "Scenario structure",
+                  "classification": "UNSUPPORTED",
+                  "reason": "Needs an explicit supported command/assertion in a newly reviewed revision; no automatic mapping."
+                }
+              ]
+            },
+            "status": "COMPLETED",
+            "outcome": "BLOCKED",
+            "startedAt": "2026-10-25T16:31:52.279Z",
+            "message": "Unsupported steps or unverified preconditions; no browser operations attempted.",
+            "completedAt": "2026-10-25T16:31:52.280Z"
+          }
+        ],
+        "coverage": [
+          {
+            "criterionId": "AC-1",
+            "text": "The page exposes a file selection control.",
+            "scenarioIds": [
+              "S-1"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED",
+            "executedScenarioIds": [],
+            "verified": false
+          },
+          {
+            "criterionId": "AC-2",
+            "text": "The page exposes an upload action.",
+            "scenarioIds": [
+              "S-2"
+            ],
+            "planned": "reviewed",
+            "blockingAssumptionIds": [],
+            "executed": "NOT_EXECUTED",
+            "executedScenarioIds": [],
+            "verified": false
+          }
+        ],
+        "gaps": [
+          "S-1: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "S-2: BLOCKED \u2014 Unsupported steps or unverified preconditions; no browser operations attempted.",
+          "AC-1: required coverage remains unverified.",
+          "AC-2: required coverage remains unverified."
+        ],
+        "knowledgeScope": {
+          "project": "desktop-selected-applications",
+          "environment": "user-selected-application",
+          "role": "isolated-browser",
+          "application": "b7c6c7b1e9cc677ae9a341ddeb0d32dd764ae3b6587c70288a2dc5430cbfe938"
+        },
+        "completedAt": "2026-10-25T16:31:52.282Z"
+      },
+      "executionDurationMs": 14.607394000000113
+    }
+  ],
+  "restart": {
+    "actualElectronRestart": true,
+    "plansPersisted": true,
+    "knowledgeBefore": {
+      "status": "ok",
+      "value": []
+    },
+    "knowledgeAfter": {
+      "status": "ok",
+      "value": []
+    },
+    "reuseMeasurement": null,
+    "reason": "Observation alone does not create verified operational knowledge."
+  },
+  "demoCredentialsDocumented": true,
+  "durationMs": 187583.364853,
+  "loginPolicy": {
+    "allowed": false,
+    "reason": "Hidden, disabled, form, download and new-window actions cannot be validated in M2."
+  },
+  "reviewDurationMs": 1543.747393,
+  "reviewRestart": {
+    "actualElectronRestart": true,
+    "approvedPlansPersisted": true,
+    "knowledgeBefore": {
+      "status": "ok",
+      "value": []
+    },
+    "knowledgeAfter": {
+      "status": "ok",
+      "value": []
+    },
+    "reuseMeasurement": null,
+    "reason": "No completed passing approved public workflow exists to verify or reuse."
+  },
+  "retainedScreenshots": [
+    {
+      "path": "validation/desktop-m7.1-evidence/home.png",
+      "sha256": "714a063eb2b0246f9a548056f50719476dbe7423d32e28691245bb982823b8b0",
+      "bytes": 85120
+    },
+    {
+      "path": "validation/desktop-m7.1-evidence/login-masked.png",
+      "sha256": "da7a052310d8e953e7ad0fc1b8522b4bc7f081c75c3c271e08c7cdc0854acc22",
+      "bytes": 31065
+    },
+    {
+      "path": "validation/desktop-m7.1-evidence/dynamic-controls.png",
+      "sha256": "98ef36ee7afef341b68366882f2894f62bebd5237ef471eb041c62d5ee55961f",
+      "bytes": 38700
+    },
+    {
+      "path": "validation/desktop-m7.1-evidence/upload-preflight.png",
+      "sha256": "cdbe3661865e1164085606bcf15468f7bdd180ef1e62e560d1d1da6d5a79b06a",
+      "bytes": 30030
+    },
+    {
+      "path": "validation/desktop-m7.1-evidence/stagehand-dynamic.png",
+      "sha256": "8fcaa19a372d5a1fc56ce79f4fc75a3187d69165147dbfd7fa6ce449bac17fc5",
+      "bytes": 39191
+    },
+    {
+      "path": "validation/desktop-m7.1-evidence/desktop-reviewed.png",
+      "sha256": "9e9545283ad6b2aec752b69ffd17494b46384470abc1909018335b2d9bc2065d",
+      "bytes": 64426
+    }
+  ],
+  "inference": {
+    "successfulPlanRequests": 3,
+    "successfulStagehandObservationRequests": 1,
+    "providerGenerateCalls": null,
+    "totalTokens": null,
+    "reason": "Existing desktop planning and observation IPC do not expose underlying model usage counters."
+  },
+  "results": {
+    "login": "BLOCKED",
+    "dynamicControls": "BLOCKED",
+    "uploadControlInspection": "PASS",
+    "uploadApprovedWorkflow": "BLOCKED",
+    "publicKnowledgeReuse": "BLOCKED",
+    "publicWebsiteBusinessBehavior": "INCONCLUSIVE"
+  },
+  "regressions": {
+    "desktopUnitTests": 88,
+    "desktopBrowserTests": 50,
+    "repositoryTests": 76,
+    "desktopTypecheck": "PASS",
+    "repositoryTypecheck": "PASS"
+  }
+}

@@ -8,7 +8,7 @@ const supportedAssertion = assertion => assertion;
 export const fixturePreconditions = ['Owned controlled login fixture', 'Synthetic valid and invalid accounts', 'Owned synthetic QA applications'];
 
 /** Explicit approved JSON only. No prose inference, selector discovery or expectation rewriting. */
-export function checkCompatibility(snapshot) {
+export function checkCompatibility(snapshot, { ownedFixture = true } = {}) {
   return snapshot.content.scenarios.map(scenario => {
     const checks = [], steps = [];
     const check = (source, fn) => {
@@ -28,7 +28,8 @@ export function checkCompatibility(snapshot) {
       if (item.kind !== kinds[assertion.kind] || (item.exactValue !== null && item.exactValue !== String(assertion.expected))) throw new Error('Declared assertion conflicts with approved source value');
       steps.push({ kind: 'assert', assertion });
     });
-    for (const [index, condition] of scenario.preconditions.entries()) checks.push({ source: `Precondition ${index + 1}`, classification: fixturePreconditions.includes(condition) ? 'EXECUTABLE' : 'CONFIGURATION_REQUIRED', reason: fixturePreconditions.includes(condition) ? 'Provided by the owned fixture.' : 'This precondition has no verified fixture/configuration binding.' });
+    const conditions = ownedFixture ? fixturePreconditions : ['User-authorized application origin'];
+    for (const [index, condition] of scenario.preconditions.entries()) checks.push({ source: `Precondition ${index + 1}`, classification: conditions.includes(condition) ? 'EXECUTABLE' : 'CONFIGURATION_REQUIRED', reason: conditions.includes(condition) ? 'Provided by the selected execution target.' : 'This precondition has no verified target/configuration binding.' });
     let plan;
     check('Scenario structure', () => {
       plan = { id: scenario.id, name: scenario.title, steps };

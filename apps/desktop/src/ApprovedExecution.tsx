@@ -6,6 +6,7 @@ export function ApprovedExecution({ snapshot }: { snapshot: ReviewSnapshot }) {
   const [preparation, setPreparation] = useState<Preparation | null>(null);
   const [authorized, setAuthorized] = useState(false), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
   const [reports, setReports] = useState<TicketReport[]>([]);
+  const [targetUrl, setTargetUrl] = useState('');
   const identity = { planId: snapshot.planId, revision: snapshot.revision, version: snapshot.version, hash: snapshot.hash };
   useEffect(() => {
     let alive = true;
@@ -15,10 +16,10 @@ export function ApprovedExecution({ snapshot }: { snapshot: ReviewSnapshot }) {
   }, [snapshot.planId, snapshot.revision, busy]);
   useEffect(() => { setPreparation(null); setAuthorized(false); }, [snapshot.hash]);
   async function prepare() {
-    setBusy(true); setAuthorized(false); setPreparation(null); setMessage('Checking approved revision and fixture configuration…');
+    setBusy(true); setAuthorized(false); setPreparation(null); setMessage('Checking approved revision and application configuration…');
     try {
-      const response = await window.qaspider.preparePlan(identity);
-      if (response.status === 'ok') { setPreparation(response.value); setMessage('Review compatibility and authorize the displayed fixture origin.'); }
+      const response = await window.qaspider.preparePlan({ ...identity, ...(targetUrl.trim() ? { url: targetUrl.trim() } : {}) });
+      if (response.status === 'ok') { setPreparation(response.value); setMessage('Review compatibility and authorize the displayed application origin.'); }
       else setMessage(response.message);
     } catch { setMessage('Preparation unavailable.'); }
     finally { setBusy(false); }
@@ -35,7 +36,8 @@ export function ApprovedExecution({ snapshot }: { snapshot: ReviewSnapshot }) {
   }
   return <section data-testid="approved-execution">
     <h3>Approved plan execution</h3>
-    <p>Owned synthetic applications: login, registration and contact. Each scenario uses an isolated browser session. Authorize the prepared origin separately from plan review.</p>
+    <p>Enter any HTTP or HTTPS application URL. Each scenario uses an isolated browser session scoped to its selected origin. Authorize the prepared origin separately from plan review. Form submission on user-selected applications remains unsupported.</p>
+    <label>Application URL (leave empty for local demo)<input type="url" value={targetUrl} disabled={busy} onChange={event => { setTargetUrl(event.target.value); setPreparation(null); setAuthorized(false); }}/></label>
     <details><summary>Explicit execution format and compatibility</summary>
       <p>Ordinary prose is unsupported. In a DRAFT revision, supply each instruction as a JSON browser command. Navigation and click expected outcomes must be JSON assertions; fill expected outcomes must be exactly [REDACTED]. Final assertion descriptions must be JSON assertions with the matching assertion kind. Review and approve these explicit expectations before execution.</p>
       <pre>{`Instruction: {"kind":"navigate","path":"/login"}
@@ -47,7 +49,7 @@ Expected outcome: [REDACTED]
 Instruction: {"kind":"click","selector":"#sign-in"}
 Expected outcome: {"kind":"url","expected":"/dashboard"}
 Final assertion (url): {"kind":"url","expected":"/dashboard"}`}</pre>
-      <p>Generic commands: NAVIGATE, OBSERVE, FILL, CLICK, SELECT and CAPTURE_EVIDENCE. Targets declare a selector or exact label and optional role. Explicit alternatives allow bounded Stagehand discovery. Assertions: url, text (present true/false), visible and enabled. Generic fills declare value; values are redacted from execution reports. Login account commands remain supported. Preconditions must be “Owned controlled login fixture” or “Synthetic valid and invalid accounts”; or “Owned synthetic QA applications”; others require configuration and block execution. No selectors, data or behavior are inferred.</p>
+      <p>Generic commands: NAVIGATE, OBSERVE, FILL, CLICK, SELECT and CAPTURE_EVIDENCE. Targets declare a selector or exact label and optional role. Explicit alternatives allow bounded Stagehand discovery. Assertions: url, text (present true/false), visible and enabled. Generic fills declare value; values are redacted from execution reports. Login account commands remain supported for the local demo. For selected applications use the precondition “User-authorized application origin”; local demo preconditions remain available only for the local demo. Other preconditions require configuration and block execution. No selectors, data or behavior are inferred.</p>
       <pre>{`Generic registration example:
 Instruction: {"kind":"NAVIGATE","path":"/registration"}
 Expected outcome: {"kind":"url","expected":"/registration"}
@@ -60,9 +62,9 @@ Adaptable contact target: {"label":"Submit","role":"button","alternatives":["Sen
     <button disabled={busy || snapshot.status !== 'APPROVED' || snapshot.revisions.at(-1)?.number !== snapshot.revision} onClick={() => void prepare()}>Prepare approved execution</button>
     {preparation && <>
       <p>Environment: {preparation.environment} · Permitted origin: <code>{preparation.origin}</code> · Preparation expires: {preparation.expiresAt}</p>
-      <p>Required fixture and synthetic credentials: {preparation.fixturesReady ? 'Available' : 'Missing — blocked'}</p>
+      <p>Execution target: {preparation.fixturesReady ? 'Prepared' : 'Missing — blocked'}</p>
       {preparation.compatibility.map(item => <article key={item.scenarioId}><strong>{item.scenarioId}: {item.classification}</strong><ul>{item.checks.map((check, index) => <li key={index}>{check.source}: {check.classification} — {check.reason}</li>)}</ul></article>)}
-      <label><input type="checkbox" checked={authorized} disabled={busy} onChange={event => setAuthorized(event.target.checked)}/>I authorize synthetic input fills, selections and submissions only in the owned test applications at {preparation.origin}.</label>
+      <label><input type="checkbox" checked={authorized} disabled={busy} onChange={event => setAuthorized(event.target.checked)}/>I authorize the approved plan’s permitted actions at {preparation.origin}.</label>
     </>}
     <button disabled={busy || !authorized || !preparation?.fixturesReady} onClick={() => void execute()}>Execute Approved Plan</button>
     <p role="status">{message}</p>

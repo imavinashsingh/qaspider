@@ -3,6 +3,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { z } from 'zod';
 import { openBrowserSession } from './browser.mjs';
 import { isOwnedFixture } from './controlled-fixture.mjs';
+import { isExecutionTarget } from './execution-target.mjs';
 import { redact } from './scenario-runner.mjs';
 import { testAccount, invalidAccount } from '../demo/credentials.mjs';
 
@@ -48,7 +49,7 @@ export function normalizePlan(input) {
 }
 export function permittedUrl(value, fixture) {
   const url = new URL(value, fixture.origin);
-  if (url.origin !== fixture.origin || url.username || url.password || !fixture.paths?.includes(url.pathname)) deny('URL is outside the owned test application paths.');
+  if (url.origin !== fixture.origin || url.username || url.password || (fixture.paths && !fixture.paths.includes(url.pathname))) deny('URL is outside the selected application scope.');
   return url;
 }
 const directLocator = (page, spec) => spec.selector ? page.locator(spec.selector) : spec.role ? page.getByRole(spec.role, { name: spec.label, exact: true }) : page.getByLabel(spec.label, { exact: true });
@@ -92,7 +93,7 @@ export async function resolveTarget(session, step, { modelAvailable, adaptations
 }
 
 async function gate(session, fixture, authorized, step, locator) {
-  if (!isOwnedFixture(fixture) || !authorized) deny('Explicit approval of this owned synthetic origin is required.');
+  if (!isExecutionTarget(fixture) || !authorized) deny('Explicit approval of the selected application origin is required.');
   permittedUrl(await session.page.url(), fixture);
   if (!await unique(locator) || !await locator.isEnabled()) deny('Target is missing, hidden, ambiguous or disabled.');
   const handle = await locator.elementHandle({ timeout: 2000 });
@@ -108,6 +109,7 @@ async function gate(session, fixture, authorized, step, locator) {
   if (step.kind === 'SELECT' && element.tag !== 'SELECT') deny('Only native select controls are supported.');
   if (step.kind === 'CLICK') {
     if (!['BUTTON', 'A'].includes(element.tag)) deny('Only links and buttons can be clicked.');
+    if (!isOwnedFixture(fixture) && element.tag === 'BUTTON' && element.action && element.type === 'submit') deny('Form submission on user-selected applications is not supported by the current action policy.');
     if (element.tag === 'A') { if (!element.href) deny('Link has no approved destination.'); permittedUrl(element.href, fixture); }
   }
   return handle;
@@ -180,7 +182,7 @@ export async function runGenericScenario(input, { fixture, authorized, options =
   }
   try {
     plan = normalizePlan(input);
-    if (!isOwnedFixture(fixture) || !authorized) deny('Explicit owned test-origin authorization is required.');
+    if (!isExecutionTarget(fixture) || !authorized) deny('Explicit selected application-origin authorization is required.');
     if (plan.steps[0].kind !== 'NAVIGATE' || plan.steps.filter(step => step.kind === 'NAVIGATE').length !== 1 || !assertionOf(plan.steps.at(-1))) deny('Start with one navigation and finish with an explicit assertion.');
     // Validate ALL URLs and assertions before opening the browser.
     for (const step of plan.steps) { if (step.kind === 'NAVIGATE') permittedUrl(step.path, fixture); const assertion = assertionOf(step); if (assertion?.kind === 'url') permittedUrl(assertion.expected, fixture); }

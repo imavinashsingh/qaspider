@@ -1,5 +1,7 @@
 # QASpider Desktop — Milestone 1
 
+Milestone 7.1 validates the public demo website and adds user-selected application origins to approved-plan preparation. See [MILESTONE-7.1.md](MILESTONE-7.1.md) for measured outcomes, screenshots, safety limits and unresolved integration blockers.
+
 Milestone 4.2 adds local plan revisions, editing, review decisions and exact-revision approval in the ticket workspace. See the [review and approval walkthrough](MILESTONE-4.2.md). Plan approval does not authorize browser execution.
 
 Milestone 4.1 adds review-only ticket understanding through the existing Codex provider. See the [ticket planning setup and walkthrough](MILESTONE-4.1.md).
