@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
+import { KnowledgeStore } from './knowledge.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { chmodSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -33,7 +34,7 @@ export class PlanStore {
       if (path !== ':memory:') chmodSync(path, 0o600);
       this.db.exec('PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;');
       const version = this.db.prepare('PRAGMA user_version').get().user_version;
-      if (version !== 0 && version !== 1) throw new Error('Plan database version is unsupported.');
+      if (![0, 1, 2].includes(version)) throw new Error('Plan database version is unsupported.');
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS desktop_plans (id TEXT PRIMARY KEY, original_json TEXT NOT NULL, created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS desktop_plan_revisions (
@@ -52,8 +53,8 @@ export class PlanStore {
         CREATE TRIGGER IF NOT EXISTS freeze_approved_update BEFORE UPDATE ON desktop_plan_revisions WHEN OLD.status='APPROVED' BEGIN SELECT RAISE(ABORT,'Approved revisions are immutable'); END;
         CREATE TRIGGER IF NOT EXISTS freeze_approved_delete BEFORE DELETE ON desktop_plan_revisions WHEN OLD.status='APPROVED' BEGIN SELECT RAISE(ABORT,'Approved revisions are immutable'); END;
         CREATE TRIGGER IF NOT EXISTS freeze_original BEFORE UPDATE ON desktop_plans BEGIN SELECT RAISE(ABORT,'Original ticket is immutable'); END;
-        PRAGMA user_version=1;
       `);
+      this.knowledge = new KnowledgeStore(this);
       // A new desktop process cannot resume ownership of an earlier browser run.
       for (const row of this.db.prepare('SELECT report_json FROM desktop_plan_executions').all()) {
         const report = JSON.parse(row.report_json);

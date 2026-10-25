@@ -5,6 +5,7 @@ import { redact } from './scenario-runner.mjs';
 import { checkCompatibility } from './plan-compatibility.mjs';
 import { runGenericScenario } from './generic-execution.mjs';
 import { testAccount, invalidAccount } from '../demo/credentials.mjs';
+import { fixtureKnowledgeScope } from './knowledge.mjs';
 
 const identity = z.object({ planId: z.string().uuid(), revision: z.number().int().positive(), version: z.number().int().positive(), hash: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 const executeRequest = identity.extend({ preparationId: z.string().uuid(), origin: z.string(), environment: z.enum(['owned-login-fixture', 'owned-qa-fixtures']), authorized: z.literal(true) }).strict();
@@ -58,6 +59,7 @@ export class ApprovedExecution {
       environment: request.environment, origin: pending.fixture.origin, startedAt: now(), status: 'RUNNING', outcome: 'INCONCLUSIVE', plannedCoverage: saved.coverage,
       scenarios: checkCompatibility(saved).map(item => ({ scenarioId: item.scenarioId, criterionId: item.criterionId, title: item.title, compatibility: item, status: 'NOT RUN', outcome: 'NOT RUN' })), coverage: [], gaps: [],
     };
+    report.knowledgeScope = fixtureKnowledgeScope(request.environment);
     const secrets = saved.content.scenarios.flatMap(scenario => scenario.steps.flatMap(step => {
       try { const command = JSON.parse(step.instruction); return command.kind === 'FILL' && command.value ? [command.value] : []; } catch { return []; }
     }));
@@ -86,6 +88,7 @@ export class ApprovedExecution {
           }
           try { scenario.result = await this.runner(scenario.compatibility.plan, {
             fixture: pending.fixture, authorized: true, options: browserOptions,
+            memory: this.store.knowledge?.find(report.knowledgeScope, scenario.compatibility.plan),
             checkpoint: async partial => { scenario.result = partial; scenario.outcome = partial.outcome; save(); },
           });
           } finally { inferenceAbort.abort(); }
@@ -106,6 +109,11 @@ export class ApprovedExecution {
       report.status = 'COMPLETED'; report.completedAt = now();
       consolidate(report);
       if (report.interrupted) { if (report.outcome !== 'FAIL') report.outcome = 'INCONCLUSIVE'; report.gaps.push('Execution or fixture cleanup interrupted; report cannot establish PASS.'); }
+      this.store.saveExecution(scrub(redact(report)));
+      for (const scenario of report.scenarios) if (scenario.result?.knowledge) {
+        try { this.store.knowledge?.record(report.knowledgeScope, scenario.compatibility.plan, report.id, scenario.scenarioId); }
+        catch { scenario.knowledgeMessage = 'Knowledge could not be recorded; execution evidence is retained.'; }
+      }
       this.store.saveExecution(scrub(redact(report)));
     }
     return scrub(redact(report));

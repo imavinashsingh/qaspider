@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { z } from 'zod';
 import { openBrowserSession } from './browser.mjs';
@@ -70,7 +70,8 @@ export async function resolveTarget(session, step, { modelAvailable, adaptations
   if (!modelAvailable) deny('AI provider unavailable; missing target cannot be adapted.');
   if (++budget.observations > 2) deny('Observation budget exhausted.');
   const method = { CLICK: 'click', FILL: 'fill', SELECT: 'selectOption' }[step.kind];
-  const result = await session.stagehand.observe(`Find the ${step.target.role ?? 'control'} for ${step.target.label}. Approved equivalent names: ${step.target.alternatives.join(', ')}. Propose only ${method}; do not act.`, { page: session.page, cache: false, timeout: 15_000 });
+  const instruction = `Find the ${step.target.role ?? 'control'} for ${step.target.label}. Approved equivalent names: ${step.target.alternatives.join(', ')}. Propose only ${method}; do not act.`;
+  const result = await (budget.observe ? budget.observe(session, instruction) : session.stagehand.observe(instruction, { page: session.page, cache: false, timeout: 15_000 }));
   if (!Array.isArray(result.data) || result.data.length > 20) deny('Invalid observation.');
   const candidates = [];
   for (const proposal of result.data) {
@@ -132,7 +133,7 @@ export async function measureAssertion(session, fixture, assertion, timeoutMs = 
 }
 
 /** Fresh browser per scenario. Never retries business actions or rewrites expectations. */
-export async function runGenericScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, checkpoint = async () => {}, assertionTimeoutMs = 1500, maxDurationMs = 90_000 } = {}) {
+export async function runGenericScenario(input, { fixture, authorized, options = {}, openSession = openBrowserSession, checkpoint = async () => {}, assertionTimeoutMs = 1500, maxDurationMs = 90_000, memory = null } = {}) {
   const report = { id: randomUUID(), scenarioId: input?.id, name: input?.name, outcome: 'INCONCLUSIVE', steps: [], adaptations: [], evidence: [], assertionsExecuted: 0, browserClosed: false, startedAt: new Date().toISOString() };
   const secrets = [testAccount, invalidAccount].flatMap(Object.values);
   for (const step of input?.steps ?? []) if (step.kind === 'FILL' && typeof step.value === 'string' && step.value) secrets.push(step.value);
@@ -142,7 +143,33 @@ export async function runGenericScenario(input, { fixture, authorized, options =
     return value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, ['outcome', 'status', 'kind', 'method', 'classification'].includes(key) ? item : sanitize(item)])) : value;
   };
   let session, timer, plan, expired = false;
-  const budget = { observations: 0 };
+  const knowledge = report.knowledge = { revisionId: memory?.id ?? null, steps: [], findings: [], metrics: { reusedSteps: 0, discoveryCalls: 0, aiCalls: 0, totalTokens: 0, tokenUsageComplete: true, discoveryMs: 0, durationMs: 0 } };
+  const started = performance.now();
+  const model = options.model;
+  if (model) options = { ...options, model: { ...model, generate: async (...args) => {
+    knowledge.metrics.aiCalls++;
+    try {
+      const response = await model.generate(...args);
+      if (Number.isFinite(response.usage?.totalTokens)) knowledge.metrics.totalTokens += response.usage.totalTokens;
+      else knowledge.metrics.tokenUsageComplete = false;
+      return response;
+    } catch (error) { knowledge.metrics.tokenUsageComplete = false; throw error; }
+  } } };
+  const budget = { observations: 0, observe: async (current, instruction) => {
+    const start = performance.now(), callsBefore = knowledge.metrics.aiCalls; knowledge.metrics.discoveryCalls++;
+    try {
+      const result = await current.stagehand.observe(instruction, { page: current.page, cache: false, timeout: 15_000 });
+      const usage = result.metadata?.usage;
+      if (knowledge.metrics.aiCalls === callsBefore) {
+        if (Number.isFinite(usage?.inputTokens) && Number.isFinite(usage?.outputTokens) && usage.inputTokens + usage.outputTokens > 0) knowledge.metrics.totalTokens += usage.inputTokens + usage.outputTokens;
+        else knowledge.metrics.tokenUsageComplete = false;
+      }
+      return result;
+    } catch (error) { knowledge.metrics.tokenUsageComplete = false; throw error; }
+    finally { knowledge.metrics.discoveryMs += performance.now() - start; }
+  } };
+  const route = async () => { const url = permittedUrl(await session.page.url(), fixture); return url.pathname; };
+  const fingerprint = async locator => createHash('sha256').update(JSON.stringify(await locator.evaluate(node => ({ tag: node.tagName, type: node.type ?? '', disabled: Boolean(node.disabled), readOnly: Boolean(node.readOnly), href: node.getAttribute('href'), action: node.form?.getAttribute('action'), target: node.getAttribute('target'), override: node.getAttribute('formaction'), names: [node.getAttribute('aria-label'), ...Array.from(node.labels ?? [], label => label.textContent?.trim()), ...(['BUTTON','A'].includes(node.tagName) ? [node.textContent?.trim()] : [])].filter(Boolean) })))).digest('hex');
   async function capture(record) {
     permittedUrl(await session.page.url(), fixture);
     const bytes = await session.controlledPage.screenshot({ type: 'png', timeout: 5000, mask: [session.controlledPage.locator('input, textarea, select')], maskColor: '#18283b' });
@@ -162,6 +189,8 @@ export async function runGenericScenario(input, { fixture, authorized, options =
       const assertion = assertionOf(step);
       const record = { number: index + 1, kind: step.kind, target: step.target?.label ?? step.target?.selector ?? step.path ?? step.selector, expected: step.kind === 'FILL' ? '[REDACTED]' : assertion?.expected, outcome: 'INCONCLUSIVE', message: '' };
       report.steps.push(record);
+      const learned = { number: index + 1, kind: step.kind };
+      knowledge.steps.push(learned);
       try {
         if (expired) throw new Error('Scenario deadline exceeded.');
         if (step.kind === 'NAVIGATE') {
@@ -179,13 +208,39 @@ export async function runGenericScenario(input, { fixture, authorized, options =
         } else if (step.kind === 'OBSERVE') {
           if (!options.model) deny('AI provider unavailable.');
           if (++budget.observations > 2) deny('Observation budget exhausted.');
-          const result = await session.stagehand.observe(step.instruction, { page: session.page, cache: false, timeout: 15_000 });
+          const result = await budget.observe(session, step.instruction);
           if (!Array.isArray(result.data) || result.data.length > 20) deny('Invalid observation.');
           record.actual = `Observed ${result.data.length} proposals; no action authorized by observation.`;
         } else if (step.target) {
-          const resolved = await resolveTarget(session, step, { modelAvailable: Boolean(options.model), adaptations: report.adaptations, budget });
+          let resolved;
+          const previous = memory?.steps.find(item => item.number === record.number);
+          if (previous?.selector && knowledge.findings.length === 0) {
+            const locator = session.controlledPage.locator(previous.selector);
+            let valid = false;
+            try { valid = previous.kind === step.kind && previous.before?.path === await route() && await unique(locator) && previous.before?.fingerprint === await fingerprint(locator); } catch {}
+            if (valid) { resolved = { locator, selector: previous.selector }; record.knowledgeReused = true; }
+            else {
+              // Capture before any observation or replacement operation. This evidence never gets overwritten.
+              await capture({ number: `${record.number}-divergence` });
+              knowledge.findings.push({ revisionId: memory.id, stepNumber: record.number, evidenceId: report.evidence.at(-1).id, reason: 'Verified target or prerequisite diverged before action; human review required.' });
+              await checkpoint(sanitize(report));
+              if (!step.target.label) deny('Changed selector-only operation has no approved meaning for adaptation; revise the plan before execution.');
+            }
+          }
+          resolved ??= await resolveTarget(session, step, { modelAvailable: Boolean(options.model), adaptations: report.adaptations, budget });
           // Revalidate after model response and immediately before deterministic execution.
           const handle = await gate(session, fixture, authorized, step, resolved.locator);
+          learned.selector = resolved.selector;
+          // Accessible labels are represented as deterministic selectors for later replay.
+          if (!step.target.selector && !report.adaptations.some(item => item.resolvedSelector === resolved.selector) && !record.knowledgeReused) {
+            learned.selector = await handle.evaluate(node => {
+              if (node.id) return '#' + CSS.escape(node.id);
+              const parts = []; let current = node;
+              while (current && current.tagName !== 'HTML') { const tag = current.tagName.toLowerCase(); const siblings = [...current.parentElement.children].filter(item => item.tagName === current.tagName); parts.unshift(tag + ':nth-of-type(' + (siblings.indexOf(current) + 1) + ')'); current = current.parentElement; }
+              return 'html > ' + parts.join(' > ');
+            });
+          }
+          learned.before = { path: await route(), fingerprint: await fingerprint(resolved.locator) };
           record.resolvedTarget = resolved.selector;
           if (step.kind === 'FILL') await handle.fill(step.value, { timeout: 4000 });
           else if (step.kind === 'SELECT') {
@@ -194,18 +249,30 @@ export async function runGenericScenario(input, { fixture, authorized, options =
             await handle.selectOption(step.value, { timeout: 4000 });
           } else await handle.click({ timeout: 4000 });
           await handle.dispose();
+          if (record.knowledgeReused) knowledge.metrics.reusedSteps++;
           record.actual = step.kind === 'FILL' ? '[REDACTED]' : 'Approved operation completed';
         }
         permittedUrl(await session.page.url(), fixture);
+        learned.after = { path: await route() };
+        const previous = memory?.steps.find(item => item.number === record.number);
+        if (record.knowledgeReused && previous?.after?.path !== learned.after.path) {
+          await capture({ number: `${record.number}-divergence` });
+          knowledge.findings.push({ revisionId: memory.id, stepNumber: record.number, evidenceId: report.evidence.at(-1).id, reason: 'Post-action route diverged; stopped without retry. Human review required.' });
+          deny('Verified post-action route changed; no action retry is permitted.');
+        }
         if (session.policyViolations?.length) deny('Browser attempted a resource outside the permitted test paths.');
         if (expired) throw new Error('Scenario deadline exceeded.');
         if (record.outcome !== 'FAIL') record.outcome = 'PASS';
         record.message = record.outcome === 'FAIL' ? 'Approved expectation was not observed.' : 'Operation or assertion verified.';
         await capture(record);
+        learned.evidenceId = record.evidenceId;
+        if (record.outcome === 'FAIL' && memory && !knowledge.findings.some(item => item.stepNumber === record.number)) knowledge.findings.push({ revisionId: memory.id, stepNumber: record.number, evidenceId: record.evidenceId, reason: 'Original approved assertion failed against remembered workflow. Human review required.' });
       } catch (error) {
         if (record.outcome !== 'FAIL') record.outcome = error instanceof SafetyError ? 'BLOCKED' : 'INCONCLUSIVE';
         record.message = error instanceof SafetyError ? error.message : 'Browser, observation, timeout or evidence failure.';
         if (session && !record.evidenceId) try { await capture(record); } catch {}
+        learned.evidenceId = record.evidenceId;
+        if (memory && record.evidenceId && !knowledge.findings.some(item => item.stepNumber === record.number)) knowledge.findings.push({ revisionId: memory.id, stepNumber: record.number, evidenceId: record.evidenceId, reason: 'Remembered workflow could not complete verification. Stopped without retry; human review required.' });
       }
       if (record.outcome === 'FAIL') report.outcome = 'FAIL';
       await checkpoint(sanitize(report));
@@ -221,6 +288,8 @@ export async function runGenericScenario(input, { fixture, authorized, options =
     try { if (session) { await session.close(); report.browserClosed = true; } }
     catch { if (report.outcome !== 'FAIL') report.outcome = 'INCONCLUSIVE'; }
     report.completedAt = new Date().toISOString();
+    knowledge.metrics.durationMs = performance.now() - started;
+    if (!knowledge.metrics.tokenUsageComplete) knowledge.metrics.totalTokens = null;
   }
   return redact(sanitize(report));
 }

@@ -4,6 +4,7 @@ import './style.css';
 import { Workspace, type WorkspaceBridge } from './Workspace.js';
 import { Scenarios, type ScenarioBridge } from './Scenarios.js';
 import { TicketPlanning, type TicketBridge } from './TicketPlanning.js';
+import { Knowledge, type KnowledgeBridge } from './Knowledge.js';
 
 export interface CaptureResult {
   status: 'success' | 'error';
@@ -13,7 +14,7 @@ export interface CaptureResult {
   screenshot?: string;
 }
 declare global {
-  interface Window { qaspider: WorkspaceBridge & ScenarioBridge & TicketBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
+  interface Window { qaspider: WorkspaceBridge & ScenarioBridge & TicketBridge & KnowledgeBridge & { openBrowser: (url: string) => Promise<CaptureResult> } }
 }
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
     <Workspace/>
     <Scenarios/>
     <TicketPlanning/>
+    <Knowledge/>
     <footer>Stagehand + local Chromium · one browser operation at a time</footer>
   </main>;
 }

@@ -67,6 +67,14 @@ void app.whenReady().then(() => {
     catch { return { status: 'unavailable', message: 'The proposal could not be saved locally. No reviewable revision was created.' }; }
   });
   handle('desktop:list-plans', reviewReply(() => savedPlans().list()));
+  handle('desktop:list-knowledge', reviewReply(input => savedPlans().knowledge.list(z.string().max(500).parse(input ?? ''))));
+  handle('desktop:knowledge-evidence', reviewReply(input => {
+    const request = z.object({ executionId: z.string().uuid(), scenarioId: z.string().max(100), evidenceId: z.string().max(200) }).strict().parse(input);
+    const row = savedPlans().db.prepare('SELECT report_json FROM desktop_plan_executions WHERE id=?').get(request.executionId);
+    const evidence = row && JSON.parse(row.report_json).scenarios.find(item => item.scenarioId === request.scenarioId)?.result?.evidence.find(item => item.id === request.evidenceId);
+    if (!evidence) throw new Error('Evidence not found.');
+    return evidence;
+  }));
   handle('desktop:get-plan', reviewReply(input => {
     const request = z.object({ planId: z.string().uuid(), revision: z.number().int().positive().optional() }).strict().parse(input);
     return savedPlans().get(request.planId, request.revision);

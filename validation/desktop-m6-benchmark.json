@@ -1,0 +1,616 @@
+{
+  "measuredAt": "2026-10-25T15:54:23.157Z",
+  "liveModelInference": true,
+  "realStagehandBrowser": true,
+  "controlledSyntheticDataOnly": true,
+  "provider": {
+    "provider": "codex-cli",
+    "model": "gpt-6.1-sol",
+    "synthetic": false
+  },
+  "trials": 3,
+  "groups": [
+    {
+      "label": "without-memory",
+      "samples": 3,
+      "meanAiCalls": 1,
+      "meanTotalTokens": 10686.333333333334,
+      "meanDiscoveryMs": 8416.402071333332,
+      "meanWallMs": 10661.519503333333,
+      "meanReusedSteps": 0
+    },
+    {
+      "label": "ticket-A",
+      "samples": 3,
+      "meanAiCalls": 1,
+      "meanTotalTokens": 10686.333333333334,
+      "meanDiscoveryMs": 5825.60309833333,
+      "meanWallMs": 8407.599824999998,
+      "meanReusedSteps": 0
+    },
+    {
+      "label": "ticket-B-after-restart",
+      "samples": 3,
+      "meanAiCalls": 0,
+      "meanTotalTokens": 0,
+      "meanDiscoveryMs": 0,
+      "meanWallMs": 1957.2872610000002,
+      "meanReusedSteps": 3
+    }
+  ],
+  "runs": [
+    {
+      "trial": 1,
+      "label": "without-memory",
+      "executionId": "a8d4a96c-cf04-45c0-a7a5-a9a42f3aadf2",
+      "outcome": "PASS",
+      "wallMs": 9316.812877,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10689,
+      "tokenUsageComplete": true,
+      "discoveryMs": 7209.467238999999,
+      "durationMs": 8272.027291,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-1.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-2.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-3.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-4.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-5.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-6.png"
+        },
+        {
+          "id": "c27c5ae0-0a33-43b6-8348-72a13e6440ed-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-without-memory-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "label": "ticket-A",
+      "executionId": "3b383f12-39b8-4460-a36e-32487b007b7a",
+      "outcome": "PASS",
+      "wallMs": 7884.067870000001,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10687,
+      "tokenUsageComplete": true,
+      "discoveryMs": 5828.16555,
+      "durationMs": 6962.788047,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-1.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-2.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-3.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-4.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-5.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-6.png"
+        },
+        {
+          "id": "da8a7799-62bc-4b51-8df1-31bbb4c0a743-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-A-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "label": "ticket-B-after-restart",
+      "executionId": "58bdb52c-24fd-40d2-9591-d0efe75f50fa",
+      "outcome": "PASS",
+      "wallMs": 2002.6370800000004,
+      "reusedSteps": 3,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 1044.539765999998,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-1.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-2.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-3.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-4.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-5.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-6.png"
+        },
+        {
+          "id": "22748141-a2c7-4a12-871a-b8cf1233ddc7-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-ticket-B-after-restart-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "label": "UI-change",
+      "executionId": "d9ac749c-0ec3-4d8a-85bd-8357fc34ad32",
+      "outcome": "PASS",
+      "wallMs": 8440.35558,
+      "reusedSteps": 2,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10690,
+      "tokenUsageComplete": true,
+      "discoveryMs": 6159.945727999999,
+      "durationMs": 7265.1606820000015,
+      "unexpectedChanges": 1,
+      "evidence": [
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-1.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-2.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-3.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-4.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-5-divergence",
+          "stepNumber": "5-divergence",
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-5-divergence.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-5.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-6.png"
+        },
+        {
+          "id": "84fbdd99-b657-49ff-8d0a-cf1e8b24f00a-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-UI-change-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "label": "business-defect",
+      "executionId": "795e5445-78da-4d2d-ac82-03019cde3fc3",
+      "outcome": "FAIL",
+      "wallMs": 3677.8931269999994,
+      "reusedSteps": 3,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 2485.513127000002,
+      "unexpectedChanges": 1,
+      "evidence": [
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-1.png"
+        },
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-2.png"
+        },
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-3.png"
+        },
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-4.png"
+        },
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-5.png"
+        },
+        {
+          "id": "78041284-3b17-4beb-88d7-50876f9357b9-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/1-business-defect-6.png"
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "label": "without-memory",
+      "executionId": "aac16c4f-6190-4de5-8abe-92d197120a93",
+      "outcome": "PASS",
+      "wallMs": 7673.804201999999,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10684,
+      "tokenUsageComplete": true,
+      "discoveryMs": 5648.494836999998,
+      "durationMs": 6648.090475999998,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-1.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-2.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-3.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-4.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-5.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-6.png"
+        },
+        {
+          "id": "ce053ae3-fb4c-4342-8fe1-3406c8edadb8-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-without-memory-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "label": "ticket-A",
+      "executionId": "f8b48bcd-90ad-46e2-bedc-e5a8f1385f26",
+      "outcome": "PASS",
+      "wallMs": 7597.696475999997,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10682,
+      "tokenUsageComplete": true,
+      "discoveryMs": 5519.346690999999,
+      "durationMs": 6766.086626999997,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-1.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-2.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-3.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-4.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-5.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-6.png"
+        },
+        {
+          "id": "2bee72ab-5207-46ef-af2c-61d5e1ecc1a9-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-A-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "label": "ticket-B-after-restart",
+      "executionId": "4aba0e54-7d42-4352-a416-d8eb2bf54f05",
+      "outcome": "PASS",
+      "wallMs": 2048.6493069999997,
+      "reusedSteps": 3,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 1195.3092000000033,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-1.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-2.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-3.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-4.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-5.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-6.png"
+        },
+        {
+          "id": "d7d5d2cf-7b03-4e4b-93cd-b02621d6bb0b-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/2-ticket-B-after-restart-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 3,
+      "label": "without-memory",
+      "executionId": "13018f3d-098d-47ce-8516-83602444dac6",
+      "outcome": "PASS",
+      "wallMs": 14993.941431,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10686,
+      "tokenUsageComplete": true,
+      "discoveryMs": 12391.244138000002,
+      "durationMs": 14100.153914999995,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-1.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-2.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-3.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-4.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-5.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-6.png"
+        },
+        {
+          "id": "32b8eb61-0ed0-483b-9ed7-6febbfc6150c-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-without-memory-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 3,
+      "label": "ticket-A",
+      "executionId": "05de94cd-9ecb-4631-873c-ba5fba54b268",
+      "outcome": "PASS",
+      "wallMs": 9741.035128999996,
+      "reusedSteps": 0,
+      "discoveryCalls": 1,
+      "aiCalls": 1,
+      "totalTokens": 10690,
+      "tokenUsageComplete": true,
+      "discoveryMs": 6129.297053999995,
+      "durationMs": 7363.639234000002,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-1.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-2.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-3.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-4.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-5.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-6.png"
+        },
+        {
+          "id": "40bd869e-43ce-4376-a7a4-75398c40623b-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-A-7.png"
+        }
+      ]
+    },
+    {
+      "trial": 3,
+      "label": "ticket-B-after-restart",
+      "executionId": "ba442308-be66-49ad-b2e0-8009fc3bc8cd",
+      "outcome": "PASS",
+      "wallMs": 1820.5753960000002,
+      "reusedSteps": 3,
+      "discoveryCalls": 0,
+      "aiCalls": 0,
+      "totalTokens": 0,
+      "tokenUsageComplete": true,
+      "discoveryMs": 0,
+      "durationMs": 995.8324980000034,
+      "unexpectedChanges": 0,
+      "evidence": [
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-1",
+          "stepNumber": 1,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-1.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-2",
+          "stepNumber": 2,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-2.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-3",
+          "stepNumber": 3,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-3.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-4",
+          "stepNumber": 4,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-4.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-5",
+          "stepNumber": 5,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-5.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-6",
+          "stepNumber": 6,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-6.png"
+        },
+        {
+          "id": "36370721-84c0-4fd5-9a8a-d2f67c0ff4fa-7",
+          "stepNumber": 7,
+          "screenshot": "test-results/desktop-live/m6/benchmark/3-ticket-B-after-restart-7.png"
+        }
+      ]
+    }
+  ],
+  "note": "Contact scenario AI/token/discovery/reuse measurements; wall time includes both registration and contact scenarios, provider preparation, screenshots, persistence and cleanup. Unknown token metadata is null. Three serial samples are descriptive, not a statistical speed guarantee."
+}
