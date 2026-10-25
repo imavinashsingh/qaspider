@@ -9,6 +9,7 @@ export async function startControlledFixture() {
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
   const fixture = Object.freeze({
     origin: `http://127.0.0.1:${server.address().port}`,
+    paths: Object.freeze(['/favicon.ico', '/login', '/dashboard', '/registration', '/contact', '/contact-changed', '/ambiguous', '/escape', '/sensitive-link']),
     close: async () => {
       owned.delete(fixture);
       server.closeAllConnections();

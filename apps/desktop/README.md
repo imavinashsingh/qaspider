@@ -151,3 +151,7 @@ Verified result: 16 desktop unit tests, 6 real desktop smoke tests (including vi
 The old UI shell, API client and components import graph, knowledge, Studio or orchestrator concepts, so none are migrated. Reused infrastructure is the npm workspace layout, React/Vite/TypeScript toolchain, Vitest/Playwright conventions and visual palette. The root legacy workflows remain available as reference; they do not run when starting the desktop.
 
 This milestone adds no autonomous discovery, LLM configuration, provider SDK, LangGraph, SQLite, custom navigation graph, worker pool, knowledge engine, orchestrator or installer packaging. Any next milestone requires explicit approval and inference work requires provider selection and validation first.
+
+## Milestone 5
+
+Approved ticket execution now supports generic typed browser commands and DOM assertions across owned login, registration and contact test applications. See [MILESTONE-5.md](MILESTONE-5.md) for command examples, seven architecture diagrams, safety limits, validation receipts and the learning walkthrough. External production mutations remain disabled. Real model validation: `node apps/desktop/scripts/verify-generic-live.mjs` from the repository root.

@@ -5,7 +5,7 @@ export interface Compatibility {
   checks: { source: string; classification: string; reason: string }[];
 }
 export interface Preparation {
-  preparationId: string; environment: 'owned-login-fixture'; origin: string; expiresAt: string;
+  preparationId: string; environment: 'owned-login-fixture' | 'owned-qa-fixtures'; origin: string; expiresAt: string;
   fixturesReady: boolean; compatibility: Compatibility[];
 }
 export interface TicketReport {
@@ -13,11 +13,11 @@ export interface TicketReport {
   environment: string; origin: string; startedAt: string; completedAt?: string; gaps: string[];
   coverage: { criterionId: string; text: string; planned: string; executed: string; verified: boolean }[];
   scenarios: { scenarioId: string; title: string; status: string; outcome: string; message?: string; startedAt?: string; completedAt?: string;
-    result?: { assertionsExecuted: number; browserClosed: boolean; steps: { number: number; kind: string; outcome: string; expected?: unknown; actual?: unknown; message: string; evidenceId?: string }[]; evidence: { id: string; stepNumber: number; screenshot: string; url: string }[] };
+    result?: { adaptations?: { requested: string; actualNames: string[]; resolvedSelector: string; evidenceId?: string }[]; assertionsExecuted: number; browserClosed: boolean; steps: { number: number; kind: string; resolvedTarget?: string; outcome: string; expected?: unknown; actual?: unknown; message: string; evidenceId?: string }[]; evidence: { id: string; stepNumber: number; screenshot: string; url: string }[] };
   }[];
 }
 export interface ExecutionBridge {
   preparePlan: (input: ExecutionIdentity) => Promise<ReviewReply<Preparation>>;
-  executePlan: (input: ExecutionIdentity & { preparationId: string; environment: 'owned-login-fixture'; origin: string; authorized: true }) => Promise<ReviewReply<TicketReport>>;
+  executePlan: (input: ExecutionIdentity & { preparationId: string; environment: 'owned-login-fixture' | 'owned-qa-fixtures'; origin: string; authorized: true }) => Promise<ReviewReply<TicketReport>>;
   planReports: (input: { planId: string; revision: number }) => Promise<ReviewReply<TicketReport[]>>;
 }

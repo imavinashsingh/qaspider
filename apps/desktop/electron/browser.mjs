@@ -19,7 +19,7 @@ export function validateTarget(input) {
  * A single local browser session. Callers must close it; startup failures close
  * partially acquired resources here. Shared by capture and observation.
  * @param {unknown} input
- * @param {{headless?: boolean, executablePath?: string | undefined, model?: import('@browserbasehq/stagehand').ClientLLM}} options
+ * @param {{headless?: boolean, executablePath?: string | undefined, model?: import('@browserbasehq/stagehand').ClientLLM, requestPolicy?: (url: string) => boolean}} options
  * @param {{localBrowser: typeof localBrowser, Stagehand: typeof Stagehand, chromium: typeof chromium}} dependencies
  */
 export async function openBrowserSession(input, options = {}, dependencies = { localBrowser, Stagehand, chromium }) {
@@ -52,6 +52,8 @@ export async function openBrowserSession(input, options = {}, dependencies = { l
     // No model configuration: ordinary browser methods make no inference calls.
     stagehand = await dependencies.Stagehand.create({ browser, cache: false, selfHeal: false, logging: { level: 'off' }, ...(options.model ? { model: options.model } : {}) });
     phase = 'navigation';
+    /** @type {string[]} */
+    const policyViolations = [];
     // Stagehand 4.3 domain policies reject localhost. Playwright supplies a CDP
     // session so Chromium checks every request, including each redirect hop.
     // This capture scope rule is not an OS/network security sandbox.
@@ -60,6 +62,20 @@ export async function openBrowserSession(input, options = {}, dependencies = { l
     const connection = await dependencies.chromium.connectOverCDP(cdpUrl);
     const context = connection.contexts()[0];
     if (!context) throw new Error('Local browser context is unavailable.');
+    if (options.requestPolicy) {
+      const policy = options.requestPolicy;
+      // Context-wide routing includes popups and subframes. Owned fixtures have
+      // no workers; this is not a hostile-worker sandbox. Close WebSocket transport.
+      await context.route('**/*', route => {
+        const request = route.request();
+        const allowed = policy(request.url()) && !['worker', 'serviceworker'].includes(request.resourceType());
+        if (!allowed) policyViolations.push('Denied resource request');
+        return allowed ? route.continue() : route.abort('blockedbyclient');
+      });
+      await context.routeWebSocket('**/*', socket => socket.close());
+      context.on('page', popup => { void popup.close().catch(() => {}); });
+      await context.clearPermissions();
+    }
     const controlledPage = context.pages()[0];
     if (!controlledPage) throw new Error('Local browser page is unavailable.');
     let navigationFailure = '';
@@ -72,7 +88,8 @@ export async function openBrowserSession(input, options = {}, dependencies = { l
     });
     const network = await context.newCDPSession(controlledPage);
     network.on('Fetch.requestPaused', event => {
-      const allowed = new URL(event.request.url).origin === target.origin;
+      const allowed = new URL(event.request.url).origin === target.origin && (!options.requestPolicy || options.requestPolicy(event.request.url));
+      if (!allowed && options.requestPolicy) policyViolations.push('Denied resource request');
       const decision = allowed
         ? network.send('Fetch.continueRequest', { requestId: event.requestId })
         : network.send('Fetch.failRequest', { requestId: event.requestId, errorReason: 'BlockedByClient' });
@@ -100,7 +117,7 @@ export async function openBrowserSession(input, options = {}, dependencies = { l
     if (new URL(visitedUrl).origin !== target.origin) {
       throw new Error(`The page reached origin ${new URL(visitedUrl).origin}; allowed origin: ${target.origin}. Enter the intended final application URL to explicitly choose its origin.`);
     }
-    return { target, browser, stagehand, page, controlledPage, context, network, response, close,
+    return { target, browser, stagehand, page, controlledPage, context, network, response, close, policyViolations,
       screenshot: async () => 'data:image/png;base64,' + Buffer.from(await page.screenshot({ type: 'png', fullPage: false, timeout: 10_000 })).toString('base64') };
   } catch (error) {
     let cleanup = '';

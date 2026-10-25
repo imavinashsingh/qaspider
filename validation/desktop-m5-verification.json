@@ -1,0 +1,41 @@
+{
+  "verifiedAt": "2026-10-25T15:42:27.359Z",
+  "milestone": 5,
+  "desktopUnitTests": 83,
+  "repositoryTests": 76,
+  "desktopBrowserAndElectronTests": 44,
+  "typechecks": {
+    "desktop": "PASS",
+    "repository": "PASS"
+  },
+  "builds": {
+    "desktop": "PASS",
+    "repository": "PASS"
+  },
+  "providerIsolation": {
+    "baseline": "PASS",
+    "postChange": "PASS",
+    "manifest": "validation/m2-isolation-recheck.json"
+  },
+  "realBrowserScenarioOutcomes": {
+    "PASS": 8,
+    "FAIL": 2,
+    "BLOCKED": 9,
+    "INCONCLUSIVE": 3
+  },
+  "liveObservation": {
+    "outcome": "PASS",
+    "inferenceCalls": 1,
+    "adaptations": 1,
+    "receipt": "validation/desktop-m5-live.json"
+  },
+  "browserReceipt": "validation/desktop-m5-browser.json",
+  "screenshots": [
+    "test-results/desktop-live/m5/desktop-preflight.png",
+    "test-results/desktop-live/m5/desktop-report.png"
+  ],
+  "recommendation": "Approve only for owned synthetic test environments; arbitrary production mutation remains disabled.",
+  "finalChecklist": "validation/desktop-m5-final-checklist.json",
+  "finalChecksVerified": 10,
+  "finalChecksTotal": 10
+}

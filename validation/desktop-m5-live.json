@@ -1,0 +1,120 @@
+{
+  "verifiedAt": "2026-10-25T15:40:17.405Z",
+  "liveModelInference": true,
+  "inferenceCalls": 1,
+  "provider": {
+    "provider": "codex-cli",
+    "model": "gpt-6.1-sol",
+    "synthetic": false
+  },
+  "controlledSyntheticDataOnly": true,
+  "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd",
+  "scenarioId": "S-1",
+  "name": "Synthetic generic test",
+  "outcome": "PASS",
+  "steps": [
+    {
+      "number": 1,
+      "kind": "NAVIGATE",
+      "target": "/contact-changed",
+      "outcome": "PASS",
+      "message": "Operation or assertion verified.",
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-1"
+    },
+    {
+      "number": 2,
+      "kind": "FILL",
+      "target": "Name",
+      "expected": "[REDACTED]",
+      "outcome": "PASS",
+      "message": "Operation or assertion verified.",
+      "resolvedTarget": "Name",
+      "actual": "[REDACTED]",
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-2"
+    },
+    {
+      "number": 3,
+      "kind": "FILL",
+      "target": "Email",
+      "expected": "[REDACTED]",
+      "outcome": "PASS",
+      "message": "Operation or assertion verified.",
+      "resolvedTarget": "Email",
+      "actual": "[REDACTED]",
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-3"
+    },
+    {
+      "number": 4,
+      "kind": "CLICK",
+      "target": "Submit",
+      "outcome": "PASS",
+      "message": "Operation or assertion verified.",
+      "resolvedTarget": "xpath=/html[1]/body[1]/section[1]/article[1]/form[1]/footer[1]/button[1]",
+      "actual": "Approved operation completed",
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-4"
+    },
+    {
+      "number": 5,
+      "kind": "assert",
+      "expected": "Message received",
+      "outcome": "PASS",
+      "message": "Operation or assertion verified.",
+      "actual": "Message received",
+      "matched": true,
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-5"
+    }
+  ],
+  "adaptations": [
+    {
+      "requested": "Submit",
+      "permittedNames": [
+        "Send Message"
+      ],
+      "resolvedSelector": "xpath=/html[1]/body[1]/section[1]/article[1]/form[1]/footer[1]/button[1]",
+      "actualNames": [
+        "Send Message"
+      ],
+      "method": "click",
+      "observedAt": "2026-10-25T15:40:16.961Z",
+      "reason": "Unique observed control has an explicitly approved equivalent name.",
+      "evidenceId": "1ae4daf2-2ea8-4635-9814-c7416a599abd-4"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd-1",
+      "stepNumber": 1,
+      "url": "http://127.0.0.1:35705/contact-changed",
+      "screenshot": "test-results/desktop-live/m5/live-1.png"
+    },
+    {
+      "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd-2",
+      "stepNumber": 2,
+      "url": "http://127.0.0.1:35705/contact-changed",
+      "screenshot": "test-results/desktop-live/m5/live-2.png"
+    },
+    {
+      "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd-3",
+      "stepNumber": 3,
+      "url": "http://127.0.0.1:35705/contact-changed",
+      "screenshot": "test-results/desktop-live/m5/live-3.png"
+    },
+    {
+      "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd-4",
+      "stepNumber": 4,
+      "url": "http://127.0.0.1:35705/contact-changed",
+      "screenshot": "test-results/desktop-live/m5/live-4.png"
+    },
+    {
+      "id": "1ae4daf2-2ea8-4635-9814-c7416a599abd-5",
+      "stepNumber": 5,
+      "url": "http://127.0.0.1:35705/contact-changed",
+      "screenshot": "test-results/desktop-live/m5/live-5.png"
+    }
+  ],
+  "assertionsExecuted": 1,
+  "browserClosed": true,
+  "startedAt": "2026-10-25T15:40:07.844Z",
+  "initialSessionEmpty": true,
+  "completedAt": "2026-10-25T15:40:17.403Z"
+}

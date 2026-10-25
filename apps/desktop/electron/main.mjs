@@ -21,7 +21,7 @@ const ticketPlanner = new TicketPlanner({ provider });
 let planStore;
 let planExecution;
 const savedPlans = () => planStore ??= new PlanStore(join(process.env.QASPIDER_DESKTOP_DATA_DIR ?? app.getPath('userData'), 'desktop-plans.sqlite'));
-const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions });
+const executions = () => planExecution ??= new ApprovedExecution(savedPlans(), { options: browserOptions, provider });
 const executionReply = operation => async input => {
   try { return { status: 'ok', value: await operation(input) }; }
   catch { return { status: 'error', message: 'Execution request rejected. Reload the latest approved revision, prepare its owned fixture and authorize its exact origin.' }; }

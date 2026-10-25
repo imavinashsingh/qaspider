@@ -1,0 +1,1365 @@
+{
+  "verifiedAt": "2026-10-25T15:41:04.784Z",
+  "liveModelInference": false,
+  "observationMode": "synthetic proposals for adaptation and budget cases; deterministic locators otherwise",
+  "realStagehandBrowser": true,
+  "reports": [
+    {
+      "id": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/registration",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Create account",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Create account",
+          "actual": "Approved operation completed",
+          "evidenceId": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "expected": "Name and email are required",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Name and email are required",
+          "matched": true,
+          "evidenceId": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-3"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:39.452Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:40.322Z",
+      "evidence": [
+        {
+          "id": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "e3ad9581-a7be-4579-ab4c-0c59ba842fcc-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "641f28cf-58c0-46fb-a6f4-510b53483612",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/registration",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "641f28cf-58c0-46fb-a6f4-510b53483612-1"
+        },
+        {
+          "number": 2,
+          "kind": "FILL",
+          "target": "Your name",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Your name",
+          "actual": "[REDACTED]",
+          "evidenceId": "641f28cf-58c0-46fb-a6f4-510b53483612-2"
+        },
+        {
+          "number": 3,
+          "kind": "FILL",
+          "target": "Email address",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Email address",
+          "actual": "[REDACTED]",
+          "evidenceId": "641f28cf-58c0-46fb-a6f4-510b53483612-3"
+        },
+        {
+          "number": 4,
+          "kind": "CLICK",
+          "target": "Create account",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Create account",
+          "actual": "Approved operation completed",
+          "evidenceId": "641f28cf-58c0-46fb-a6f4-510b53483612-4"
+        },
+        {
+          "number": 5,
+          "kind": "assert",
+          "expected": "Email already registered",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Email already registered",
+          "matched": true,
+          "evidenceId": "641f28cf-58c0-46fb-a6f4-510b53483612-5"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:40.323Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:41.169Z",
+      "evidence": [
+        {
+          "id": "641f28cf-58c0-46fb-a6f4-510b53483612-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "641f28cf-58c0-46fb-a6f4-510b53483612-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "641f28cf-58c0-46fb-a6f4-510b53483612-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "641f28cf-58c0-46fb-a6f4-510b53483612-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "641f28cf-58c0-46fb-a6f4-510b53483612-5",
+          "stepNumber": 5,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "09ae5248-212b-426c-90c6-72f5e7540ebf",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/registration",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-1"
+        },
+        {
+          "number": 2,
+          "kind": "FILL",
+          "target": "Your name",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Your name",
+          "actual": "[REDACTED]",
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-2"
+        },
+        {
+          "number": 3,
+          "kind": "FILL",
+          "target": "Email address",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Email address",
+          "actual": "[REDACTED]",
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-3"
+        },
+        {
+          "number": 4,
+          "kind": "SELECT",
+          "target": "Account type",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Account type",
+          "actual": "Approved operation completed",
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-4"
+        },
+        {
+          "number": 5,
+          "kind": "CLICK",
+          "target": "Create account",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Create account",
+          "actual": "Approved operation completed",
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-5"
+        },
+        {
+          "number": 6,
+          "kind": "assert",
+          "expected": "Registration complete",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Registration complete",
+          "matched": true,
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-6"
+        },
+        {
+          "number": 7,
+          "kind": "ASSERT_ENABLED",
+          "target": "button",
+          "expected": true,
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": true,
+          "matched": true,
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-7"
+        },
+        {
+          "number": 8,
+          "kind": "ASSERT_VISIBLE",
+          "target": "#result",
+          "expected": true,
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": true,
+          "matched": true,
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-8"
+        },
+        {
+          "number": 9,
+          "kind": "ASSERT_TEXT",
+          "target": "#result",
+          "expected": "Error",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Registration complete",
+          "matched": true,
+          "evidenceId": "09ae5248-212b-426c-90c6-72f5e7540ebf-9"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 4,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:41.170Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:42.353Z",
+      "evidence": [
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-5",
+          "stepNumber": 5,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-6",
+          "stepNumber": 6,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-7",
+          "stepNumber": 7,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-8",
+          "stepNumber": 8,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "09ae5248-212b-426c-90c6-72f5e7540ebf-9",
+          "stepNumber": 9,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Submit",
+          "actual": "Approved operation completed",
+          "evidenceId": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "expected": "Name and email are required",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Name and email are required",
+          "matched": true,
+          "evidenceId": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-3"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:42.362Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:43.120Z",
+      "evidence": [
+        {
+          "id": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "0e29686c-3c1c-4b5c-8b2b-9ca7c7845de8-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "4a105a6c-8608-488a-ab52-eb4a40e6601c-1"
+        },
+        {
+          "number": 2,
+          "kind": "FILL",
+          "target": "Name",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Name",
+          "actual": "[REDACTED]",
+          "evidenceId": "4a105a6c-8608-488a-ab52-eb4a40e6601c-2"
+        },
+        {
+          "number": 3,
+          "kind": "FILL",
+          "target": "Email",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Email",
+          "actual": "[REDACTED]",
+          "evidenceId": "4a105a6c-8608-488a-ab52-eb4a40e6601c-3"
+        },
+        {
+          "number": 4,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Submit",
+          "actual": "Approved operation completed",
+          "evidenceId": "4a105a6c-8608-488a-ab52-eb4a40e6601c-4"
+        },
+        {
+          "number": 5,
+          "kind": "assert",
+          "expected": "Enter a valid email",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Enter a valid email",
+          "matched": true,
+          "evidenceId": "4a105a6c-8608-488a-ab52-eb4a40e6601c-5"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:43.120Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:44.206Z",
+      "evidence": [
+        {
+          "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "4a105a6c-8608-488a-ab52-eb4a40e6601c-5",
+          "stepNumber": 5,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "089ab039-2025-4e06-83d1-a1de0f4fb320",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "089ab039-2025-4e06-83d1-a1de0f4fb320-1"
+        },
+        {
+          "number": 2,
+          "kind": "FILL",
+          "target": "Name",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Name",
+          "actual": "[REDACTED]",
+          "evidenceId": "089ab039-2025-4e06-83d1-a1de0f4fb320-2"
+        },
+        {
+          "number": 3,
+          "kind": "FILL",
+          "target": "Email",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Email",
+          "actual": "[REDACTED]",
+          "evidenceId": "089ab039-2025-4e06-83d1-a1de0f4fb320-3"
+        },
+        {
+          "number": 4,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Submit",
+          "actual": "Approved operation completed",
+          "evidenceId": "089ab039-2025-4e06-83d1-a1de0f4fb320-4"
+        },
+        {
+          "number": 5,
+          "kind": "assert",
+          "expected": "Message received",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Message received",
+          "matched": true,
+          "evidenceId": "089ab039-2025-4e06-83d1-a1de0f4fb320-5"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:44.207Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:45.056Z",
+      "evidence": [
+        {
+          "id": "089ab039-2025-4e06-83d1-a1de0f4fb320-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "089ab039-2025-4e06-83d1-a1de0f4fb320-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "089ab039-2025-4e06-83d1-a1de0f4fb320-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "089ab039-2025-4e06-83d1-a1de0f4fb320-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "089ab039-2025-4e06-83d1-a1de0f4fb320-5",
+          "stepNumber": 5,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "3271bbef-f651-49a2-9607-789e18b64164",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "FAIL",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "3271bbef-f651-49a2-9607-789e18b64164-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Submit",
+          "actual": "Approved operation completed",
+          "evidenceId": "3271bbef-f651-49a2-9607-789e18b64164-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "expected": "Message received",
+          "outcome": "FAIL",
+          "message": "Approved expectation was not observed.",
+          "actual": "Name and email are required",
+          "matched": false,
+          "evidenceId": "3271bbef-f651-49a2-9607-789e18b64164-3"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:45.057Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:45.937Z",
+      "evidence": [
+        {
+          "id": "3271bbef-f651-49a2-9607-789e18b64164-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "3271bbef-f651-49a2-9607-789e18b64164-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "3271bbef-f651-49a2-9607-789e18b64164-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "404184af-7bae-4587-81b2-38bacd3932bc",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact-changed",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-1"
+        },
+        {
+          "number": 2,
+          "kind": "FILL",
+          "target": "Name",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Name",
+          "actual": "[REDACTED]",
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-2"
+        },
+        {
+          "number": 3,
+          "kind": "FILL",
+          "target": "Email",
+          "expected": "[REDACTED]",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "Email",
+          "actual": "[REDACTED]",
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-3"
+        },
+        {
+          "number": 4,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "resolvedTarget": "button",
+          "actual": "Approved operation completed",
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-4"
+        },
+        {
+          "number": 5,
+          "kind": "assert",
+          "expected": "Message received",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Message received",
+          "matched": true,
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-5"
+        }
+      ],
+      "adaptations": [
+        {
+          "requested": "Submit",
+          "permittedNames": [
+            "Send Message"
+          ],
+          "resolvedSelector": "button",
+          "actualNames": [
+            "Send Message"
+          ],
+          "method": "click",
+          "observedAt": "2026-10-25T15:40:46.611Z",
+          "reason": "Unique observed control has an explicitly approved equivalent name.",
+          "evidenceId": "404184af-7bae-4587-81b2-38bacd3932bc-4"
+        }
+      ],
+      "assertionsExecuted": 1,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:45.944Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:46.786Z",
+      "evidence": [
+        {
+          "id": "404184af-7bae-4587-81b2-38bacd3932bc-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "404184af-7bae-4587-81b2-38bacd3932bc-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "404184af-7bae-4587-81b2-38bacd3932bc-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "404184af-7bae-4587-81b2-38bacd3932bc-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "404184af-7bae-4587-81b2-38bacd3932bc-5",
+          "stepNumber": 5,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "4703abf4-fb21-48fb-be80-a209b45cf161",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/ambiguous",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "4703abf4-fb21-48fb-be80-a209b45cf161-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "BLOCKED",
+          "message": "Target is ambiguous; no adaptation is permitted.",
+          "evidenceId": "4703abf4-fb21-48fb-be80-a209b45cf161-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:46.793Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:47.352Z",
+      "evidence": [
+        {
+          "id": "4703abf4-fb21-48fb-be80-a209b45cf161-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/ambiguous",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "4703abf4-fb21-48fb-be80-a209b45cf161-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/ambiguous",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "e9e3b882-0d28-4ed7-b13d-287bef7a4dc0",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": false,
+      "startedAt": "2026-10-25T15:40:47.352Z",
+      "message": "Scenario validation or persistence failed.",
+      "completedAt": "2026-10-25T15:40:47.353Z",
+      "evidence": []
+    },
+    {
+      "id": "e9bd20da-a041-4d9f-841d-26eab5b04760",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": false,
+      "startedAt": "2026-10-25T15:40:47.353Z",
+      "message": "Explicit owned test-origin authorization is required.",
+      "completedAt": "2026-10-25T15:40:47.353Z",
+      "evidence": []
+    },
+    {
+      "id": "eb8f59c6-b552-4859-bda7-747ba87474a8",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact-changed",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "eb8f59c6-b552-4859-bda7-747ba87474a8-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "BLOCKED",
+          "message": "AI provider unavailable; missing target cannot be adapted.",
+          "evidenceId": "eb8f59c6-b552-4859-bda7-747ba87474a8-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:47.353Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:47.934Z",
+      "evidence": [
+        {
+          "id": "eb8f59c6-b552-4859-bda7-747ba87474a8-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "eb8f59c6-b552-4859-bda7-747ba87474a8-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "d9cc7f3e-81f9-46ab-b0ec-fe8de69b7b88",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/sensitive-link",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "d9cc7f3e-81f9-46ab-b0ec-fe8de69b7b88-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Read configuration",
+          "outcome": "BLOCKED",
+          "message": "URL is outside the owned test application paths.",
+          "evidenceId": "d9cc7f3e-81f9-46ab-b0ec-fe8de69b7b88-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:47.935Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:48.498Z",
+      "evidence": [
+        {
+          "id": "d9cc7f3e-81f9-46ab-b0ec-fe8de69b7b88-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/sensitive-link",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "d9cc7f3e-81f9-46ab-b0ec-fe8de69b7b88-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/sensitive-link",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "e7770b4a-6b2c-4241-ab47-491d743862c9",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "INCONCLUSIVE",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/escape",
+          "outcome": "INCONCLUSIVE",
+          "message": "Browser, observation, timeout or evidence failure."
+        },
+        {
+          "number": 2,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": false,
+      "startedAt": "2026-10-25T15:40:48.498Z",
+      "completedAt": "2026-10-25T15:40:48.942Z",
+      "evidence": []
+    },
+    {
+      "id": "42a94f8f-fcfd-41fa-9b5e-47894d67401a",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "INCONCLUSIVE",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "INCONCLUSIVE",
+          "message": "Browser, observation, timeout or evidence failure."
+        },
+        {
+          "number": 2,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": false,
+      "startedAt": "2026-10-25T15:40:48.942Z",
+      "completedAt": "2026-10-25T15:40:48.942Z",
+      "evidence": []
+    },
+    {
+      "id": "adbbaf65-bece-47b9-8eef-d76e1d254f09",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "FAIL",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "adbbaf65-bece-47b9-8eef-d76e1d254f09-1"
+        },
+        {
+          "number": 2,
+          "kind": "assert",
+          "expected": "Impossible",
+          "outcome": "FAIL",
+          "message": "Browser, observation, timeout or evidence failure.",
+          "actual": "Ready",
+          "matched": false
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 1,
+      "browserClosed": false,
+      "startedAt": "2026-10-25T15:40:48.952Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:49.678Z",
+      "evidence": [
+        {
+          "id": "adbbaf65-bece-47b9-8eef-d76e1d254f09-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "ae2eac2e-84b4-4a5f-9857-e857ead132c6",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact-changed",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "ae2eac2e-84b4-4a5f-9857-e857ead132c6-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "BLOCKED",
+          "message": "Observation did not establish one compatible approved target.",
+          "evidenceId": "ae2eac2e-84b4-4a5f-9857-e857ead132c6-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:56.693Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:57.304Z",
+      "evidence": [
+        {
+          "id": "ae2eac2e-84b4-4a5f-9857-e857ead132c6-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "ae2eac2e-84b4-4a5f-9857-e857ead132c6-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "a0a1b82b-ee7c-4114-b481-06f930d2bd14",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact-changed",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "a0a1b82b-ee7c-4114-b481-06f930d2bd14-1"
+        },
+        {
+          "number": 2,
+          "kind": "CLICK",
+          "target": "Submit",
+          "outcome": "BLOCKED",
+          "message": "Observation did not establish one compatible approved target.",
+          "evidenceId": "a0a1b82b-ee7c-4114-b481-06f930d2bd14-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:57.304Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:58.053Z",
+      "evidence": [
+        {
+          "id": "a0a1b82b-ee7c-4114-b481-06f930d2bd14-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "a0a1b82b-ee7c-4114-b481-06f930d2bd14-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact-changed",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "717afa26-cec1-4743-9d7c-203f526716e7",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "PASS",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "717afa26-cec1-4743-9d7c-203f526716e7-1"
+        },
+        {
+          "number": 2,
+          "kind": "ASSERT_ENABLED",
+          "target": "button",
+          "expected": false,
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": false,
+          "matched": true,
+          "evidenceId": "717afa26-cec1-4743-9d7c-203f526716e7-2"
+        },
+        {
+          "number": 3,
+          "kind": "ASSERT_VISIBLE",
+          "target": "#missing",
+          "expected": false,
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": false,
+          "matched": true,
+          "evidenceId": "717afa26-cec1-4743-9d7c-203f526716e7-3"
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 2,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:58.059Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:58.722Z",
+      "evidence": [
+        {
+          "id": "717afa26-cec1-4743-9d7c-203f526716e7-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "717afa26-cec1-4743-9d7c-203f526716e7-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "717afa26-cec1-4743-9d7c-203f526716e7-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "684cd1d2-e0d8-4e55-a6bf-30b4119f4dd3",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/registration",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "684cd1d2-e0d8-4e55-a6bf-30b4119f4dd3-1"
+        },
+        {
+          "number": 2,
+          "kind": "SELECT",
+          "target": "Account type",
+          "outcome": "BLOCKED",
+          "message": "Approved option value is missing or ambiguous.",
+          "resolvedTarget": "Account type",
+          "evidenceId": "684cd1d2-e0d8-4e55-a6bf-30b4119f4dd3-2"
+        },
+        {
+          "number": 3,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:58.723Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:40:59.454Z",
+      "evidence": [
+        {
+          "id": "684cd1d2-e0d8-4e55-a6bf-30b4119f4dd3-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "684cd1d2-e0d8-4e55-a6bf-30b4119f4dd3-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/registration",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    },
+    {
+      "id": "7564a2f2-f70c-446b-a136-5b0f03e69eeb",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "INCONCLUSIVE",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "INCONCLUSIVE",
+          "message": "Browser, observation, timeout or evidence failure."
+        },
+        {
+          "number": 2,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:40:59.455Z",
+      "completedAt": "2026-10-25T15:41:00.030Z",
+      "evidence": []
+    },
+    {
+      "id": "291237e6-923a-4d55-a9ae-6e7213f691fc",
+      "scenarioId": "S-1",
+      "name": "Synthetic generic test",
+      "outcome": "BLOCKED",
+      "steps": [
+        {
+          "number": 1,
+          "kind": "NAVIGATE",
+          "target": "/contact",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "evidenceId": "291237e6-923a-4d55-a9ae-6e7213f691fc-1"
+        },
+        {
+          "number": 2,
+          "kind": "OBSERVE",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Observed 1 proposals; no action authorized by observation.",
+          "evidenceId": "291237e6-923a-4d55-a9ae-6e7213f691fc-2"
+        },
+        {
+          "number": 3,
+          "kind": "OBSERVE",
+          "outcome": "PASS",
+          "message": "Operation or assertion verified.",
+          "actual": "Observed 1 proposals; no action authorized by observation.",
+          "evidenceId": "291237e6-923a-4d55-a9ae-6e7213f691fc-3"
+        },
+        {
+          "number": 4,
+          "kind": "OBSERVE",
+          "outcome": "BLOCKED",
+          "message": "Observation budget exhausted.",
+          "evidenceId": "291237e6-923a-4d55-a9ae-6e7213f691fc-4"
+        },
+        {
+          "number": 5,
+          "kind": "assert",
+          "outcome": "NOT RUN",
+          "message": "An earlier operation stopped execution."
+        }
+      ],
+      "adaptations": [],
+      "assertionsExecuted": 0,
+      "browserClosed": true,
+      "startedAt": "2026-10-25T15:41:00.036Z",
+      "initialSessionEmpty": true,
+      "completedAt": "2026-10-25T15:41:00.750Z",
+      "evidence": [
+        {
+          "id": "291237e6-923a-4d55-a9ae-6e7213f691fc-1",
+          "stepNumber": 1,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "291237e6-923a-4d55-a9ae-6e7213f691fc-2",
+          "stepNumber": 2,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "291237e6-923a-4d55-a9ae-6e7213f691fc-3",
+          "stepNumber": 3,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        },
+        {
+          "id": "291237e6-923a-4d55-a9ae-6e7213f691fc-4",
+          "stepNumber": 4,
+          "url": "http://127.0.0.1:41895/contact",
+          "screenshot": "[PNG persisted in ignored test-results]"
+        }
+      ]
+    }
+  ]
+}

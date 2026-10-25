@@ -1,0 +1,95 @@
+{
+  "verifiedAt": "2026-10-25T15:42:27.359Z",
+  "milestone": 5,
+  "verified": 10,
+  "total": 10,
+  "scope": "Owned synthetic test applications, supported native controls, explicitly approved alternative target names. No claim of arbitrary production mutation safety or hostile-page containment.",
+  "checks": [
+    {
+      "number": 1,
+      "criterion": "Two structurally different applications use the same generic adapter",
+      "status": "VERIFIED",
+      "evidence": "Registration and contact real-browser cases call runGenericScenario; adapter contains no app-specific selector branches."
+    },
+    {
+      "number": 2,
+      "criterion": "Stagehand discovers unfamiliar controls without fixture-specific selectors",
+      "status": "VERIFIED",
+      "evidence": "Live observation produced xpath=/html[1]/body[1]/section[1]/article[1]/form[1]/footer[1]/button[1]; no selector supplied for the adapted button."
+    },
+    {
+      "number": 3,
+      "criterion": "Safe operational UI changes can be handled and recorded",
+      "status": "VERIFIED",
+      "evidence": "Submit to explicitly approved Send Message: live adaptation metadata, DOM verification and linked PNG evidence."
+    },
+    {
+      "number": 4,
+      "criterion": "Consequential actions cannot bypass authorization",
+      "status": "VERIFIED",
+      "evidence": "Owned capability, explicit authorization, prepared origin/environment/revision and one-use expiry enforced. Unauthorized and forged requests rejected. Applies to the enabled owned synthetic environment, not arbitrary hostile websites."
+    },
+    {
+      "number": 5,
+      "criterion": "Actual browser assertions determine PASS or FAIL",
+      "status": "VERIFIED",
+      "evidence": "DOM/URL/enabled/visibility measurements and bounded polling; model opinions cannot set assertion verdicts."
+    },
+    {
+      "number": 6,
+      "criterion": "A deliberate product failure remains FAIL with evidence",
+      "status": "VERIFIED",
+      "evidence": "Injected wrong contact confirmation: expected Message received, actual Delivery failed. Ticket FAIL and screenshot survive SQLite restart."
+    },
+    {
+      "number": 7,
+      "criterion": "Unsupported steps and missing provider states are reported accurately",
+      "status": "VERIFIED",
+      "evidence": "Unknown operations blocked before execution; missing provider blocks required adaptation; browser failures inconclusive; remaining steps not run."
+    },
+    {
+      "number": 8,
+      "criterion": "Approved plan revision and original expectations remain immutable",
+      "status": "VERIFIED",
+      "evidence": "Entire saved snapshot compared before/after execution and database restart; stale/tampered revisions rejected; approved business expectation unchanged in product-defect case."
+    },
+    {
+      "number": 9,
+      "criterion": "Screenshots, adaptation history and consolidated reports are retained",
+      "status": "VERIFIED",
+      "evidence": "Adaptation report, revision/hash, criteria and PNG evidence verified after SQLite restart; Electron report/screenshot reload passes."
+    },
+    {
+      "number": 10,
+      "criterion": "Previous desktop tests pass and a live Stagehand run is demonstrated",
+      "status": "VERIFIED",
+      "evidence": "44 browser/Electron tests, 83 desktop unit tests, 76 root tests and both typechecks pass. Separate live model receipt: PASS, one generation, one adaptation."
+    }
+  ],
+  "tests": {
+    "desktopUnit": 83,
+    "repository": 76,
+    "browserAndElectron": 44,
+    "desktopTypecheck": "PASS",
+    "repositoryTypecheck": "PASS"
+  },
+  "live": {
+    "outcome": "PASS",
+    "inferenceCalls": 1,
+    "adaptations": 1,
+    "receipt": "validation/desktop-m5-live.json"
+  },
+  "productDefect": {
+    "outcome": "FAIL",
+    "expected": "Message received",
+    "actual": "Delivery failed",
+    "screenshot": "test-results/desktop-live/m5/product-defect.png",
+    "report": "test-results/desktop-live/m5/product-defect-report.json"
+  },
+  "adaptationPersistence": {
+    "outcome": "PASS",
+    "report": "test-results/desktop-live/m5/adaptation-persistence-report.json",
+    "immutableRevisionConfirmedByTest": true
+  },
+  "recommendation": "Ready for final M5 approval within the stated owned-test scope. No additional milestone started."
+}

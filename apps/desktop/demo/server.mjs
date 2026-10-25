@@ -1,3 +1,4 @@
+import { serveQaApplication } from './qa-apps.mjs';
 import { createServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
@@ -10,6 +11,8 @@ export function createDemoServer() {
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'");
     response.setHeader('X-Content-Type-Options', 'nosniff');
+    if (request.url === '/favicon.ico') { response.writeHead(204); response.end(); return; }
+    if (serveQaApplication(request, response)) return;
     const cookie = (request.headers.cookie ?? '').match(/(?:^|;\s*)qa_session=([^;]+)/)?.[1];
     if (request.method === 'POST' && request.url === '/login') {
       // Bounded, synthetic form fixture. Never reflect or log request values.
